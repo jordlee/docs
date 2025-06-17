@@ -3,9 +3,9 @@
   "theme": "maple",
   "name": "Mint Starter Kit",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#FF8C00",
+    "light": "#FFA07A",
+    "dark": "#CD6600"
   },
   "favicon": "/favicon.svg",
   "navigation": {
