@@ -22,7 +22,7 @@
             ]
           },
           {
-            "group": "Essentials",
+            "group": "MCP Server",
             "pages": [
               "essentials/markdown",
               "essentials/code",
