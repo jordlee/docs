@@ -22,7 +22,7 @@
             ]
           },
           {
-            "group": "MCP-Server",
+            "group": "MCP Server",
             "pages": [
               "MCP-Server/overview",
               "MCP-Server/setup",
