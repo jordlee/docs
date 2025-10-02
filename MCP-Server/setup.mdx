@@ -1,12 +1,47 @@
 ---
-description: "The navigation field in docs.json defines the pages that go in the navigation menu"
+description: "Connecting your LLM to the MCP Server"
 icon: "map"
 title: "Setup"
 ---
 
-The navigation menu is the list of links on every website.
+Kando uses Model Context Protocol (MCP) to give LLMs access to complete SDK documentation, code examples, and system design recommendations. 
 
-You will likely update `docs.json` every time you add a new page. Pages do not show up automatically.
+MCP is a new framework pioneered by Anthropic (creator's of Claude and top-performing LLMs like Opus and Sonnet) which has been gaining traction since its announcement in September 2024, but is still in its early beta testing stages. 
+
+The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), ChatGPT (web), and LM Studio (open-source desktop). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI. 
+
+You'll need the official MCP server URL to use Kando with your LLM provider. Please fill out the form to gain access to the URL. 
+
+<Tabs>
+  <Tab title="Claude">
+    ### Requirements
+
+    To use Kando with Claude in the web browser or mobile app, you'll need the following:
+
+    1. Claude Pro, Max, or Enterprise account (starting at \$20/month)
+    2. MCP Server URL
+    3. System Prompt
+
+    ### Configuration Instructions
+
+    1. Navigate to "Settings" in the left panel.
+    2. Click on the "Connectors" tab to configure a new connector.
+    3. Press the "Add custom connector" button.
+    4. Give your connector a name (e.g. Kando).
+    5. Paste in the MCP Server URL in the "Remote MCP server URL" field. Please fill out this form to request access.
+    6. Click the "Add" button to finish the connector configuration.
+    7. If the connection is successful, you should see a new connector with the {connector name} from step 4. You may need to refresh the page for the UI to update.
+  </Tab>
+  <Tab title="Claude Code">
+    
+  </Tab>
+  <Tab title="ChatGPT">
+    
+  </Tab>
+  <Tab title="LM Studio">
+    
+  </Tab>
+</Tabs>
 
 ## Navigation syntax
 
