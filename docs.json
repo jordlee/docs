@@ -24,11 +24,11 @@
           {
             "group": "MCP Server",
             "pages": [
-              "MCP Server/markdown",
-              "MCP Server/code",
-              "MCP Server/images",
-              "MCP Server/settings",
-              "MCP Server/navigation",
+              "MCP Server/overview",
+              "MCP Server/setup",
+              "MCP Server/tips",
+              "MCP Server/troubleshooting",
+              "MCP Server/recommended llms",
               "MCP Server/reusable-snippets"
             ]
           }
