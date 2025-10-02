@@ -22,14 +22,14 @@
             ]
           },
           {
-            "group": "MCP Server",
+            "group": "MCP-Server",
             "pages": [
-              "MCP Server/overview",
-              "MCP Server/setup",
-              "MCP Server/tips",
-              "MCP Server/troubleshooting",
-              "MCP Server/recommended llms",
-              "MCP Server/reusable-snippets"
+              "MCP-Server/overview",
+              "MCP-Server/setup",
+              "MCP-Server/tips",
+              "MCP-Server/troubleshooting",
+              "MCP-Server/Recommended-LLMs",
+              "MCP-Server/reusable-snippets"
             ]
           }
         ]
