@@ -12,20 +12,53 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
 
 <Tabs>
   <Tab title="Claude">
+    <AccordionGroup>
+      <Accordion title="Requirements" defaultOpen>
+        - Claude Pro, Max, or Enterprise account (starting at \$20/month)
+        - MCP Server URL
+        - System Prompt
+      </Accordion>
+      <Accordion title="Basic Setup">
+        1. Go to **Settings → Connectors**.
+        2. Click **Add custom connector**.
+        3. Name it (e.g. `Kando`).
+        4. Paste the MCP Server URL into the "Remote MCP server URL" field.
+        5. Click **Add**.
+        6. Refresh if needed — you should now see your new connector.
+      </Accordion>
+      <Accordion title="Enabling Tools">
+        Kando enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retreived when you ask a question.
+
+        There are currently 14 tools supported for Claude; you can view more details about each tool in the page.
+
+        <Tip>
+          Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
+        </Tip>
+        To view the Kando's available tools:
+
+        1. Navigate to **Settings → Connectors**.
+        2. Next to the Kando connector, click the \*\*Configure \*\*button.
+        3. You'll now be able to see all available tools Kando offers.
+
+        By default, all tools will be **enabled**.
+
+        There are two tools that you must disable when using Kando with Claude.
+
+        <Warning>
+          Disable the\*\*search \*\* and \*\*fetch \*\*tools before prompting with Kando. These tools are intended for use only with ChatGPT.
+        </Warning>
+        The default tool permission setting is **always ask for permission**.
+
+        In this configuration, Claude will ask for permission every time it wants to use a tool. To allow automatic tool usage, set the permission to \*\*allow unsupervised. \*\*
+
+        <Tip>
+          When using Kando for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
+        </Tip>
+      </Accordion>
+    </AccordionGroup>
     ### Requirements
 
-    - Claude Pro, Max, or Enterprise account (starting at \$20/month)
-    - MCP Server URL
-    - System Prompt
-
-    ### Configuration Instructions
-
-    1. Go to **Settings → Connectors**.
-    2. Click **Add custom connector**.
-    3. Name it (e.g. `Kando`).
-    4. Paste the MCP Server URL into the "Remote MCP server URL" field.
-    5. Click **Add**.
-    6. Refresh if needed — you should now see your new connector.
+    ### Basic Setup
   </Tab>
   <Tab title="Claude Code">
     ### Requirements
@@ -76,32 +109,4 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
 
 ### Enabling Tools
 
-Kando enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retreived when you ask a question.
-
-There are currently 14 tools supported for Claude; you can view more details about each tool in the page.
-
-<Tip>
-  Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
-</Tip>
-
-To view the Kando's available tools:
-
-1. Navigate to **Settings → Connectors**.
-2. Next to the Kando connector, click the \*\*Configure \*\*button.
-3. You'll now be able to see all available tools Kando offers.
-
-By default, all tools will be **enabled**.
-
-There are two tools that you must disable when using Kando with Claude.
-
-<Warning>
-  Disable the\*\*search \*\* and \*\*fetch \*\*tools before prompting with Kando. These tools are intended for use only with ChatGPT.
-</Warning>
-
-The default tool permission setting is **always ask for permission**.
-
-In this configuration, Claude will ask for permission every time it wants to use a tool. To allow automatic tool usage, set the permission to \*\*allow unsupervised. \*\*
-
-<Tip>
-  When using Kando for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
-</Tip>
+/
