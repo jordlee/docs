@@ -30,17 +30,112 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
   <Tab title="Claude Code">
     ### Requirements
 
-    - Claude Desktop or CLI installed
+    - Claude Code CLI installed
     - MCP Server URL
     - System Prompt
 
-    ### Setup Instructions
+    ### Configuration Scopes
 
-    1. Open **Claude Code**.
-    2. Navigate to **Settings → Connectors**.
-    3. Add a new connector and name it (e.g. `Kando`).
-    4. Enter the MCP Server URL.
-    5. Save and restart Claude Code to activate the connection.
+    Claude Code supports three configuration scopes for MCP servers:
+
+    #### User Scope (Global)
+    Available across all projects on your machine. Best for personal utility servers and frequently-used services.
+
+    ```bash
+    claude mcp add Kando --scope user npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    ```
+
+    **Configuration stored in:** `~/.claude.json`
+
+    ```json
+    {
+      "mcpServers": {
+        "Kando": {
+          "type": "stdio",
+          "command": "npx",
+          "args": [
+            "mcp-remote",
+            "https://sdk-rag-agent-production.up.railway.app/mcp"
+          ],
+          "env": {}
+        }
+      }
+    }
+    ```
+
+    #### Project Scope (Team Shared)
+    Shared with all team members via `.mcp.json` in the project root. Best for team collaboration.
+
+    ```bash
+    claude mcp add Kando --scope project npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    ```
+
+    **Configuration stored in:** `.mcp.json` (project root)
+
+    ```json
+    {
+      "mcpServers": {
+        "Kando": {
+          "type": "stdio",
+          "command": "npx",
+          "args": [
+            "mcp-remote",
+            "https://sdk-rag-agent-production.up.railway.app/mcp"
+          ],
+          "env": {}
+        }
+      }
+    }
+    ```
+
+    <Tip>
+      Commit `.mcp.json` to version control to share MCP server configuration with your team.
+    </Tip>
+
+    #### Local Scope (Private)
+    Private to current user and project only. Best for personal development servers or experimental configurations.
+
+    ```bash
+    claude mcp add Kando npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    ```
+
+    **Configuration stored in:** `~/.claude.json` (project-specific section)
+
+    ### Scope Priority
+
+    When multiple scopes define the same server, Claude Code uses this priority order:
+    **Local > Project > User**
+
+    ### Verification
+
+    After adding the MCP server, verify it's connected:
+
+    ```bash
+    claude mcp list
+    ```
+
+    You should see:
+    ```
+    Kando: npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp - ✓ Connected
+    ```
+
+    ### Managing MCP Servers
+
+    **List all servers:**
+    ```bash
+    claude mcp list
+    ```
+
+    **Remove a server:**
+    ```bash
+    claude mcp remove Kando --scope user    # Remove from user scope
+    claude mcp remove Kando --scope project # Remove from project scope
+    claude mcp remove Kando                 # Remove from local scope
+    ```
+
+    <Note>
+      Restart Claude Code or start a new session after modifying MCP server configurations.
+    </Note>
   </Tab>
   <Tab title="ChatGPT">
     ### Requirements
