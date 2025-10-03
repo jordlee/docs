@@ -4,46 +4,69 @@ icon: "book"
 title: "Setup"
 ---
 
-Kando uses Model Context Protocol (MCP) to give LLMs access to complete SDK documentation, code examples, and system design recommendations.
+Kando uses Model Context Protocol (MCP) to give LLMs access to complete SDK documentation, code examples, and system design recommendations. 
 
-MCP is a new framework pioneered by Anthropic (creator's of Claude and top-performing LLMs like Opus and Sonnet) which has been gaining traction since its announcement in September 2024, but is still in its early beta testing stages.
+MCP is a new framework pioneered by Anthropic (creator's of Claude and top-performing LLMs like Opus and Sonnet) which has been gaining traction since its announcement in September 2024, but is still in its early beta testing stages. 
 
-The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), ChatGPT (web), and LM Studio (open-source desktop). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
+The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), ChatGPT (web), and LM Studio (open-source desktop). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI. 
 
-You'll need the official MCP server URL to use Kando with your LLM provider. Please fill out the form to gain access to the URL.
+You'll need the official MCP server URL to use Kando with your LLM provider. Please fill out the form to gain access to the URL. 
 
 <Tabs>
-  <Tab title="Claude (Mobile or Web)">
-    
+  <Tab title="Claude">
+    ### Requirements
+
+    - Claude Pro, Max, or Enterprise account (starting at $20/month)  
+    - MCP Server URL  
+    - System Prompt  
+
+    ### Configuration Instructions
+    1. Go to **Settings → Connectors**.  
+    2. Click **Add custom connector**.  
+    3. Name it (e.g. `Kando`).  
+    4. Paste the MCP Server URL into the "Remote MCP server URL" field.  
+    5. Click **Add**.  
+    6. Refresh if needed — you should now see your new connector.  
   </Tab>
+
   <Tab title="Claude Code">
-    
+    ### Requirements
+    - Claude Desktop or CLI installed  
+    - MCP Server URL  
+
+    ### Setup Instructions
+    1. Open **Claude Code**.  
+    2. Navigate to **Settings → Connectors**.  
+    3. Add a new connector and name it (e.g. `Kando`).  
+    4. Enter the MCP Server URL.  
+    5. Save and restart Claude Code to activate the connection.  
   </Tab>
-  <Tab title="ChatGPT (Web)">
-    
+
+  <Tab title="ChatGPT">
+    ### Requirements
+    - ChatGPT Plus plan ($20/month or higher)  
+    - MCP Server URL  
+
+    ### Setup Instructions
+    1. Open **ChatGPT Settings** in the left sidebar.  
+    2. Go to **Connectors**.  
+    3. Click **Add custom connector**.  
+    4. Give it a name (e.g. `Kando`).  
+    5. Paste in the MCP Server URL.  
+    6. Save changes — ChatGPT will automatically test the connection.  
   </Tab>
-  <Tab title="LM Studio (Desktop)">
-    
+
+  <Tab title="LM Studio">
+    ### Requirements
+    - LM Studio (latest release from GitHub)  
+    - MCP Server URL  
+
+    ### Setup Instructions
+    1. Open **LM Studio**.  
+    2. Go to **Settings → MCP Servers**.  
+    3. Add a new MCP server with a friendly name (e.g. `Kando`).  
+    4. Paste in the MCP Server URL.  
+    5. Save and restart LM Studio.  
+    6. You should now see Kando listed as an available connector.  
   </Tab>
 </Tabs>
-
-````code-tabs
-```md Claude
-### Requirements
-
-To use Kando with Claude in the web browser or mobile app, you'll need the following:
-
-1. Claude Pro, Max, or Enterprise account (starting at $20/month)
-2. MCP Server URL
-3. System Prompt
-
-### Configuration Instructions
-
-1. Navigate to "Settings" in the left panel.
-2. Click on the "Connectors" tab to configure a new connector.
-3. Press the "Add custom connector" button.
-4. Give your connector a name (e.g. Kando).
-5. Paste in the MCP Server URL in the "Remote MCP server URL" field. Please fill out this form to request access.
-6. Click the "Add" button to finish the connector configuration.
-7. If the connection is successful, you should see a new connector with the {connector name} from step 4. You may need to refresh the page for the UI to update.
-````
