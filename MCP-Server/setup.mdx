@@ -26,6 +26,52 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     4. Paste the MCP Server URL into the "Remote MCP server URL" field.
     5. Click **Add**.
     6. Refresh if needed — you should now see your new connector.
+
+    ### Enabling Tools
+
+    Kando enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retreived when you ask a question.
+
+    There are currently 14 tools supported for Claude; you can view more details about each tool in the page.
+
+    <Tip>
+      Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
+    </Tip>
+    To view the Kando's available tools:
+
+    1. Navigate to **Settings → Connectors**.
+    2. Next to the Kando connector, click the \*\*Configure \*\*button.
+    3. You'll now be able to see all available tools Kando offers.
+
+    By default, all tools will be **enabled**.
+
+    There are two tools that you must disable when using Kando with Claude.
+
+    <Warning>
+      Disable the\*\*search \*\* and \*\*fetch \*\*tools before prompting with Kando. These tools are intended for use only with ChatGPT.
+    </Warning>
+    The default tool permission setting is **always ask for permission**.
+
+    In this configuration, Claude will ask for permission every time it wants to use a tool. To allow automatic tool usage, set the permission to \*\*allow unsupervised. \*\*
+
+    <Tip>
+      When using Kando for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
+    </Tip>
+    ### Using Tools
+
+    To start using Kando's tools, open a new chat window.
+
+    Click the \*\*search and tools \*\*icon button in the chat box. You should now see the Kando connector at the top of the list.
+
+    You can toggle the connector on and off, as well as toggle individual tools directly in the chat window.
+
+    ### Deleting Kando
+
+    If you decide you no longer want to keep Kando as a connector, or want to temporarily disconnect from it, here's how:
+
+    1. Go to **Settings → Connectors**.
+    2. Click the \*\*More \*\*icon button next to the Kando connector.
+    3. Click **Remove** to permanantely remove the connector (you'll need to start the entire process if you want to add Kando at a later time).
+    4. Click \*\*Disconnect \*\* to temporarily remove the connector.
   </Tab>
   <Tab title="Claude Code">
     ### Requirements
@@ -39,6 +85,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     Claude Code supports three configuration scopes for MCP servers:
 
     #### User Scope (Global)
+
     Available across all projects on your machine. Best for personal utility servers and frequently-used services.
 
     ```bash
@@ -64,6 +111,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     ```
 
     #### Project Scope (Team Shared)
+
     Shared with all team members via `.mcp.json` in the project root. Best for team collaboration.
 
     ```bash
@@ -91,8 +139,8 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     <Tip>
       Commit `.mcp.json` to version control to share MCP server configuration with your team.
     </Tip>
-
     #### Local Scope (Private)
+
     Private to current user and project only. Best for personal development servers or experimental configurations.
 
     ```bash
@@ -103,8 +151,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
 
     ### Scope Priority
 
-    When multiple scopes define the same server, Claude Code uses this priority order:
-    **Local > Project > User**
+    When multiple scopes define the same server, Claude Code uses this priority order: **Local \> Project \> User**
 
     ### Verification
 
@@ -115,6 +162,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     ```
 
     You should see:
+
     ```
     Kando: npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp - ✓ Connected
     ```
@@ -122,11 +170,13 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     ### Managing MCP Servers
 
     **List all servers:**
+
     ```bash
     claude mcp list
     ```
 
     **Remove a server:**
+
     ```bash
     claude mcp remove Kando --scope user    # Remove from user scope
     claude mcp remove Kando --scope project # Remove from project scope
@@ -168,52 +218,3 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     6. You should now see Kando listed as an available connector.
   </Tab>
 </Tabs>
-
-### Enabling Tools
-
-Kando enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retreived when you ask a question.
-
-There are currently 14 tools supported for Claude; you can view more details about each tool in the page.
-
-<Tip>
-  Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
-</Tip>
-
-To view the Kando's available tools:
-
-1. Navigate to **Settings → Connectors**.
-2. Next to the Kando connector, click the \*\*Configure \*\*button.
-3. You'll now be able to see all available tools Kando offers.
-
-By default, all tools will be **enabled**.
-
-There are two tools that you must disable when using Kando with Claude.
-
-<Warning>
-  Disable the\*\*search \*\* and \*\*fetch \*\*tools before prompting with Kando. These tools are intended for use only with ChatGPT.
-</Warning>
-
-The default tool permission setting is **always ask for permission**.
-
-In this configuration, Claude will ask for permission every time it wants to use a tool. To allow automatic tool usage, set the permission to \*\*allow unsupervised. \*\*
-
-<Tip>
-  When using Kando for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
-</Tip>
-
-### Using Tools
-
-To start using Kando's tools, open a new chat window.
-
-Click the **search and tools **icon button in the chat box. You should now see the Kando connector at the top of the list. 
-
-You can toggle the connector on and off, as well as toggle individual tools directly in the chat window.
-
-### Deleting Kando
-
-If you decide you no longer want to keep Kando as a connector, or want to temporarily disconnect from it, here's how:
-
-1. Go to **Settings → Connectors**.
-2. Click the **More **icon button next to the Kando connector.
-3. Click **Remove** to permanantely remove the connector (you'll need to start the entire process if you want to add Kando at a later time).
-4. Click **Disconnect ** to temporarily remove the connector. 
