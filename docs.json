@@ -14,14 +14,6 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Get Started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
             "group": "MCP Server",
             "pages": [
               "MCP-Server/overview",
@@ -33,10 +25,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "API Reference",
-        "groups": []
       }
     ],
     "global": {
