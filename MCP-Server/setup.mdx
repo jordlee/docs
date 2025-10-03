@@ -1,121 +1,49 @@
 ---
 description: "Connecting your LLM to the MCP Server"
-icon: "map"
+icon: "book"
 title: "Setup"
 ---
 
-Kando uses Model Context Protocol (MCP) to give LLMs access to complete SDK documentation, code examples, and system design recommendations. 
+Kando uses Model Context Protocol (MCP) to give LLMs access to complete SDK documentation, code examples, and system design recommendations.
 
-MCP is a new framework pioneered by Anthropic (creator's of Claude and top-performing LLMs like Opus and Sonnet) which has been gaining traction since its announcement in September 2024, but is still in its early beta testing stages. 
+MCP is a new framework pioneered by Anthropic (creator's of Claude and top-performing LLMs like Opus and Sonnet) which has been gaining traction since its announcement in September 2024, but is still in its early beta testing stages.
 
-The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), ChatGPT (web), and LM Studio (open-source desktop). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI. 
+The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), ChatGPT (web), and LM Studio (open-source desktop). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
 
-You'll need the official MCP server URL to use Kando with your LLM provider. Please fill out the form to gain access to the URL. 
+You'll need the official MCP server URL to use Kando with your LLM provider. Please fill out the form to gain access to the URL.
 
 <Tabs>
-  <Tab title="Claude">
-    ### Requirements
-
-    To use Kando with Claude in the web browser or mobile app, you'll need the following:
-
-    1. Claude Pro, Max, or Enterprise account (starting at \$20/month)
-    2. MCP Server URL
-    3. System Prompt
-
-    ### Configuration Instructions
-
-    1. Navigate to "Settings" in the left panel.
-    2. Click on the "Connectors" tab to configure a new connector.
-    3. Press the "Add custom connector" button.
-    4. Give your connector a name (e.g. Kando).
-    5. Paste in the MCP Server URL in the "Remote MCP server URL" field. Please fill out this form to request access.
-    6. Click the "Add" button to finish the connector configuration.
-    7. If the connection is successful, you should see a new connector with the {connector name} from step 4. You may need to refresh the page for the UI to update.
+  <Tab title="Claude (Mobile or Web)">
+    
   </Tab>
   <Tab title="Claude Code">
     
   </Tab>
-  <Tab title="ChatGPT">
+  <Tab title="ChatGPT (Web)">
     
   </Tab>
-  <Tab title="LM Studio">
+  <Tab title="LM Studio (Desktop)">
     
   </Tab>
 </Tabs>
 
-## Navigation syntax
+````code-tabs
+```md Claude
+### Requirements
 
-Our navigation syntax is recursive which means you can make nested navigation groups. You don't need to include `.mdx` in page names.
+To use Kando with Claude in the web browser or mobile app, you'll need the following:
 
-<CodeGroup>
+1. Claude Pro, Max, or Enterprise account (starting at $20/month)
+2. MCP Server URL
+3. System Prompt
 
-```json Regular Navigation
-"navigation": {
-  "tabs": [
-    {
-      "tab": "Docs",
-      "groups": [
-        {
-          "group": "Getting Started",
-          "pages": ["quickstart"]
-        }
-      ]
-    }
-  ]
-}
-```
+### Configuration Instructions
 
-
-```json Nested Navigation
-"navigation": {
-  "tabs": [
-    {
-      "tab": "Docs",
-      "groups": [
-        {
-          "group": "Getting Started",
-          "pages": [
-            "quickstart",
-            {
-              "group": "Nested Reference Pages",
-              "pages": ["nested-reference-page"]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-</CodeGroup>
-
-## Folders
-
-Simply put your MDX files in folders and update the paths in `docs.json`.
-
-For example, to have a page at `https://yoursite.com/your-folder/your-page` you would make a folder called `your-folder` containing an MDX file called `your-page.mdx`.
-
-<Warning>
-  You cannot use `api` for the name of a folder unless you nest it inside another folder. Mintlify uses Next.js which reserves the top-level `api` folder for internal server calls. A folder name such as `api-reference` would be accepted.
-</Warning>
-
-```json Navigation With Folder
-"navigation": {
-  "tabs": [
-    {
-      "tab": "Docs",
-      "groups": [
-        {
-          "group": "Group Name",
-          "pages": ["your-folder/your-page"]
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Hidden Pages
-
-MDX files not included in `docs.json` will not show up in the sidebar but are accessible through the search bar and by linking directly to them.
+1. Navigate to "Settings" in the left panel.
+2. Click on the "Connectors" tab to configure a new connector.
+3. Press the "Add custom connector" button.
+4. Give your connector a name (e.g. Kando).
+5. Paste in the MCP Server URL in the "Remote MCP server URL" field. Please fill out this form to request access.
+6. Click the "Add" button to finish the connector configuration.
+7. If the connection is successful, you should see a new connector with the {connector name} from step 4. You may need to refresh the page for the UI to update.
+````
