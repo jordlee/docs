@@ -4,22 +4,60 @@ description: "AI-powered SDK documentation and API integration."
 icon: "code"
 ---
 
-### What is Kando?
+## What is Kando?
 
-Kando is an intellegent search engine that allows LLMs (large language models) to access complete API documentation, code examples, and system design recommendations for Sony's developer products, starting with the Camera Remote SDK.
+Kando is an intelligent search assistant that helps developers learn and use Sony's Camera Remote SDK faster. Instead of manually searching through hundreds of pages of documentation, you can ask questions in plain English to AI assistants like Claude or ChatGPT, and get instant answers with code examples.
 
-We built this tool to address a common struggle faced by developers and technologists:
+We built this tool to solve a common problem:
 
-> "\*\*Learning a new SDK sucks. \*\*It's time consuming and frustrating to sift through hundreds of pages of API reference, thousands of lines of sample code, and understand how it fits together with the solution I'm building."
+> "**Learning a new SDK is hard.** It takes hours to find the right API, understand how it works, and figure out how to use it in your project."
 
-<Card title="Our Message to Developers" icon="message">
-  By leveraging the reasoning, search, and coding capabilities of today's top LLMs from Anthropic, OpenAI, and open-source providers, we've made it possible to turn your preferred AI agents into experts on Sony's SDKs so you can build faster and focus on creating value for your customers.
+<Card title="Our Goal" icon="message">
+  Turn your favorite AI assistant into an SDK expert that can answer questions, explain APIs, provide code examples, and help you build faster.
 </Card>
 
-### How does it work?
+## How It Works
 
-Kando uses Model Context Protocol (MCP) to give LLMs access to complete SDK documentation, code examples, and system design recommendations.
+Kando works in three simple steps:
 
-MCP is a new framework pioneered by Anthropic (creator's of Claude and top-performing LLMs like Opus and Sonnet) which has been gaining traction since its announcement in September 2024, but is still in its early beta testing stages.
+**1. You Ask a Question**
+- Ask your AI assistant (Claude, ChatGPT, etc.) about the Camera Remote SDK
+- Examples: "How do I connect to a camera?" or "Show me how to capture an image in C#"
 
-Imagine the following scenario:
+**2. Kando Searches for Answers**
+- The AI assistant automatically uses Kando to search through SDK documentation
+- Searches across 8,962+ pieces of content including guides, API references, and code examples
+- Works with both SDK V1.14.00 and V2.00.00
+
+**3. You Get Instant Results**
+- Receive relevant documentation, function details, and working code examples
+- All formatted and explained by your AI assistant
+- No need to leave your conversation
+
+## What Makes Kando Different?
+
+### Smart Search
+Kando understands what you're asking for, even if you don't know the exact API name. It uses AI to interpret your question and find the most relevant answers.
+
+### Multiple Content Types
+- 📖 **Documentation**: Tutorials, guides, and explanations
+- 🔧 **API References**: Function definitions and parameters
+- 💻 **Code Examples**: Working C++ and C# code
+- 📊 **Compatibility Tables**: Which cameras support which features
+
+### Version Support
+Switch between SDK versions (V1.14.00 and V2.00.00) to find information for the version you're using.
+
+### Available Everywhere
+Works with Claude (web, mobile, desktop), ChatGPT, and other AI assistants that support MCP (Model Context Protocol).
+
+## The Technology (Simplified)
+
+**For those curious about what's under the hood:**
+
+- **RAG (Retrieval-Augmented Generation)**: Combines AI understanding with database search to find accurate answers
+- **Vector Embeddings**: Converts documentation into a format AI can search semantically
+- **MCP (Model Context Protocol)**: The standard that lets AI assistants connect to Kando
+- **Cloud Hosted**: Runs on Railway for reliable 24/7 availability
+
+You don't need to understand these technologies to use Kando—just connect it to your AI assistant and start asking questions!
