@@ -186,21 +186,55 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
+
+    ### Tool Permissions
+
+    <Warning>
+      Unlike Claude web, Claude Code does not currently support granular tool permissions or the ability to enable/disable individual tools. When you add an MCP server, all its tools are available by default.
+    </Warning>
+
+    **What's different from Claude web:**
+    - ❌ Cannot enable/disable individual tools
+    - ❌ No per-tool permission settings ("always ask" vs "allow unsupervised")
+    - ❌ No tool configuration UI
+    - ✅ All tools are active once the server is added
+
+    The only permission control is the initial approval prompt when using project-scoped servers for the first time.
   </Tab>
   <Tab title="ChatGPT">
     ### Requirements
 
-    - ChatGPT Plus plan (\$20/month or higher)
-    - MCP Server URL
+    - ChatGPT Plus, Pro, Business, or EDU account
+    - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
-    ### Setup Instructions
+    ### Configuration Steps
 
-    1. Open **ChatGPT Settings** in the left sidebar.
-    2. Go to **Connectors**.
-    3. Click **Add custom connector**.
-    4. Give it a name (e.g. `Kando`).
-    5. Paste in the MCP Server URL.
-    6. Save changes — ChatGPT will automatically test the connection.
+    1. **Enable Developer Mode**
+       - Log in to your ChatGPT account
+       - Open **Account Settings** (left sidebar)
+       - Navigate to the **Connectors** tab
+       - Scroll to the bottom and expand **Advanced settings**
+       - Toggle on **Developer mode** to enable custom connectors
+
+    2. **Add the MCP Server**
+       - In the Connectors settings, click **Add custom connector**
+       - Name it (e.g. `Kando`)
+       - Paste the MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
+       - Save changes — ChatGPT will automatically test the connection
+
+    3. **Use in Chat**
+       - Open a **new chat** (must not be nested in a project)
+       - Click the **"+"** icon in the chat window
+       - Hover over **"more"** in the dropdown menu
+       - Select **"Developer mode"** from the expanded list
+       - Next to the **"Developer Mode"** chip, click **"add"**
+       - Select the Kando connector and toggle it **on**
+
+    <Warning>
+      - Developer mode does **not work** within ChatGPT Projects
+      - The MCP server cannot be used in **Deep Research** mode
+      - Must create a standalone chat to use custom connectors
+    </Warning>
   </Tab>
   <Tab title="LM Studio">
     ### Requirements
