@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "Kando": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://sdk-rag-agent-production.up.railway.app/mcp"
+      ],
+      "env": {}
+    }
+  }
+}
