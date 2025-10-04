@@ -1,102 +1,412 @@
 ---
 title: "Tools"
-description: "Reusable, custom snippets to keep content in sync"
+description: "Comprehensive guide to Kando's search and utility tools"
 icon: "wrench"
 ---
 
-import SnippetIntro from '/snippets/snippet-intro.mdx';
+## Available Tools
 
-<SnippetIntro />
-
-## Creating a custom snippet
-
-**Pre-condition**: You must create your snippet file in the `snippets` directory.
+Kando provides **13+ specialized tools** that your AI assistant can use to search SDK documentation, code examples, and technical references. Your AI automatically selects the best tool for your question, but understanding what's available helps you ask better questions.
 
 <Note>
-  Any page in the `snippets` directory will be treated as a snippet and will not be rendered into a standalone page. If you want to create a standalone page from the snippet, import the snippet into another file and call it as a component.
+  You don't need to manually specify which tool to use—your AI assistant (Claude, ChatGPT, etc.) will automatically choose the most appropriate tool based on your query.
 </Note>
 
-### Default export
+---
 
-1. Add content to your snippet file that you want to re-use across multiple locations. Optionally, you can add variables that can be filled in via props when you import the snippet.
+## General Search Tools
 
-```mdx snippets/my-snippet.mdx
-Hello world! This is my content I want to reuse across pages. My keyword of the
-day is {word}.
-```
+These are the most commonly used tools for broad searches across all content types.
+
+### search_sdk
+
+**Purpose**: Intelligent multi-modal search with AI intent mapping
+
+**Best for**:
+- General questions about SDK features
+- Conceptual queries ("how do I...")
+- When you don't know the exact API name
+
+**How it works**:
+- Uses AI to understand your intent
+- Expands queries with technical synonyms
+- Searches across all content types
+
+**Example queries**:
+- "How do I connect to a camera?"
+- "What APIs control focus?"
+- "Show me how to start live view"
+
+**Strengths**:
+- ✅ Understands natural language
+- ✅ Finds relevant results even with vague queries
+- ✅ Good for exploratory searches
+
+**Limitations**:
+- ⚠️ Slower than other tools (AI processing time)
+- ⚠️ May timeout on very complex queries
+
+---
+
+### search_hybrid
+
+**Purpose**: Combined semantic and exact match search
+
+**Best for**:
+- Balanced search when you have some keywords
+- Finding specific features with context
+- When semantic search alone isn't precise enough
+
+**How it works**:
+- Combines vector similarity search with metadata filtering
+- Faster than search_sdk (no AI intent mapping)
+- Returns results ranked by relevance
+
+**Example queries**:
+- "SetSaveInfo parameters"
+- "camera compatibility for focus position"
+- "error code 0x80010001"
+
+**Strengths**:
+- ✅ Faster than search_sdk
+- ✅ More precise than pure semantic search
+- ✅ Good balance of speed and accuracy
+
+**Limitations**:
+- ⚠️ Less flexible with natural language
+
+---
+
+### search_with_intent_analysis
+
+**Purpose**: Advanced query expansion for complex questions
+
+**Best for**:
+- Multi-part questions
+- Complex technical queries
+- When simple search doesn't return good results
+
+**How it works**:
+- Deep AI analysis of query intent
+- Generates multiple search variations
+- Aggregates and ranks results
+
+**Example queries**:
+- "What's the difference between V1.14 and V2.00 connection APIs?"
+- "How do I handle errors when camera disconnects during capture?"
+
+**Strengths**:
+- ✅ Best for complex queries
+- ✅ Most intelligent interpretation
+
+**Limitations**:
+- ⚠️ Slowest tool (deep AI processing)
+- ⚠️ Higher chance of timeout
+- ⚠️ May return too many results
+
+---
+
+## Specialized Search Tools
+
+These tools filter results by content type for more targeted searches.
+
+### search_code_examples
+
+**Purpose**: Find working C++ or C# code examples
+
+**Parameters**:
+- `language`: "cpp" or "csharp"
+- `query`: What you're trying to implement
+- `top_k`: Number of results (default: 5)
+
+**Best for**:
+- Getting copy-paste ready code
+- Learning SDK usage patterns
+- Language-specific implementations
+
+**Example queries**:
+- "capture image" (language: cpp)
+- "connect to camera" (language: csharp)
+- "handle camera events" (language: cpp)
+
+**Strengths**:
+- ✅ Returns actual working code
+- ✅ Language-filtered results
+- ✅ Includes context and comments
+
+**Limitations**:
+- ⚠️ Limited to available SDK examples
+- ⚠️ May not cover all edge cases
+
+---
+
+### search_documentation
+
+**Purpose**: Search guides, tutorials, and explanatory text only
+
+**Best for**:
+- Understanding concepts
+- Learning workflows
+- Getting high-level overviews
+
+**Example queries**:
+- "camera connection workflow"
+- "SDK initialization steps"
+- "live view streaming explained"
+
+**Strengths**:
+- ✅ Filters out code and API references
+- ✅ Returns readable explanations
+- ✅ Good for learning
+
+**Limitations**:
+- ⚠️ Doesn't include API details
+
+---
+
+### search_api_functions
+
+**Purpose**: Find API function definitions and signatures
+
+**Best for**:
+- Looking up function parameters
+- Understanding return types
+- Finding related functions
+
+**Example queries**:
+- "SetSaveInfo"
+- "Connect function"
+- "release shutter API"
+
+**Strengths**:
+- ✅ Returns complete function signatures
+- ✅ Includes parameter descriptions
+- ✅ Fast and precise
+
+**Limitations**:
+- ⚠️ Doesn't include usage examples
+
+---
+
+### search_compatibility
+
+**Purpose**: Search camera compatibility tables
+
+**Best for**:
+- Checking which cameras support specific features
+- Model-specific capabilities
+- Feature availability by camera
+
+**Example queries**:
+- "which cameras support focus position control"
+- "A7 IV live view capabilities"
+- "remote capture compatibility"
+
+**Strengths**:
+- ✅ Returns structured compatibility data
+- ✅ Model-specific information
+- ✅ Helpful for hardware planning
+
+**Limitations**:
+- ⚠️ Only as current as indexed tables
+- ⚠️ May not include latest camera models
+
+---
+
+## Exact Match Tools
+
+These tools perform precise lookups using exact names or codes.
+
+### search_exact_api
+
+**Purpose**: Look up APIs by exact name
+
+**Best for**:
+- When you know the API name
+- Quick reference lookups
+- Finding specific functions
+
+**Example queries**:
+- "SetSaveInfo"
+- "Connect"
+- "GetDeviceProperty"
+
+**Strengths**:
+- ✅ Fastest tool
+- ✅ Most precise results
+- ✅ Returns all related documentation
+
+**Limitations**:
+- ⚠️ Requires exact API name
+- ⚠️ Won't find results with typos
+
+---
+
+### search_error_codes
+
+**Purpose**: Look up SDK error codes
+
+**Best for**:
+- Debugging error messages
+- Understanding error meanings
+- Finding solutions to errors
+
+**Example queries**:
+- "0x80010001"
+- "SDK_ERROR_TIMEOUT"
+
+**Strengths**:
+- ✅ Quick error resolution
+- ✅ Includes error descriptions
+
+**Limitations**:
+- ⚠️ Limited to documented error codes
+
+---
+
+### search_warning_codes
+
+**Purpose**: Look up SDK warning codes
+
+**Best for**:
+- Understanding warnings
+- Determining if warnings can be ignored
+- Warning-specific troubleshooting
+
+**Strengths**:
+- ✅ Specific to warnings (not errors)
+- ✅ Helps distinguish warning severity
+
+---
+
+### search_by_source_file
+
+**Purpose**: Search within specific SDK source files
+
+**Parameters**:
+- `file_name`: Name of the source file
+- `query`: What to search for in that file
+
+**Best for**:
+- Deep-diving into specific modules
+- Understanding file-specific implementations
+- Debugging specific components
+
+**Example queries**:
+- file_name: "CameraDevice.cpp", query: "Connect"
+- file_name: "LiveViewProcessor.h", query: "frame handling"
+
+**Strengths**:
+- ✅ Highly targeted searches
+- ✅ Useful for code exploration
+
+**Limitations**:
+- ⚠️ Requires knowing file names
+- ⚠️ Very specific use case
+
+---
+
+## Version Management Tools
+
+These tools let you switch between SDK versions or check which version you're querying.
+
+### get_sdk_version
+
+**Purpose**: Check which SDK version is currently active
+
+**Returns**: Current SDK version (e.g., "V2.00.00")
+
+**Use case**: Verify you're searching the right version
+
+---
+
+### list_sdk_versions
+
+**Purpose**: See all available SDK versions
+
+**Returns**: List of indexed SDK versions (V1.14.00, V2.00.00)
+
+**Use case**: Discover which versions Kando supports
+
+---
+
+### set_sdk_version
+
+**Purpose**: Switch between SDK versions
+
+**Parameters**:
+- `version`: "V1.14.00" or "V2.00.00"
+
+**Best for**:
+- Comparing APIs across versions
+- Finding version-specific information
+- Working with legacy SDKs
+
+**Example**:
+- Set to V1.14.00 to find legacy API documentation
+- Switch to V2.00.00 for latest features
+
+**Note**: Changes persist for your session
+
+---
+
+## System Information Tools
+
+### get_sdk_stats
+
+**Purpose**: View database statistics and performance metrics
+
+**Returns**:
+- Total indexed content
+- Content type breakdown
+- Database health status
+
+**Use case**: Understand Kando's knowledge base scope
+
+---
+
+## Tool Selection Guide
+
+### When to Use Which Tool
+
+| Your Goal | Recommended Tool | Why |
+|-----------|-----------------|-----|
+| Explore SDK features | `search_sdk` | Natural language understanding |
+| Find specific API | `search_exact_api` | Fastest, most precise |
+| Get code examples | `search_code_examples` | Language-filtered code |
+| Debug an error | `search_error_codes` | Error-specific lookup |
+| Learn concepts | `search_documentation` | Text-only explanations |
+| Check compatibility | `search_compatibility` | Hardware-specific data |
+| Complex question | `search_with_intent_analysis` | Advanced AI processing |
+| Balanced search | `search_hybrid` | Speed + accuracy |
+
+---
+
+## Best Practices
+
+<Tip>
+  **Start Broad, Then Narrow**
+  1. Begin with `search_sdk` for general questions
+  2. If results aren't precise enough, try `search_hybrid`
+  3. For exact matches, use `search_exact_api`
+</Tip>
 
 <Warning>
-  The content that you want to reuse must be inside the `snippets` directory in order for the import to work.
+  **Known Limitations**
+  - Intent mapping can timeout on very complex queries
+  - Not all camera models may be in compatibility tables
+  - Code examples are limited to what's in the SDK samples
 </Warning>
 
-2. Import the snippet into your destination file.
-
-```mdx destination-file.mdx
----
-title: My title
-description: My Description
 ---
 
-import MySnippet from '/snippets/path/to/my-snippet.mdx';
+## Need Help?
 
-## Header
+If you're not getting good results:
 
-Lorem impsum dolor sit amet.
+1. **Try a different approach** - Rephrase your question with more context
+2. **Be specific** - Include API names, camera models, or error codes when known
+3. **Check your SDK version** - Make sure you're searching the right version
+4. **Ask your AI assistant** - It can help refine your query
 
-<MySnippet word="bananas" />
-```
-
-### Reusable variables
-
-1. Export a variable from your snippet file:
-
-```mdx snippets/path/to/custom-variables.mdx
-export const myName = 'my name';
-
-export const myObject = { fruit: 'strawberries' };
-```
-
-2. Import the snippet from your destination file and use the variable:
-
-```mdx destination-file.mdx
----
-title: My title
-description: My Description
----
-
-import { myName, myObject } from '/snippets/path/to/custom-variables.mdx';
-
-Hello, my name is {myName} and I like {myObject.fruit}.
-```
-
-### Reusable components
-
-1. Inside your snippet file, create a component that takes in props by exporting your component in the form of an arrow function.
-
-```mdx snippets/custom-component.mdx
-export const MyComponent = ({ title }) => (
-  <div>
-    <h1>{title}</h1>
-    <p>... snippet content ...</p>
-  </div>
-);
-```
-
-<Warning>
-  MDX does not compile inside the body of an arrow function. Stick to HTML syntax when you can or use a default export if you need to use MDX.
-</Warning>
-
-2. Import the snippet into your destination file and pass in the props
-
-```mdx destination-file.mdx
----
-title: My title
-description: My Description
----
-
-import { MyComponent } from '/snippets/custom-component.mdx';
-
-Lorem ipsum dolor sit amet.
-
-<MyComponent title={'Custom title'} />
-```
+The AI assistant will automatically choose the best tool, but understanding what's available helps you ask better questions!
