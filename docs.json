@@ -30,6 +30,11 @@
     "global": {
       "anchors": [
         {
+          "anchor": "SDK Download",
+          "href": "https://pro.sony/ue_US/digital-imaging/sdk-download",
+          "icon": "download"
+        },
+        {
           "anchor": "Solutions",
           "href": "https://pro.sony/ue_US/digital-imaging/camera-remote-toolkit",
           "icon": "lightbulb"
