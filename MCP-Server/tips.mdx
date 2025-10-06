@@ -158,12 +158,30 @@ Use these prompt templates as starting points for different stages of SDK develo
     ```
 
     **What Kando Returns:**
-    - Comprehensive compatibility tables showing camera models
-    - Connection type support by camera (USB, wired LAN, wireless LAN)
-    - Mode support (RemoteControlMode, ContentsTransferMode, RemoteTransferMode)
+    - Complete list of supported camera models by category
+    - Connection type support matrix for each camera
+    - SDK mode availability (RemoteControl, ContentsTransfer, RemoteTransfer)
+    - Special requirements and limitations per model
 
     **Example Response Snippet:**
-    > *"ILX-LR1: Supports USB (R/C/T), Ethernet Wired (R/C/T), Ethernet Wireless (R/C/T). Must use SSH authentication. Use a USB Type C wired LAN adaptor. Use of a Gigabit Ethernet compatible adaptor is recommended."*
+    > **Supported Camera Models in SDK V2.00.00:**
+    >
+    > **Cinema Line:**
+    > - ILX-LR1, ILME-FX6 (Ver.3.00+), MPC-2610
+    >
+    > **Alpha Series:**
+    > - ILCE-1, ILCE-9M3, ILCE-7RM5, ILCE-7M4, ILCE-7RM4A, ILCE-7SM3, ILCE-7C, ILCE-7CR, and more
+    >
+    > **Connection Support by Model:**
+    > | Model | USB | Wired LAN | Wireless LAN | Notes |
+    > |-------|-----|-----------|--------------|-------|
+    > | ILX-LR1 | ✓ R/C/T | ✓ R/C/T | ✓ R/C/T | SSH auth required, USB-C to GigE adapter |
+    > | ILCE-1 | ✓ R/C/T | ✓ R/C/T | ✓ R/C/T | All modes supported |
+    > | ILCE-7RM4A | ✓ R/C | ✗ | ✗ | USB only, no network |
+    >
+    > **Legend:** R=RemoteControlMode, C=ContentsTransferMode, T=RemoteTransferMode
+    >
+    > For complete compatibility tables with all models, see Function List documentation.
 
     **Use when**: Evaluating if the SDK supports your target cameras
   </Accordion>
@@ -176,12 +194,39 @@ Use these prompt templates as starting points for different stages of SDK develo
     ```
 
     **What Kando Returns:**
-    - Physical layer support tables by camera model
-    - Connection mode explanations (R=RemoteControl, C=ContentsTransfer, T=RemoteTransfer)
-    - Special requirements (SSH authentication, network adapters)
+    - Detailed comparison of all physical connection types
+    - Performance characteristics and use case recommendations
+    - Hardware requirements for each connection type
+    - Connection mode compatibility per physical layer
 
     **Example Response Snippet:**
-    > *"'R' refers to RemoteControlMode, 'C' refers to ContentsTransferMode, 'T' refers to RemoteTransferMode. The ContentsTransferMode feature was added in version 1.05.00. The RemoteTransferMode feature was added in version 1.13.00."*
+    > **Physical Connection Types:**
+    >
+    > **1. USB Connection**
+    > - **Interface**: Direct USB cable (Type-C or Micro-USB depending on camera)
+    > - **Pros**: Most stable, highest bandwidth, no network configuration needed
+    > - **Cons**: Limited cable length (~5m), tethered operation only
+    > - **Best for**: Studio setups, direct PC control, maximum reliability
+    >
+    > **2. Wired LAN (Ethernet)**
+    > - **Interface**: RJ45 network cable (cameras may need USB-C to Ethernet adapter)
+    > - **Pros**: Stable, long-distance capable (100m+), network integration
+    > - **Cons**: Requires network setup, some cameras need adapters, may require SSH pairing
+    > - **Best for**: Fixed installations, multi-camera systems, industrial applications
+    >
+    > **3. Wireless LAN (Wi-Fi)**
+    > - **Interface**: Built-in Wi-Fi (camera creates access point or joins network)
+    > - **Pros**: No cables, portable, flexible positioning
+    > - **Cons**: Lower bandwidth, potential interference, not all cameras support all modes
+    > - **Cons**: Linux ARMv7/ARMv8 SDK versions don't support wireless
+    > - **Best for**: Mobile applications, temporary setups, on-location shooting
+    >
+    > **Connection Modes by Physical Layer:**
+    > - **RemoteControlMode (R)**: Real-time camera control - Available on all connection types
+    > - **ContentsTransferMode (C)**: File transfer only - Added in SDK v1.05.00
+    > - **RemoteTransferMode (T)**: Control + auto file transfer - Added in SDK v1.13.00
+    >
+    > **Important**: Check camera compatibility table—not all cameras support all modes on all connection types.
 
     **Use when**: Planning your hardware and connection strategy
   </Accordion>
@@ -194,12 +239,34 @@ Use these prompt templates as starting points for different stages of SDK develo
     ```
 
     **What Kando Returns:**
-    - Release notes and version-specific features
-    - Current SDK version information (V2.00.00 is latest)
-    - Breaking changes and migration guidance
+    - Key differences between SDK versions
+    - New features and capabilities in each version
+    - Breaking changes and migration considerations
+    - Recommendation for new projects
 
     **Example Response Snippet:**
-    > *"Current version: V2.00.00 (latest). Available versions: V1.14.00 (stable), V2.00.00 (latest, active)"*
+    > **SDK Version Comparison:**
+    >
+    > **V2.00.00 (Latest - Recommended for New Projects)**
+    > - **Status**: Latest stable release, actively maintained
+    > - **New Camera Support**: Additional camera models including latest Alpha and Cinema Line cameras
+    > - **New Features**: Enhanced property controls, additional device properties
+    > - **Compatibility**: Full backward compatibility with V1.14.00 cameras
+    >
+    > **V1.14.00 (Stable Legacy)**
+    > - **Status**: Stable, mature codebase
+    > - **Use Case**: Existing projects that don't need latest features
+    > - **Camera Support**: Broad support for Alpha 7/9 series and earlier Cinema Line
+    > - **ContentsTransferMode**: Added in v1.05.00
+    > - **RemoteTransferMode**: Added in v1.13.00
+    >
+    > **Key Differences:**
+    > - V2.00.00 supports newer camera models released after V1.14.00
+    > - V2.00.00 includes additional device property codes and commands
+    > - API compatibility maintained—migration typically requires minimal code changes
+    > - DLL/library files must be updated when switching versions (rebuild required)
+    >
+    > **Recommendation**: Use **V2.00.00** for all new projects to ensure latest camera support and future compatibility.
 
     **Use when**: Deciding which SDK version to adopt
   </Accordion>
@@ -344,12 +411,48 @@ Use these prompt templates as starting points for different stages of SDK develo
     ```
 
     **What Kando Returns:**
-    - Multi-connection limitations by camera model
-    - Maximum simultaneous connection counts
-    - Best practices for managing multiple device handles
+    - Multi-camera connection limits and constraints
+    - Architecture patterns for multi-camera control
+    - Device handle management strategies
+    - Callback handling for multiple cameras
 
     **Example Response Snippet:**
-    > *"One camera can be controlled by multiple host PCs. The maximum number of simultaneous connections is 5 users (applications). If the number of Connect requests exceeds the limit, the Connect() will fail. Note that the connection is not complete until the OnConnected() callback is received."*
+    > **Multi-Camera Limitations:**
+    > - **Per Camera**: Maximum 5 simultaneous connections from different hosts/applications
+    > - **Per Host PC**: No SDK-imposed limit on number of cameras (limited by system resources)
+    > - **Connection Completion**: Connection isn't complete until `OnConnected()` callback is received
+    > - **Exceeded Limit**: `Connect()` fails with error if camera already has 5 connections
+    >
+    > **Recommended Architecture:**
+    > ```cpp
+    > // 1. Single SDK instance manages all cameras
+    > Init(); // Call once for entire application
+    >
+    > // 2. Enumerate all connected cameras
+    > ICrEnumCameraObjectInfo* cameraList;
+    > EnumCameraObjects(&cameraList);
+    >
+    > // 3. Store device handles in a collection
+    > std::vector<CrDeviceHandle> cameras;
+    > for (int i = 0; i < cameraCount; i++) {
+    >     CrDeviceHandle handle;
+    >     Connect(cameraInfo[i], callback, &handle, mode);
+    >     cameras.push_back(handle);
+    > }
+    >
+    > // 4. Manage each camera independently
+    > for (auto handle : cameras) {
+    >     GetDeviceProperties(handle, ...);
+    >     SendCommand(handle, ...);
+    > }
+    > ```
+    >
+    > **Best Practices:**
+    > - Use separate callback objects or camera identifiers to distinguish events from different cameras
+    > - Implement thread-safe queue for handling callbacks from multiple cameras
+    > - Consider network bandwidth when using multiple cameras over LAN
+    > - For time-synchronized capture, account for network latency variations
+    > - Properly clean up each device handle with `Disconnect()` before `Release()`
 
     **Use when**: Building multi-camera control systems
   </Accordion>
@@ -428,7 +531,38 @@ Use these prompt templates as starting points for different stages of SDK develo
     - Cable and connection specifications
 
     **Example Response Snippet:**
-    > *"Must be used with SSH authentication. Use a USB Type C wired LAN adaptor. Use of a Gigabit Ethernet compatible adaptor is recommended."*
+
+    > **Connection-Specific Hardware Requirements:**
+    >
+    > **USB Connection:**
+    > - Standard USB cable (camera-specific type - e.g., USB Type-C for newer models)
+    > - Direct connection to host PC USB port
+    > - Cable length limitation: ~5m maximum
+    > - No additional adapters needed for basic USB
+    >
+    > **Wired LAN (Ethernet) Connection:**
+    > - For ILX-LR1, ILME-FX6, MPC-2610: **USB Type-C to Gigabit Ethernet adapter required**
+    >   - Recommendation: Use Gigabit Ethernet compatible adapter for best performance
+    >   - Standard Ethernet cable (Cat5e or better)
+    >   - Can extend up to 100m+ with quality cables
+    > - For PXW-Z200, HXR-NX800, BRC-AM7: Built-in Ethernet port (no adapter needed)
+    >
+    > **Wireless LAN Connection:**
+    > - Camera's built-in Wi-Fi (if supported)
+    > - Wireless network infrastructure (router/access point)
+    > - Platform limitation: **Not supported on Linux ARMv7/ARMv8**
+    >
+    > **Authentication Requirements:**
+    > - **SSH authentication required** for: ILX-LR1, MPC-2610, ILME-FX6, PXW-Z200, HXR-NX800
+    >   - Default username: `admin`
+    >   - Password setup during initial pairing
+    >   - SSH fingerprint verification on first connection
+    > - Standard USB connection: No SSH authentication needed (most Alpha series cameras)
+    >
+    > **Multi-Camera Setups:**
+    > - Network switch/hub (for wired multi-camera with LAN)
+    > - Maximum 5 simultaneous connections per camera (MPC-2610 and similar models)
+    > - Adequate network bandwidth planning for live view streaming
 
     **Use when**: Planning hardware and infrastructure
   </Accordion>
@@ -449,7 +583,55 @@ Use these prompt templates as starting points for different stages of SDK develo
     - Property availability and access modes
 
     **Example Response Snippet:**
-    > *"Supporting physical layer table: ILX-LR1 - USB R/C/T: compatible, Ethernet Wired R/C/T: compatible, Ethernet Wireless R/C/T: compatible"*
+
+    > **Camera Connection Compatibility:**
+    >
+    > **ILX-LR1 Full Support Matrix:**
+    > - USB: RemoteControl ✓, ContentsTransfer ✓, RemoteTransfer ✓
+    > - Ethernet Wired: RemoteControl ✓, ContentsTransfer ✓, RemoteTransfer ✓
+    > - Ethernet Wireless: RemoteControl ✓, ContentsTransfer ✓, RemoteTransfer ✓
+    >
+    > **ILCE-7RM4A (Alpha 7R IV) Support Matrix:**
+    > - USB: RemoteControl ✓, ContentsTransfer ✓
+    > - Ethernet: Not supported
+    >
+    > **Property Feature Validation Approach:**
+    >
+    > To verify if specific features (F-stop, ISO, shutter speed) are supported on your camera:
+    >
+    > 1. **Call `GetDeviceProperties()` with property codes:**
+    >    ```cpp
+    >    SDK::CrDeviceProperty* prop_list = nullptr;
+    >    std::int32_t nprop = 0;
+    >    SDK::GetDeviceProperties(deviceHandle, &prop_list, &nprop);
+    >    ```
+    >
+    > 2. **Check `CrPropertyEnableFlag` for each property:**
+    >    - Property exists in the returned list → Feature is supported
+    >    - Property not in list → Feature not available on this camera
+    >
+    > 3. **Validate writability with `IsSetEnableCurrentValue()`:**
+    >    ```cpp
+    >    if (prop.IsSetEnableCurrentValue()) {
+    >        // Property is writable - you can set values
+    >    } else {
+    >        // Property is read-only or not currently settable
+    >    }
+    >    ```
+    >
+    > 4. **Example validation pattern from SDK:**
+    >    ```cpp
+    >    if (m_prop.f_number.writable == -1) {
+    >        tout << "F-stop control is not supported on this camera\n";
+    >        return false;
+    >    }
+    >    // Property is supported - safe to use
+    >    ```
+    >
+    > **Important Notes:**
+    > - Some properties may be read-only in certain camera modes (e.g., Auto mode)
+    > - Property availability can change based on camera settings (mode dial position, lens attached)
+    > - Always validate before attempting to set values to avoid SDK errors
 
     **Use when**: Validating feature compatibility before implementation
   </Accordion>
@@ -470,7 +652,63 @@ Use these prompt templates as starting points for different stages of SDK develo
     - Performance and capability trade-offs
 
     **Example Response Snippet:**
-    > *"'R' refers to RemoteControlMode, 'C' refers to ContentsTransferMode, 'T' refers to RemoteTransferMode. The ContentsTransferMode feature was added in version 1.05.00. The RemoteTransferMode feature was added in version 1.13.00."*
+
+    > **Connection Mode Comparison & Decision Matrix:**
+    >
+    > | Mode | Abbreviation | SDK Version | Capabilities | Best For |
+    > |------|--------------|-------------|--------------|----------|
+    > | **RemoteControlMode** | R | 1.00.00+ | Camera control + automatic transfer of newly captured images | Studio setups, live control apps, automated capture workflows |
+    > | **ContentsTransferMode** | C | 1.05.00+ | Pull existing files from camera media (no control) | Backup operations, downloading existing images from SD card |
+    > | **RemoteTransferMode** | T | 1.13.00+ | Combined: control + transfer new captures + pull existing media | Remote production, full file management workflows |
+    >
+    > **Detailed Mode Characteristics:**
+    >
+    > **RemoteControlMode (R):**
+    > - Full camera remote control capabilities
+    > - Live view image streaming available
+    > - Real-time property changes (ISO, F-stop, shutter speed)
+    > - Capture commands and shutter control
+    > - **CAN automatically transfer newly captured images to host** (via `SetSaveInfo` + `StillImageStoreDestination`)
+    > - **CANNOT pull existing images from camera SD card/media**
+    > - Use when: You need control and automatic transfer of new captures, but don't need to access existing files on the card
+    >
+    > **ContentsTransferMode (C):**
+    > - File transfer ONLY - no camera control
+    > - Pull existing images from camera media slots
+    > - Cannot trigger captures or change settings
+    > - Requires disconnect/reconnect to switch to control mode
+    > - Use when: Batch downloading existing files from camera storage (no control needed)
+    >
+    > **RemoteTransferMode (T):**
+    > - **Full feature set**: control + automatic transfer of new captures + pull existing media files
+    > - Eliminates need for mode switching (disconnect/reconnect)
+    > - Can execute shooting process during content transfer
+    > - Maximizes efficiency for remote production workflows
+    > - **Trade-off**: Content transfer speed may decrease during simultaneous operations
+    > - **Recommendation**: Measure actual performance in your environment before production use
+    > - Use when: You need complete file management (new captures + existing media access) with camera control
+    >
+    > **Decision Tree:**
+    >
+    > ```
+    > Do you need to control the camera?
+    >   ├─ NO  → Use ContentsTransferMode (C)
+    >   │         (Just pulling existing files from media)
+    >   │
+    >   └─ YES → Do you need to pull existing files from SD card?
+    >             ├─ NO  → Use RemoteControlMode (R)
+    >             │         (Control + auto-transfer new captures only)
+    >             │
+    >             └─ YES → Use RemoteTransferMode (T)
+    >                       (Control + new captures + pull existing media)
+    >                       SDK 1.13.00+ required
+    > ```
+    >
+    > **Camera Support Notes:**
+    > - Check compatibility tables - not all cameras support all modes
+    > - ILX-LR1: Supports all three modes (R/C/T) on all connection types
+    > - Many Alpha series cameras: Only support RemoteControlMode (R)
+    > - Verify your specific camera model's capabilities before implementation
 
     **Use when**: Choosing the right connection mode for your application
   </Accordion>
