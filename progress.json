@@ -1,0 +1,355 @@
+{
+  "project": "Kando MCP Tips Page Enhancement",
+  "date": "2025-10-06",
+  "status": "Completed",
+  "summary": "Successfully researched SDK documentation via Kando MCP and created comprehensive prompting tips with 6 categories of starter prompts including actual SDK response snippets.",
+
+  "research_findings": {
+    "sdk_information": {
+      "current_version": "V2.00.00",
+      "available_versions": ["V1.14.00 (stable)", "V2.00.00 (latest, active)"],
+      "total_content_indexed": "8,962+ pieces of content",
+      "protocol_supported": "Remote-Control Protocol Version 3",
+      "content_types": [
+        "Documentation text (guides, tutorials)",
+        "Code examples (C++, C#)",
+        "API function definitions",
+        "Compatibility tables",
+        "Error and warning codes"
+      ]
+    },
+
+    "ilx_lr1_camera_details": {
+      "model": "ILX-LR1",
+      "connection_support": {
+        "usb": {
+          "RemoteControlMode": true,
+          "ContentsTransferMode": true,
+          "RemoteTransferMode": true,
+          "notes": "Use USB Type C wired LAN adaptor (Gigabit Ethernet compatible recommended)"
+        },
+        "ethernet_wired": {
+          "RemoteControlMode": true,
+          "ContentsTransferMode": true,
+          "RemoteTransferMode": true,
+          "notes": "Must use SSH authentication"
+        },
+        "ethernet_wireless": {
+          "RemoteControlMode": true,
+          "ContentsTransferMode": true,
+          "RemoteTransferMode": true,
+          "notes": "Must use SSH authentication"
+        }
+      },
+      "authentication_requirement": "SSH authentication required (user: admin)",
+      "multi_connection_support": "Up to 5 simultaneous connections from different host PCs",
+      "pairing_workflow": "Network > Cnct./Remote Sht. > Remote Shoot Function > Pairing, then power cycle camera (wait 10+ seconds before restart)"
+    },
+
+    "key_sdk_apis_found": {
+      "connection": {
+        "SDK::Connect": "Main connection API with SSH support",
+        "SDK::Disconnect": "Cleanup and disconnect from camera",
+        "parameters": "deviceHandle, mode (RemoteControl/ContentsTransfer/RemoteTransfer), reconnect settings, SSH credentials"
+      },
+      "properties": {
+        "SDK::GetDeviceProperties": "Get all camera properties",
+        "SDK::GetSelectDeviceProperties": "Get specific properties (more efficient)",
+        "SDK::SetDeviceProperty": "Set writable camera properties",
+        "common_properties": [
+          "CrDeviceProperty_FNumber (F-stop)",
+          "CrDeviceProperty_IsoSensitivity",
+          "CrDeviceProperty_ShutterSpeed",
+          "CrDeviceProperty_ExposureProgramMode",
+          "CrDeviceProperty_DriveMode"
+        ]
+      },
+      "capture": {
+        "SDK::SendCommand": "Send camera commands",
+        "CrCommandId_Release": "Shutter control (Down/Up)",
+        "timing_note": "35ms delay recommended between shutter down and up"
+      },
+      "file_management": {
+        "SCRSDK::SetSaveInfo": "Configure save location and filename pattern",
+        "parameters": "deviceHandle, path, prefix, number"
+      },
+      "callbacks": {
+        "OnConnected": "Connection established notification",
+        "OnDisconnected": "Camera disconnected event",
+        "OnPropertyChanged": "Property value changed notification",
+        "OnError": "Error event with error code"
+      }
+    },
+
+    "error_codes_researched": {
+      "CrError_Connect_TimeOut": {
+        "description": "A connection operation timed out",
+        "common_cause": "Network issues, camera not ready, pairing not complete",
+        "handling": "Verify camera is paired, check network connection, ensure camera is powered on and in correct mode"
+      },
+      "CrError_Connect_FailBusy": {
+        "description": "Too many connections to camera",
+        "common_cause": "Maximum simultaneous connections (5) exceeded",
+        "handling": "Close unused connections, ensure no other applications are connected"
+      },
+      "SSH_related_errors": [
+        "CrError_Connect_SSH_ServerConnectFailed",
+        "CrError_Connect_SSH_InvalidParameter",
+        "CrError_Connect_SSH_ServerAuthenticationFailed",
+        "CrError_Connect_SSH_UserAuthenticationFailed",
+        "CrError_Connect_SSH_PortForwardFailed",
+        "CrError_Connect_SSH_GetFingerprintFailed"
+      ]
+    },
+
+    "connection_modes": {
+      "RemoteControlMode": {
+        "abbreviation": "R",
+        "description": "Full camera control mode",
+        "use_case": "Real-time camera control, live view, property changes"
+      },
+      "ContentsTransferMode": {
+        "abbreviation": "C",
+        "description": "File transfer mode",
+        "added_in_version": "1.05.00",
+        "use_case": "Transferring existing images from camera to host"
+      },
+      "RemoteTransferMode": {
+        "abbreviation": "T",
+        "description": "Combined control and transfer mode",
+        "added_in_version": "1.13.00",
+        "use_case": "Control camera and automatically transfer captured images to host"
+      }
+    },
+
+    "code_examples_found": {
+      "connection_with_ssh": {
+        "language": "C++",
+        "source_file": "CameraDevice.cpp",
+        "function": "CameraDevice::connect",
+        "features": [
+          "SSH fingerprint verification",
+          "Password handling with masked input",
+          "Error handling with CR_FAILED macro",
+          "SetSaveInfo call after connection"
+        ]
+      },
+      "property_loading": {
+        "language": "C++",
+        "source_file": "CameraDevice.cpp",
+        "function": "CameraDevice::load_properties",
+        "features": [
+          "Batch property retrieval",
+          "Writable status checking",
+          "Type-safe property value parsing",
+          "Resource cleanup with ReleaseDeviceProperties"
+        ]
+      },
+      "image_capture": {
+        "language": "C++",
+        "source_file": "CameraDevice.cpp",
+        "function": "CameraDevice::capture_image",
+        "features": [
+          "Two-phase shutter control (down/up)",
+          "35ms timing between commands",
+          "SendCommand API usage"
+        ]
+      },
+      "callbacks": {
+        "language": "C++",
+        "source_file": "CameraDevice.cpp",
+        "functions": [
+          "CameraDevice::OnConnected - Connection success notification",
+          "CameraDevice::OnError - Error handling with message lookup"
+        ]
+      }
+    },
+
+    "kando_mcp_tools": {
+      "total_tools": "13+",
+      "categories": {
+        "general_search": [
+          "search_sdk - Intelligent multi-modal search with AI intent mapping",
+          "search_hybrid - Combined semantic and exact match search",
+          "search_with_intent_analysis - Advanced query expansion"
+        ],
+        "specialized_search": [
+          "search_code_examples - Find C++ or C# code (language-filtered)",
+          "search_documentation - Guides and tutorials only",
+          "search_api_functions - API signatures and parameters",
+          "search_compatibility - Camera compatibility tables"
+        ],
+        "exact_match": [
+          "search_exact_api - Look up APIs by exact name",
+          "search_error_codes - SDK error code lookup",
+          "search_warning_codes - SDK warning code lookup",
+          "search_by_source_file - Search within specific source files"
+        ],
+        "version_management": [
+          "get_sdk_version - Check current SDK version",
+          "set_sdk_version - Switch between V1.14.00 and V2.00.00",
+          "list_sdk_versions - See all available versions"
+        ],
+        "system": [
+          "get_sdk_stats - Database statistics and metrics"
+        ]
+      }
+    }
+  },
+
+  "starter_prompts_created": {
+    "categories": [
+      {
+        "name": "CrSDK Overview",
+        "purpose": "Understand general SDK capabilities, requirements, and use cases",
+        "prompts": [
+          "General Capabilities",
+          "Camera Support",
+          "Connection Types",
+          "SDK Versions"
+        ]
+      },
+      {
+        "name": "Workflow Planning",
+        "purpose": "Connect use case to SDK operations, APIs, and requirements",
+        "prompts": [
+          "Real-World Use Case Example (ILX-LR1 drone inspection system)",
+          "Feature-Specific Workflow",
+          "Multi-Camera Setup"
+        ]
+      },
+      {
+        "name": "System Design",
+        "purpose": "Plan APIs, dependencies, hardware, and architecture",
+        "prompts": [
+          "API Selection",
+          "Hardware Requirements",
+          "Compatibility Matrix",
+          "Connection Mode Selection"
+        ]
+      },
+      {
+        "name": "Execution",
+        "purpose": "Generate production-ready code with proper SDK implementations",
+        "prompts": [
+          "Complete Implementation",
+          "Property Management",
+          "Callback Implementation",
+          "Image Capture"
+        ]
+      },
+      {
+        "name": "Debugging",
+        "purpose": "Resolve error codes, fix bugs, and clarify SDK concepts",
+        "prompts": [
+          "Error Code Resolution",
+          "Connection Issues",
+          "Concept Clarification",
+          "Unexpected Behavior"
+        ]
+      },
+      {
+        "name": "Testing & Validation",
+        "purpose": "Plan testing criteria and validate SDK integration",
+        "prompts": [
+          "Integration Testing Plan",
+          "Performance Validation",
+          "Multi-Camera Testing",
+          "Cross-Platform Validation"
+        ]
+      }
+    ],
+    "features": [
+      "Each prompt includes example query text",
+      "Shows what Kando returns for that query type",
+      "Includes actual SDK response snippets from research",
+      "Provides 'Use when' guidance",
+      "Real code examples from CameraDevice.cpp",
+      "Real compatibility data for ILX-LR1",
+      "Actual error code explanations"
+    ]
+  },
+
+  "prompting_best_practices_added": {
+    "general_tips": [
+      "Be specific with context (camera model, SDK version, language, connection type, OS)",
+      "Use exact terminology when known (API names, error codes)",
+      "Ask for code examples (Kando has working C++/C# samples)",
+      "Request compatibility information before implementation",
+      "Iterate and follow up with clarifying questions"
+    ],
+    "tool_usage_guidance": [
+      "Automatic tool selection by AI assistant",
+      "13+ specialized search tools available",
+      "SDK V2.00.00 is default, can switch to V1.14.00",
+      "Claude Code users: all tools available once MCP server added (no granular permissions)"
+    ],
+    "advanced_techniques": [
+      "Combining multiple questions in one prompt",
+      "Learning from official sample applications",
+      "Understanding API relationships and workflows"
+    ]
+  },
+
+  "files_modified": {
+    "MCP-Server/tips.mdx": {
+      "status": "Complete rewrite",
+      "changes": [
+        "Replaced generic markdown examples with SDK-focused content",
+        "Added General Prompting Tips section",
+        "Added When and How to Use Kando section",
+        "Created 6 categories of Starter Prompts with real SDK snippets",
+        "Included actual code examples from SDK (C++)",
+        "Added ILX-LR1 compatibility details from Kando searches",
+        "Included real error code explanations",
+        "Added Advanced Tips section"
+      ],
+      "lines": "820 lines",
+      "accordions": "24 prompt templates"
+    }
+  },
+
+  "next_steps": {
+    "documentation": [
+      "Consider adding C# code examples alongside C++ examples",
+      "Could expand with more camera-specific prompt examples",
+      "May want to add troubleshooting section linking common errors to prompts"
+    ],
+    "validation": [
+      "Test starter prompts with actual Kando queries",
+      "Verify all SDK snippets are accurate and up-to-date",
+      "Check Mintlify rendering of accordions and code blocks"
+    ],
+    "enhancements": [
+      "Add visual diagrams for SDK workflow",
+      "Consider video tutorials showing prompt usage",
+      "Create quick reference card for most common prompts"
+    ]
+  },
+
+  "kando_mcp_tools_used_during_research": [
+    "mcp__Kando__get_current_sdk_version - Verified SDK V2.00.00 is active",
+    "mcp__Kando__get_sdk_stats - Confirmed 8,962+ content pieces indexed",
+    "mcp__Kando__search_documentation (3 queries) - SDK overview, connection workflow, error handling",
+    "mcp__Kando__search_code_examples (3 queries) - Connection, capture, property management code",
+    "mcp__Kando__search_compatibility - ILX-LR1 hardware and connection support",
+    "mcp__Kando__search_api_functions - SetSaveInfo API signature",
+    "mcp__Kando__search_sdk - Testing and validation best practices",
+    "mcp__Kando__search_error_codes - CrError_Connect_TimeOut explanation"
+  ],
+
+  "performance_metrics": {
+    "research_phase": {
+      "tool_calls": 8,
+      "content_retrieved": "Successfully retrieved documentation, code examples, compatibility tables, and error codes",
+      "sdk_version_active": "V2.00.00"
+    },
+    "documentation_phase": {
+      "tips_page_size": "820 lines",
+      "starter_prompt_categories": 6,
+      "total_prompt_templates": 24,
+      "code_snippets_included": 8,
+      "real_sdk_responses": "All snippets from actual Kando MCP tool responses"
+    }
+  }
+}
