@@ -1,12 +1,12 @@
 ---
 title: "Tips"
-description: "Best practices for using Iris to learn and implement the Camera Remote SDK"
+description: "Best practices for using AI SDK Assistant to learn and implement the Camera Remote SDK"
 icon: "lightbulb"
 ---
 
 ## General Prompting Tips
 
-Get better results from Iris by following these best practices when asking questions about the Camera Remote SDK.
+Get better results from AI SDK Assistant by following these best practices when asking questions about the Camera Remote SDK.
 
 ### Be Specific with Context
 
@@ -35,7 +35,7 @@ If you already know specific API names, error codes, or property codes, include 
 
 ### Ask for Code Examples
 
-Iris has access to working C++ and C# code examples from the SDK. Don't hesitate to request them.
+AI SDK Assistant has access to working C++ and C# code examples from the SDK. Don't hesitate to request them.
 
 **Example prompts:**
 - "Show me C++ code to capture an image and save it to the host"
@@ -62,19 +62,19 @@ If the first answer isn't quite right, ask follow-up questions or rephrase with 
 
 ---
 
-## When and How to Use Iris
+## When and How to Use AI SDK Assistant
 
 ### Automatic Tool Selection
 
-Iris uses **13+ specialized search tools** to find the best answers for your questions. Your AI assistant automatically chooses the right tool based on what you're asking.
+AI SDK Assistant uses **13+ specialized search tools** to find the best answers for your questions. Your AI assistant automatically chooses the right tool based on what you're asking.
 
 <Note>
-  You don't need to specify which tool to use—just ask your question naturally. Iris's AI will determine whether to search documentation, code examples, API references, compatibility tables, or error codes.
+  You don't need to specify which tool to use—just ask your question naturally. AI SDK Assistant's AI will determine whether to search documentation, code examples, API references, compatibility tables, or error codes.
 </Note>
 
 ### Available Search Capabilities
 
-Iris can search across:
+AI SDK Assistant can search across:
 
 - 📖 **Documentation**: Tutorials, guides, workflows, and conceptual explanations
 - 🔧 **API Functions**: Function signatures, parameters, return types
@@ -86,7 +86,7 @@ For detailed information about each search tool, see the [Tools](/MCP-Server/too
 
 ### SDK Version Switching
 
-Iris currently searches **SDK V2.00.00** by default. If you need information from V1.14.00, just specify it in your question.
+AI SDK Assistant currently searches **SDK V2.00.00** by default. If you need information from V1.14.00, just specify it in your question.
 
 **Example:**
 - "In SDK V1.14.00, how do I initialize the SDK?"
@@ -94,9 +94,9 @@ Iris currently searches **SDK V2.00.00** by default. If you need information fro
 
 Your AI assistant can use the `set_sdk_version` tool to switch versions during the conversation if needed.
 
-### When Iris Searches Automatically
+### When AI SDK Assistant Searches Automatically
 
-Your AI assistant will automatically use Iris when you ask questions about:
+Your AI assistant will automatically use AI SDK Assistant when you ask questions about:
 
 - Camera Remote SDK features and capabilities
 - How to implement specific SDK operations
@@ -106,7 +106,7 @@ Your AI assistant will automatically use Iris when you ask questions about:
 - SDK code examples and patterns
 
 <Warning>
-  **For Claude Code users**: Unlike Claude web, Claude Code does not support granular tool permissions. All Iris tools are available once the MCP server is added. The only control is the initial approval when using project-scoped servers.
+  **For Claude Code users**: Unlike Claude web, Claude Code does not support granular tool permissions. All AI SDK Assistant tools are available once the MCP server is added. The only control is the initial approval when using project-scoped servers.
 </Warning>
 
 ---
@@ -127,7 +127,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What can I control on the camera, and what are the system requirements?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Comprehensive list of SDK capabilities and operations
     - System requirements for all supported platforms
     - Camera control functions and property management APIs
@@ -157,7 +157,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     I'm particularly interested in [your camera model].
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Complete list of supported camera models by category
     - Connection type support matrix for each camera
     - SDK mode availability (RemoteControl, ContentsTransfer, RemoteTransfer)
@@ -193,7 +193,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     for connecting to cameras? What are the differences between them?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Detailed comparison of all physical connection types
     - Performance characteristics and use case recommendations
     - Hardware requirements for each connection type
@@ -238,7 +238,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     Which version should I use for a new project?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Key differences between SDK versions
     - New features and capabilities in each version
     - Breaking changes and migration considerations
@@ -298,7 +298,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     4. How to structure the workflow from connection to capture
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - ILX-LR1 compatibility details and requirements
     - API recommendations for property management and capture
     - Connection workflow with pairing instructions
@@ -363,7 +363,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     in what order, and what are the prerequisites?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Complete step-by-step operation guides with API sequences
     - Timing considerations and camera state requirements
     - Prerequisites and property dependencies
@@ -410,7 +410,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     to handle multiple camera connections?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Multi-camera connection limits and constraints
     - Architecture patterns for multi-camera control
     - Device handle management strategies
@@ -478,7 +478,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What's the minimal set of APIs I need to implement?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Complete list of required and optional APIs
     - Function signatures with parameter descriptions
     - Call order and dependencies
@@ -524,7 +524,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     cables, or other equipment required? Does this camera need SSH authentication?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Camera-specific hardware requirements
     - Network adapter recommendations
     - Authentication requirements (SSH)
@@ -577,7 +577,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     with this connection type? Are there any limitations?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Detailed compatibility tables with feature support
     - Connection type limitations by camera
     - Property availability and access modes
@@ -645,7 +645,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     For my use case [describe], which mode should I use and why?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Mode descriptions and use cases
     - SDK version requirements for each mode
     - Camera support by mode
@@ -734,7 +734,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     Use SDK V2.00.00 and include proper error handling.
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Complete, working code examples from SDK samples
     - Proper initialization and cleanup patterns
     - Error handling with SDK error codes
@@ -778,7 +778,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     Include error handling for cases where the property isn't writable.
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Property loading and parsing code
     - Writable status checking
     - Value validation and setting
@@ -829,7 +829,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What's the best practice for handling these events?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Complete callback implementations
     - Thread-safety considerations
     - Event handling patterns
@@ -870,7 +870,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     release command. Include proper timing and error handling.
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Shutter control command sequences
     - Timing recommendations between commands
     - Image capture completion detection
@@ -914,7 +914,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What does this error mean, what causes it, and how do I fix it?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Error code definitions and explanations
     - Common causes and troubleshooting steps
     - Code examples showing error handling
@@ -944,7 +944,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What should I check? Do I need to configure anything on the camera?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Camera pairing instructions
     - Network configuration requirements
     - Connection prerequisites and timing
@@ -965,7 +965,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     Can you explain what this means and when to use each?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Detailed API explanations
     - Use case comparisons
     - Performance implications
@@ -1000,7 +1000,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What could be wrong?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Common pitfalls and timing issues
     - Camera state requirements
     - Missing prerequisite operations
@@ -1029,7 +1029,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What edge cases and error conditions should I handle?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Common error scenarios to test
     - Connection state transitions
     - Property value validation
@@ -1054,7 +1054,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     How can I validate that my implementation meets these requirements?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Timing considerations and limitations
     - Resource management best practices
     - Long-running operation guidance
@@ -1075,7 +1075,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     when managing multiple camera connections?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Connection limits per camera
     - Device handle management patterns
     - Callback synchronization
@@ -1096,7 +1096,7 @@ Use these prompt templates as starting points for different stages of SDK develo
     What should I check?
     ```
 
-    **What Iris Returns:**
+    **What AI SDK Assistant Returns:**
     - Platform-specific implementation details
     - String handling differences (wide char vs. char)
     - Path separator differences
@@ -1129,7 +1129,7 @@ Please provide a comprehensive answer covering all three areas.
 
 ### Learning from Examples
 
-Ask Iris to show you how the official sample apps implement features:
+Ask AI SDK Assistant to show you how the official sample apps implement features:
 
 ```
 How does the official SDK sample application implement [feature]?
@@ -1149,10 +1149,10 @@ and the callback notifications? Walk me through the complete flow.
 
 ## Need More Help?
 
-- **Tool Reference**: See [Tools](/MCP-Server/tools) for detailed information about Iris's search capabilities
+- **Tool Reference**: See [Tools](/MCP-Server/tools) for detailed information about AI SDK Assistant's search capabilities
 - **Troubleshooting**: Check [Troubleshooting](/MCP-Server/troubleshooting) for common setup and usage issues
-- **Setup Guide**: Review [Setup](/MCP-Server/setup) if you need to reconfigure Iris
+- **Setup Guide**: Review [Setup](/MCP-Server/setup) if you need to reconfigure AI SDK Assistant
 
 <Tip>
-  The more specific and detailed your questions, the better Iris can help you learn and implement the Camera Remote SDK!
+  The more specific and detailed your questions, the better AI SDK Assistant can help you learn and implement the Camera Remote SDK!
 </Tip>
