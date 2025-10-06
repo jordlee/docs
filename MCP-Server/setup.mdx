@@ -189,17 +189,41 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     </Note>
     ### Tool Permissions
 
-    <Warning>
-      Unlike Claude web, Claude Code does not currently support granular tool permissions or the ability to enable/disable individual tools. When you add an MCP server, all its tools are available by default.
-    </Warning>
+    Claude Code supports **granular tool-level permissions** configured through settings files. You can approve all tools from a server or specific individual tools.
+
+    **Approve all tools from the AI SDK Assistant server:**
+    ```json
+    "approvedTools": ["mcp__CRSDK"]
+    ```
+
+    **Approve specific tools only:**
+    ```json
+    "approvedTools": [
+      "mcp__CRSDK__search_sdk",
+      "mcp__CRSDK__search_code_examples",
+      "mcp__CRSDK__search_documentation",
+      "mcp__CRSDK__search_api_functions",
+      "mcp__CRSDK__search_compatibility"
+    ]
+    ```
+
+    <Note>
+      - **Wildcards (`*`) are not supported** for MCP permissions
+      - You must explicitly list each tool or approve the entire server
+      - See [Claude Code IAM Documentation](https://docs.claude.com/en/docs/claude-code/iam#access-control-and-permissions) for detailed permission configuration
+    </Note>
+
+    **Configuration scopes:**
+    - **User scope**: Global across all projects (`~/.claude.json`)
+    - **Project scope**: Per-project configuration (`.claude/config.json`)
+    - **Local scope**: Repository-specific (`.claude.local.json`)
+
     **What's different from Claude web:**
 
-    - ❌ Cannot enable/disable individual tools
-    - ❌ No per-tool permission settings ("always ask" vs "allow unsupervised")
-    - ❌ No tool configuration UI
-    - ✅ All tools are active once the server is added
-
-    The only permission control is the initial approval prompt when using project-scoped servers for the first time.
+    - ❌ No visual UI for tool management
+    - ✅ File-based configuration (version control friendly)
+    - ✅ Granular tool-level permissions via settings files
+    - ✅ Multiple configuration scopes (user, project, local)
   </Tab>
   <Tab title="ChatGPT">
     ### Requirements
