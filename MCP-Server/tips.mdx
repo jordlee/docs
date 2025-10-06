@@ -128,12 +128,24 @@ Use these prompt templates as starting points for different stages of SDK develo
     ```
 
     **What Kando Returns:**
-    - API specifications and supported operations
-    - SDK documentation overview with protocol requirements
-    - Reference to complete command and property lists
+    - Comprehensive list of SDK capabilities and operations
+    - System requirements for all supported platforms
+    - Camera control functions and property management APIs
 
     **Example Response Snippet:**
-    > *"The Camera Remote SDK supports Remote-Control Protocol Version 3. The purpose of this document is to list the API specifications for the Camera Remote SDK provided by Sony Corporation."*
+    > **Main Capabilities:**
+    > - **Image Capture**: Control shutter release with `SendCommand(CrCommandId_Release)` for single and continuous shooting
+    > - **Camera Properties**: Get/Set ISO, aperture (F-number), shutter speed, focus mode, white balance via `GetDeviceProperties()` and `SetDeviceProperty()`
+    > - **Live View**: Stream real-time preview images with `GetLiveViewImage()` for on-screen display
+    > - **File Management**: Transfer captured images to host PC with `SetSaveInfo()` and `StillImageStoreDestination` property
+    > - **Focus & Zoom**: Control autofocus area, manual focus position, and motorized zoom operations
+    >
+    > **System Requirements:**
+    > - **Windows**: Windows 10 64-bit, Windows 11 64-bit
+    > - **Linux**: Ubuntu 22.04 LTS, Ubuntu 24.04 LTS (PC and ARMv8)
+    > - **macOS**: macOS 13.1+ (Ventura), 14+ (Sonoma), 15+ (Sequoia)
+    >
+    > **Basic Workflow**: `Init()` → `EnumCameraObjects()` → `Connect()` → `GetDeviceProperties()` → control operations → `Disconnect()` → `Release()`
 
     **Use when**: You're just getting started and need a high-level overview
   </Accordion>
@@ -227,14 +239,50 @@ Use these prompt templates as starting points for different stages of SDK develo
 
     **Example Response Snippets:**
 
-    *Compatibility:*
-    > *"ILX-LR1 must be used with SSH authentication. Use a USB Type C wired LAN adaptor. One camera can be controlled by multiple host PCs. The maximum number of simultaneous connections is 5 users (applications)."*
+    *ILX-LR1 Requirements:*
+    > - SSH authentication required (username: "admin")
+    > - USB Type-C to Gigabit Ethernet adapter recommended
+    > - Supports all connection modes: RemoteControlMode, ContentsTransferMode, RemoteTransferMode
+    > - Maximum 5 simultaneous connections supported
 
-    *Pairing workflow:*
-    > *"When connecting via wired LAN, you need to perform the 'Network > Cnct./Remote Sht. > Remote Shoot Function > Pairing' operation on the camera to make it memorize the host PC. Once the pairing is established, turn off the camera, pause for about 10 seconds, and then turn it back on again."*
-
-    *SetSaveInfo API:*
-    > *"CrError SCRSDK::SetSaveInfo(CrDeviceHandle deviceHandle, CrChar \*path, CrChar \*prefix, CrInt32 no)"*
+    *Complete Workflow for Your Use Case:*
+    > **1. SDK Initialization & Connection:**
+    > ```
+    > Init() → EnumCameraObjects() → Connect() with RemoteControlMode + SSH
+    > ```
+    >
+    > **2. Camera Pairing (First Time):**
+    > - Set camera to: Network > Cnct./Remote Sht. > Remote Shoot Function > Pairing
+    > - Call `Connect()` from your app
+    > - Accept pairing on camera
+    > - Power cycle camera (wait 10+ seconds) to save pairing info
+    >
+    > **3. Configure Save Destination (Host Only):**
+    > ```cpp
+    > SetSaveInfo(deviceHandle, "C:\\Photos", "inspection_", 1);
+    > SetDeviceProperty(CrDeviceProperty_StillImageStoreDestination,
+    >                  CrStillImageStoreDestination_HostPC);
+    > ```
+    >
+    > **4. Set Camera Properties (F-stop, ISO, etc.):**
+    > ```cpp
+    > GetDeviceProperties() // Check current values and available options
+    > SetDeviceProperty(CrDeviceProperty_FNumber, f_28_value);
+    > SetDeviceProperty(CrDeviceProperty_IsoSensitivity, iso_value);
+    > // Save settings to camera memory slot for recall
+    > ```
+    >
+    > **5. Timelapse Capture Loop (Every 1 Second):**
+    > ```cpp
+    > while (capture_active) {
+    >     SendCommand(CrCommandId_Release, CrCommandParam_Down);
+    >     Sleep(35); // ms
+    >     SendCommand(CrCommandId_Release, CrCommandParam_Up);
+    >     Sleep(965); // Wait remaining time for 1-second interval
+    > }
+    > ```
+    >
+    > **Recommended Connection**: Wired LAN (Ethernet) for reliable continuous operation during flight
 
     **Use when**: You have a specific application and need to map it to SDK operations
   </Accordion>
@@ -249,12 +297,39 @@ Use these prompt templates as starting points for different stages of SDK develo
     ```
 
     **What Kando Returns:**
-    - Step-by-step operation guides
-    - API call sequences with timing considerations
-    - Prerequisites and camera state requirements
+    - Complete step-by-step operation guides with API sequences
+    - Timing considerations and camera state requirements
+    - Prerequisites and property dependencies
 
-    **Example Response Snippet:**
-    > *"The camera may not accept shooting operations immediately after connection. Camera Remote SDK supports only the Remote-Control Protocol Version 3."*
+    **Example Response Snippet (Live View Streaming):**
+    > **Prerequisites:**
+    > - Camera must be connected in RemoteControlMode
+    > - Check `CrDeviceProperty_LiveViewStatus` is supported
+    > - Camera may not accept operations immediately after connection—wait for `OnConnected()` callback
+    >
+    > **Workflow:**
+    > ```
+    > 1. Enable Live View:
+    >    SetDeviceProperty(CrDeviceProperty_LiveView_Enable, CrLiveView_Enable)
+    >
+    > 2. Configure Live View Quality (optional):
+    >    SetDeviceProperty(CrDeviceProperty_LiveView_Image_Quality, quality_setting)
+    >
+    > 3. Start Image Retrieval Loop:
+    >    while (streaming) {
+    >        GetLiveViewImage() // Returns JPEG image data
+    >        Display image on screen
+    >        Process at 30fps or camera's native rate
+    >    }
+    >
+    > 4. Cleanup:
+    >    SetDeviceProperty(CrDeviceProperty_LiveView_Enable, CrLiveView_Disable)
+    > ```
+    >
+    > **Important Notes:**
+    > - Network traffic affects stability; avoid simultaneous heavy operations
+    > - Image data is retrieved from internal buffer updated by background task
+    > - Camera Remote SDK does not support "Enlarge Screen" mode—disable it on camera
 
     **Use when**: Implementing a specific SDK feature
   </Accordion>
@@ -301,12 +376,38 @@ Use these prompt templates as starting points for different stages of SDK develo
     ```
 
     **What Kando Returns:**
-    - Specific API function signatures and parameters
-    - Required vs. optional API calls
-    - API dependency chains and call order
+    - Complete list of required and optional APIs
+    - Function signatures with parameter descriptions
+    - Call order and dependencies
 
     **Example Response Snippet:**
-    > *"API Member: SetSaveInfo in SCRSDK - Definition: CrError SCRSDK::SetSaveInfo(CrDeviceHandle deviceHandle, CrChar \*path, CrChar \*prefix, CrInt32 no)"*
+    > **Minimal API Set for Basic Camera Control:**
+    >
+    > **Required (Core Operations):**
+    > - `Init()` - Initialize SDK at application start
+    > - `EnumCameraObjects()` - Discover connected cameras
+    > - `Connect(pCameraInfo, callback, &deviceHandle, mode)` - Establish camera connection
+    > - `Disconnect(deviceHandle)` - Close camera connection
+    > - `Release()` - Cleanup SDK resources at application end
+    >
+    > **Camera Property Management:**
+    > - `GetDeviceProperties(deviceHandle, &propList, &count)` - Read all camera properties
+    > - `SetDeviceProperty(deviceHandle, &property)` - Change writable properties
+    > - Property codes for your use case:
+    >   - `CrDeviceProperty_FNumber` - Aperture/F-stop
+    >   - `CrDeviceProperty_IsoSensitivity` - ISO setting
+    >   - `CrDeviceProperty_ShutterSpeed` - Shutter speed
+    >   - `CrDeviceProperty_ExposureProgramMode` - P/A/S/M mode
+    >
+    > **Image Capture:**
+    > - `SendCommand(deviceHandle, CrCommandId_Release, param)` - Trigger shutter (Down/Up)
+    > - `SetSaveInfo(deviceHandle, path, prefix, number)` - Configure file save location
+    > - `SetDeviceProperty(CrDeviceProperty_StillImageStoreDestination)` - Set save destination (camera/host/both)
+    >
+    > **Optional (Enhanced Features):**
+    > - `GetLiveViewImage()` - Live preview streaming
+    > - `GetLiveViewProperties()` - Live view-specific properties
+    > - `ReleaseDeviceProperties()` - Free property list memory
 
     **Use when**: Determining which APIs your application needs
   </Accordion>
