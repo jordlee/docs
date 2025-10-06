@@ -4,7 +4,7 @@ icon: "book"
 title: "Setup"
 ---
 
-The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), ChatGPT (web), and LM Studio (open-source desktop). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
+The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), and ChatGPT (web). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
 
 <Note>
   You'll need the official MCP server URL to use Kando with your LLM provider. Since the tool is still in Private Beta, please do not share this URL with others.
@@ -26,7 +26,6 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
        - Paste the MCP Server URL into the "Remote MCP server URL" field
        - Click **Add**
        - Refresh if needed — you should now see your new connector
-
     2. **Configure Tools**
 
        Kando enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retrieved when you ask a question.
@@ -36,9 +35,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
        <Tip>
          Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
        </Tip>
-
        To configure Kando's tools:
-
        - Navigate to **Settings → Connectors**
        - Next to the Kando connector, click the **Configure** button
        - You'll now be able to see all available tools Kando offers
@@ -48,7 +45,6 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
        <Warning>
          Disable the **search** and **fetch** tools before prompting with Kando. These tools are intended for use only with ChatGPT.
        </Warning>
-
     3. **Set Tool Permissions**
 
        The default tool permission setting is **always ask for permission**.
@@ -191,14 +187,13 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
-
     ### Tool Permissions
 
     <Warning>
       Unlike Claude web, Claude Code does not currently support granular tool permissions or the ability to enable/disable individual tools. When you add an MCP server, all its tools are available by default.
     </Warning>
-
     **What's different from Claude web:**
+
     - ❌ Cannot enable/disable individual tools
     - ❌ No per-tool permission settings ("always ask" vs "allow unsupervised")
     - ❌ No tool configuration UI
@@ -220,13 +215,11 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
        - Navigate to the **Connectors** tab
        - Scroll to the bottom and expand **Advanced settings**
        - Toggle on **Developer mode** to enable custom connectors
-
     2. **Add the MCP Server**
        - In the Connectors settings, click **Add custom connector**
        - Name it (e.g. `Kando`)
        - Paste the MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
        - Save changes — ChatGPT will automatically test the connection
-
     3. **Use in Chat**
        - Open a **new chat** (must not be nested in a project)
        - Click the **"+"** icon in the chat window
@@ -240,20 +233,5 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
       - The MCP server cannot be used in **Deep Research** mode
       - Must create a standalone chat to use custom connectors
     </Warning>
-  </Tab>
-  <Tab title="LM Studio">
-    ### Requirements
-
-    - LM Studio (latest release from GitHub)
-    - MCP Server URL
-
-    ### Setup Instructions
-
-    1. Open **LM Studio**.
-    2. Go to **Settings → MCP Servers**.
-    3. Add a new MCP server with a friendly name (e.g. `Kando`).
-    4. Paste in the MCP Server URL.
-    5. Save and restart LM Studio.
-    6. You should now see Kando listed as an available connector.
   </Tab>
 </Tabs>
