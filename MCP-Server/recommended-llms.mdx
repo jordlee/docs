@@ -1,48 +1,200 @@
 ---
 title: "Recommended LLMs"
-description: "Add image, video, and other HTML elements"
-icon: "robot"
+description: "Choose the best AI assistant platform for using AI SDK Assistant"
+icon: "brain"
 ---
 
-<img
-  style={{ borderRadius:"0.5rem" }}
-  src="https://mintlify-assets.b-cdn.net/bigbend.jpg"
-/>
+## Overview
 
-## Image
+AI SDK Assistant works with any AI platform that supports MCP (Model Context Protocol). Your choice of platform affects how you manage tool permissions, configure the connection, and interact with the SDK documentation.
 
-### Using Markdown
+All platforms provide access to the same underlying AI SDK Assistant capabilities—the difference is in the user experience and control options.
 
-The [markdown syntax](https://www.markdownguide.org/basic-syntax/#images) lets you add images using the following code
+---
 
-```md
-![title](/path/image.jpg)
-```
+## Platform Comparison
 
-Note that the image file size must be less than 5MB. Otherwise, we recommend hosting on a service like [Cloudinary](https://cloudinary.com/) or [S3](https://aws.amazon.com/s3/). You can then use that URL and embed.
+| Platform | Account Required | Tool Permissions | Setup | Best For |
+|----------|------------------|------------------|-------|----------|
+| **Claude (Web/Mobile/Desktop)** | Pro, Max, or Enterprise ($20+/mo) | ✅ Granular UI controls<br/>Per-tool "ask" vs "unsupervised" | Easy (UI-based) | Most users, maximum control |
+| **Claude Code (CLI)** | Free with Claude account | ✅ Granular file-based config<br/>Approve server or specific tools | Medium (config files) | Developers, automation workflows |
+| **ChatGPT** | Plus, Pro, Business, or EDU | ⚠️ Basic (all tools or none) | Easy (UI-based) | Existing ChatGPT subscribers |
 
-### Using Embeds
+---
 
-To get more customizability with images, you can also use [embeds](/writing-content/embed) to add images
+## Detailed Platform Reviews
 
-```html
-<img height="200" src="/path/image.jpg" />
-```
+<AccordionGroup>
+  <Accordion title="Claude (Web, Mobile, Desktop) - Recommended" icon="star">
+    **Best for**: Most users who want maximum control and the best MCP experience
 
-## Embeds and HTML elements
+    ### Why We Recommend Claude
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/4KzFe50RQkQ" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ width:"100%",borderRadius:"0.5rem" }} />
+    - **Granular Tool Control**: Enable/disable individual tools through an intuitive UI
+    - **Permission Levels**: Set each tool to "always ask" or "allow unsupervised"
+    - **Multi-Platform**: Works on web, iOS/Android mobile apps, and desktop
+    - **Best MCP Support**: Built by Anthropic (creators of MCP protocol)
 
-<br />
+    ### Account Requirements
 
-<Tip>
-  Mintlify supports [HTML tags in Markdown](https://www.markdownguide.org/basic-syntax/#html). This is helpful if you prefer HTML tags to Markdown syntax, and lets you create documentation with infinite flexibility.
-</Tip>
+    - Claude Pro ($20/month), Max, or Enterprise account
+    - Standard free Claude accounts do not support MCP connectors
 
-### iFrames
+    ### Key Features
 
-Loads another HTML page within the document. Most commonly used for embedding videos.
+    - ✅ Visual tool configuration interface
+    - ✅ Per-chat connector toggling
+    - ✅ Easy connector management (add/remove/configure)
+    - ✅ Can disable specific tools you don't want Claude to use
 
-```html
-<iframe src="https://www.youtube.com/embed/4KzFe50RQkQ"> </iframe>
-```
+    ### Tool Permission Options
+
+    1. **Always ask for permission**: Claude prompts before using each tool
+    2. **Allow unsupervised**: Claude uses tools automatically without asking
+
+    <Tip>
+      For AI SDK Assistant, we recommend starting with "allow unsupervised" for all tools to enable seamless SDK searches. You can adjust permissions later based on your preferences.
+    </Tip>
+
+    ### Getting Started
+
+    See the [Setup Guide → Claude tab](/MCP-Server/setup) for detailed configuration instructions.
+  </Accordion>
+
+  <Accordion title="Claude Code (CLI) - Recommended for Developers" icon="terminal">
+    **Best for**: Developers, automation workflows, and CLI enthusiasts
+
+    ### Why Use Claude Code
+
+    - **Free**: No subscription required (works with standard Claude account)
+    - **Granular Permissions**: Configure tool access via settings files
+    - **Automation-Friendly**: Scriptable and integrates with development workflows
+    - **Multiple Scopes**: User, project, or local MCP server configurations
+
+    ### Account Requirements
+
+    - Standard Claude account (free)
+    - Claude Code CLI installed
+
+    ### Tool Permission System
+
+    Claude Code supports **granular tool-level permissions** configured through settings files:
+
+    **Approve all tools from a server:**
+    ```json
+    "approvedTools": ["mcp__Kando"]
+    ```
+
+    **Approve specific tools only:**
+    ```json
+    "approvedTools": [
+      "mcp__Kando__search_sdk",
+      "mcp__Kando__search_code_examples",
+      "mcp__Kando__search_documentation"
+    ]
+    ```
+
+    <Note>
+      - Wildcards (`*`) are **not supported** for MCP permissions
+      - You must explicitly list each tool or approve the entire server
+      - See [Claude Code IAM Documentation](https://docs.claude.com/en/docs/claude-code/iam#access-control-and-permissions) for details
+    </Note>
+
+    ### Configuration Scopes
+
+    - **User scope**: Global across all projects (`~/.claude.json`)
+    - **Project scope**: Per-project configuration (`.claude/config.json`)
+    - **Local scope**: Repository-specific (`.claude.local.json`)
+
+    ### Key Differences from Claude Web
+
+    - ❌ No visual UI for tool management
+    - ✅ More flexible configuration (file-based)
+    - ✅ Version control friendly (commit configs to git)
+    - ✅ Automation and scripting support
+
+    ### Getting Started
+
+    See the [Setup Guide → Claude Code tab](/MCP-Server/setup) for configuration commands and examples.
+  </Accordion>
+
+  <Accordion title="ChatGPT - Alternative Option" icon="message">
+    **Best for**: Users with existing ChatGPT subscriptions looking for an alternative
+
+    ### Why Use ChatGPT
+
+    - Works if you already have a ChatGPT subscription
+    - Familiar interface for ChatGPT users
+    - Alternative to Claude platforms
+
+    ### Account Requirements
+
+    - ChatGPT Plus, Pro, Business, or EDU account
+    - Free ChatGPT accounts do not support custom MCP connectors
+
+    ### Important Limitations
+
+    <Warning>
+      - **No ChatGPT Projects support**: Must use standalone chats
+      - **No Deep Research mode**: MCP servers don't work with Deep Research
+      - **Developer mode required**: Must enable Developer mode in settings
+      - **Basic tool control**: All tools enabled or disabled together (no granular control)
+    </Warning>
+
+    ### Setup Requirements
+
+    1. Enable **Developer mode** in ChatGPT settings
+    2. Add AI SDK Assistant as a custom connector
+    3. Create a **new standalone chat** (not in a Project)
+    4. Enable Developer mode chip in the chat
+    5. Toggle on the AI SDK Assistant connector
+
+    ### Key Differences from Claude
+
+    - ⚠️ More setup steps required
+    - ⚠️ Cannot use in Projects or Deep Research
+    - ⚠️ Less flexible tool permissions
+    - ✅ Works if you prefer ChatGPT's interface
+
+    ### Getting Started
+
+    See the [Setup Guide → ChatGPT tab](/MCP-Server/setup) for detailed configuration steps.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Which Platform Should You Choose?
+
+### Choose **Claude (Web/Mobile/Desktop)** if you:
+
+- Want the easiest setup with visual controls
+- Need granular per-tool permission management
+- Prefer a UI-based approach
+- Want the best overall MCP experience
+- Use mobile or desktop apps
+
+### Choose **Claude Code (CLI)** if you:
+
+- Are comfortable with command-line tools
+- Want to integrate SDK searches into development workflows
+- Need automation or scripting capabilities
+- Want version-controlled MCP configurations
+- Prefer file-based configuration over UI
+
+### Choose **ChatGPT** if you:
+
+- Already have a ChatGPT Plus/Pro subscription
+- Prefer ChatGPT's interface and features
+- Are comfortable with the platform limitations
+- Want an alternative to Claude
+
+---
+
+## Getting Started
+
+Ready to set up AI SDK Assistant? Head to the [Setup Guide](/MCP-Server/setup) for platform-specific configuration instructions.
+
+<Card title="Setup Guide" icon="rocket" href="/MCP-Server/setup">
+  Step-by-step instructions for connecting AI SDK Assistant to your chosen platform
+</Card>
