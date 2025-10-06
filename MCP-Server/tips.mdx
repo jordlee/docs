@@ -1,88 +1,1158 @@
 ---
 title: "Tips"
-description: "Text, title, and styling in standard markdown"
+description: "Best practices for using Iris to learn and implement the Camera Remote SDK"
 icon: "lightbulb"
 ---
 
-## Titles
+## General Prompting Tips
 
-Best used for section headers.
+Get better results from Iris by following these best practices when asking questions about the Camera Remote SDK.
 
-```md
-## Titles
-```
-
-### Subtitles
-
-Best use to subsection headers.
-
-```md
-### Subtitles
-```
+### Be Specific with Context
 
 <Tip>
-  Each **title** and **subtitle** creates an anchor and also shows up on the table of contents on the right.
+  **Include relevant details** in your questions to get more accurate answers:
+  - **Camera model** (e.g., "ILX-LR1", "ILCE-7M4", "A7 IV")
+  - **SDK version** (V1.14.00 or V2.00.00)
+  - **Programming language** (C++ or C#)
+  - **Connection type** (USB, wired LAN, wireless LAN)
+  - **Operating system** (Windows, macOS, Linux)
+  - **Connection mode** (RemoteControlMode, ContentsTransferMode, RemoteTransferMode)
 </Tip>
 
-## Text Formatting
+**Example:**
+- ❌ Vague: "How do I connect to a camera?"
+- ✅ Specific: "How do I connect to an ILX-LR1 camera via wired LAN using the C++ SDK V2.00.00 on Windows in RemoteControlMode?"
 
-We support most markdown formatting. Simply add `**`, `_`, or `~` around text to format it.
+### Use Exact Terminology When Known
 
-| Style         | How to write it   | Result            |
-| ------------- | ----------------- | ----------------- |
-| Bold          | `**bold**`        | **bold**          |
-| Italic        | `_italic_`        | _italic_          |
-| Strikethrough | `~strikethrough~` | ~~strikethrough~~ |
+If you already know specific API names, error codes, or property codes, include them in your query for faster, more precise results.
 
-You can combine these. For example, write `**_bold and italic_**` to get **_bold and italic_** text.
+**Examples:**
+- "What parameters does `SetSaveInfo` accept?"
+- "What causes error code `CrError_Connect_TimeOut`?"
+- "How do I use `CrDeviceProperty_FNumber` to set aperture?"
 
-You need to use HTML to write superscript and subscript text. That is, add `<sup>` or `<sub>` around your text.
+### Ask for Code Examples
 
-| Text Size   | How to write it          | Result                 |
-| ----------- | ------------------------ | ---------------------- |
-| Superscript | `<sup>superscript</sup>` | <sup>superscript</sup> |
-| Subscript   | `<sub>subscript</sub>`   | <sub>subscript</sub>   |
+Iris has access to working C++ and C# code examples from the SDK. Don't hesitate to request them.
 
-## Linking to Pages
+**Example prompts:**
+- "Show me C++ code to capture an image and save it to the host"
+- "Give me a C# example of connecting to a camera with SSH authentication"
+- "What's the code for setting ISO sensitivity in C++?"
 
-You can add a link by wrapping text in `[]()`. You would write `[link to google](https://google.com)` to [link to google](https://google.com).
+### Request Compatibility Information
 
-Links to pages in your docs need to be root-relative. Basically, you should include the entire folder path. For example, `[link to text](/writing-content/text)` links to the page "Text" in our components section.
+Check which cameras support specific features before implementation.
 
-Relative links like `[link to text](../text)` will open slower because we cannot optimize them as easily.
+**Example prompts:**
+- "Which cameras support RemoteTransferMode?"
+- "Does the ILX-LR1 support wireless LAN connection?"
+- "What connection modes are available for the ILCE-1?"
 
-## Blockquotes
+### Iterate and Follow Up
 
-### Singleline
+If the first answer isn't quite right, ask follow-up questions or rephrase with more details.
 
-To create a blockquote, add a `>` in front of a paragraph.
+**Example:**
+1. Initial: "How do I set camera properties?"
+2. Follow-up: "How do I set F-stop specifically? Do I need to check if it's writable first?"
+3. Clarification: "Show me the complete code including error handling"
 
-> Dorothy followed her through many of the beautiful rooms in her castle.
+---
 
-```md
-> Dorothy followed her through many of the beautiful rooms in her castle.
+## When and How to Use Iris
+
+### Automatic Tool Selection
+
+Iris uses **13+ specialized search tools** to find the best answers for your questions. Your AI assistant automatically chooses the right tool based on what you're asking.
+
+<Note>
+  You don't need to specify which tool to use—just ask your question naturally. Iris's AI will determine whether to search documentation, code examples, API references, compatibility tables, or error codes.
+</Note>
+
+### Available Search Capabilities
+
+Iris can search across:
+
+- 📖 **Documentation**: Tutorials, guides, workflows, and conceptual explanations
+- 🔧 **API Functions**: Function signatures, parameters, return types
+- 💻 **Code Examples**: Working C++ and C# implementations
+- 📊 **Compatibility Tables**: Camera models, features, connection types
+- ⚠️ **Error & Warning Codes**: Detailed error explanations and solutions
+
+For detailed information about each search tool, see the [Tools](/MCP-Server/tools) page.
+
+### SDK Version Switching
+
+Iris currently searches **SDK V2.00.00** by default. If you need information from V1.14.00, just specify it in your question.
+
+**Example:**
+- "In SDK V1.14.00, how do I initialize the SDK?"
+- "What's the difference between V1.14.00 and V2.00.00 for camera connection?"
+
+Your AI assistant can use the `set_sdk_version` tool to switch versions during the conversation if needed.
+
+### When Iris Searches Automatically
+
+Your AI assistant will automatically use Iris when you ask questions about:
+
+- Camera Remote SDK features and capabilities
+- How to implement specific SDK operations
+- API function usage and parameters
+- Debugging errors or understanding warnings
+- Camera compatibility and requirements
+- SDK code examples and patterns
+
+<Warning>
+  **For Claude Code users**: Unlike Claude web, Claude Code does not support granular tool permissions. All Iris tools are available once the MCP server is added. The only control is the initial approval when using project-scoped servers.
+</Warning>
+
+---
+
+## Starter Prompts
+
+Use these prompt templates as starting points for different stages of SDK development. Each category addresses a specific phase of your implementation journey.
+
+### 1. CrSDK Overview
+
+**Purpose**: Understand general SDK capabilities, requirements, and use cases
+
+<AccordionGroup>
+  <Accordion title="General Capabilities" icon="book-open">
+    **Prompt:**
+    ```
+    What are the main capabilities of Sony's Camera Remote SDK?
+    What can I control on the camera, and what are the system requirements?
+    ```
+
+    **What Iris Returns:**
+    - Comprehensive list of SDK capabilities and operations
+    - System requirements for all supported platforms
+    - Camera control functions and property management APIs
+
+    **Example Response Snippet:**
+    > **Main Capabilities:**
+    > - **Image Capture**: Control shutter release with `SendCommand(CrCommandId_Release)` for single and continuous shooting
+    > - **Camera Properties**: Get/Set ISO, aperture (F-number), shutter speed, focus mode, white balance via `GetDeviceProperties()` and `SetDeviceProperty()`
+    > - **Live View**: Stream real-time preview images with `GetLiveViewImage()` for on-screen display
+    > - **File Management**: Transfer captured images to host PC with `SetSaveInfo()` and `StillImageStoreDestination` property
+    > - **Focus & Zoom**: Control autofocus area, manual focus position, and motorized zoom operations
+    >
+    > **System Requirements:**
+    > - **Windows**: Windows 10 64-bit, Windows 11 64-bit
+    > - **Linux**: Ubuntu 22.04 LTS, Ubuntu 24.04 LTS (PC and ARMv8)
+    > - **macOS**: macOS 13.1+ (Ventura), 14+ (Sonoma), 15+ (Sequoia)
+    >
+    > **Basic Workflow**: `Init()` → `EnumCameraObjects()` → `Connect()` → `GetDeviceProperties()` → control operations → `Disconnect()` → `Release()`
+
+    **Use when**: You're just getting started and need a high-level overview
+  </Accordion>
+
+  <Accordion title="Camera Support" icon="camera">
+    **Prompt:**
+    ```
+    Which Sony cameras are supported by the Camera Remote SDK V2.00.00?
+    I'm particularly interested in [your camera model].
+    ```
+
+    **What Iris Returns:**
+    - Complete list of supported camera models by category
+    - Connection type support matrix for each camera
+    - SDK mode availability (RemoteControl, ContentsTransfer, RemoteTransfer)
+    - Special requirements and limitations per model
+
+    **Example Response Snippet:**
+    > **Supported Camera Models in SDK V2.00.00:**
+    >
+    > **Cinema Line:**
+    > - ILX-LR1, ILME-FX6 (Ver.3.00+), MPC-2610
+    >
+    > **Alpha Series:**
+    > - ILCE-1, ILCE-9M3, ILCE-7RM5, ILCE-7M4, ILCE-7RM4A, ILCE-7SM3, ILCE-7C, ILCE-7CR, and more
+    >
+    > **Connection Support by Model:**
+    > | Model | USB | Wired LAN | Wireless LAN | Notes |
+    > |-------|-----|-----------|--------------|-------|
+    > | ILX-LR1 | ✓ R/C/T | ✓ R/C/T | ✓ R/C/T | SSH auth required, USB-C to GigE adapter |
+    > | ILCE-1 | ✓ R/C/T | ✓ R/C/T | ✓ R/C/T | All modes supported |
+    > | ILCE-7RM4A | ✓ R/C | ✗ | ✗ | USB only, no network |
+    >
+    > **Legend:** R=RemoteControlMode, C=ContentsTransferMode, T=RemoteTransferMode
+    >
+    > For complete compatibility tables with all models, see Function List documentation.
+
+    **Use when**: Evaluating if the SDK supports your target cameras
+  </Accordion>
+
+  <Accordion title="Connection Types" icon="wifi">
+    **Prompt:**
+    ```
+    What connection types (USB, wired LAN, wireless LAN) are supported
+    for connecting to cameras? What are the differences between them?
+    ```
+
+    **What Iris Returns:**
+    - Detailed comparison of all physical connection types
+    - Performance characteristics and use case recommendations
+    - Hardware requirements for each connection type
+    - Connection mode compatibility per physical layer
+
+    **Example Response Snippet:**
+    > **Physical Connection Types:**
+    >
+    > **1. USB Connection**
+    > - **Interface**: Direct USB cable (Type-C or Micro-USB depending on camera)
+    > - **Pros**: Most stable, highest bandwidth, no network configuration needed
+    > - **Cons**: Limited cable length (~5m), tethered operation only
+    > - **Best for**: Studio setups, direct PC control, maximum reliability
+    >
+    > **2. Wired LAN (Ethernet)**
+    > - **Interface**: RJ45 network cable (cameras may need USB-C to Ethernet adapter)
+    > - **Pros**: Stable, long-distance capable (100m+), network integration
+    > - **Cons**: Requires network setup, some cameras need adapters, may require SSH pairing
+    > - **Best for**: Fixed installations, multi-camera systems, industrial applications
+    >
+    > **3. Wireless LAN (Wi-Fi)**
+    > - **Interface**: Built-in Wi-Fi (camera creates access point or joins network)
+    > - **Pros**: No cables, portable, flexible positioning
+    > - **Cons**: Lower bandwidth, potential interference, not all cameras support all modes
+    > - **Cons**: Linux ARMv7/ARMv8 SDK versions don't support wireless
+    > - **Best for**: Mobile applications, temporary setups, on-location shooting
+    >
+    > **Connection Modes by Physical Layer:**
+    > - **RemoteControlMode (R)**: Real-time camera control - Available on all connection types
+    > - **ContentsTransferMode (C)**: File transfer only - Added in SDK v1.05.00
+    > - **RemoteTransferMode (T)**: Control + auto file transfer - Added in SDK v1.13.00
+    >
+    > **Important**: Check camera compatibility table—not all cameras support all modes on all connection types.
+
+    **Use when**: Planning your hardware and connection strategy
+  </Accordion>
+
+  <Accordion title="SDK Versions" icon="code-branch">
+    **Prompt:**
+    ```
+    What's the difference between SDK V1.14.00 and V2.00.00?
+    Which version should I use for a new project?
+    ```
+
+    **What Iris Returns:**
+    - Key differences between SDK versions
+    - New features and capabilities in each version
+    - Breaking changes and migration considerations
+    - Recommendation for new projects
+
+    **Example Response Snippet:**
+    > **SDK Version Comparison:**
+    >
+    > **V2.00.00 (Latest - Recommended for New Projects)**
+    > - **Status**: Latest stable release, actively maintained
+    > - **New Camera Support**: Additional camera models including latest Alpha and Cinema Line cameras
+    > - **New Features**: Enhanced property controls, additional device properties
+    > - **Compatibility**: Full backward compatibility with V1.14.00 cameras
+    >
+    > **V1.14.00 (Stable Legacy)**
+    > - **Status**: Stable, mature codebase
+    > - **Use Case**: Existing projects that don't need latest features
+    > - **Camera Support**: Broad support for Alpha 7/9 series and earlier Cinema Line
+    > - **ContentsTransferMode**: Added in v1.05.00
+    > - **RemoteTransferMode**: Added in v1.13.00
+    >
+    > **Key Differences:**
+    > - V2.00.00 supports newer camera models released after V1.14.00
+    > - V2.00.00 includes additional device property codes and commands
+    > - API compatibility maintained—migration typically requires minimal code changes
+    > - DLL/library files must be updated when switching versions (rebuild required)
+    >
+    > **Recommendation**: Use **V2.00.00** for all new projects to ensure latest camera support and future compatibility.
+
+    **Use when**: Deciding which SDK version to adopt
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 2. Workflow Planning
+
+**Purpose**: Connect your use case to SDK operations, APIs, and requirements
+
+<AccordionGroup>
+  <Accordion title="Real-World Use Case Example" icon="drone">
+    **Prompt:**
+    ```
+    I'm a developer for a drone manufacturer that builds remote control
+    solar panel and cell tower inspection systems using the ILX-LR1.
+
+    We want to:
+    - Control the camera to set F-stop and other basic settings
+    - Recall those settings at the start of flight
+    - Save photos to the host computer only (not camera SD card)
+    - Take photos every 1 second until a command is given
+
+    Can you help me understand:
+    1. Which SDK APIs and operations I'll need to use
+    2. What connection type and mode is best for this use case
+    3. Any special requirements for the ILX-LR1
+    4. How to structure the workflow from connection to capture
+    ```
+
+    **What Iris Returns:**
+    - ILX-LR1 compatibility details and requirements
+    - API recommendations for property management and capture
+    - Connection workflow with pairing instructions
+    - Code examples for device properties and image capture
+
+    **Example Response Snippets:**
+
+    *ILX-LR1 Requirements:*
+    > - SSH authentication required (username: "admin")
+    > - USB Type-C to Gigabit Ethernet adapter recommended
+    > - Supports all connection modes: RemoteControlMode, ContentsTransferMode, RemoteTransferMode
+    > - Maximum 5 simultaneous connections supported
+
+    *Complete Workflow for Your Use Case:*
+    > **1. SDK Initialization & Connection:**
+    > ```
+    > Init() → EnumCameraObjects() → Connect() with RemoteControlMode + SSH
+    > ```
+    >
+    > **2. Camera Pairing (First Time):**
+    > - Set camera to: Network > Cnct./Remote Sht. > Remote Shoot Function > Pairing
+    > - Call `Connect()` from your app
+    > - Accept pairing on camera
+    > - Power cycle camera (wait 10+ seconds) to save pairing info
+    >
+    > **3. Configure Save Destination (Host Only):**
+    > ```cpp
+    > SetSaveInfo(deviceHandle, "C:\\Photos", "inspection_", 1);
+    > SetDeviceProperty(CrDeviceProperty_StillImageStoreDestination,
+    >                  CrStillImageStoreDestination_HostPC);
+    > ```
+    >
+    > **4. Set Camera Properties (F-stop, ISO, etc.):**
+    > ```cpp
+    > GetDeviceProperties() // Check current values and available options
+    > SetDeviceProperty(CrDeviceProperty_FNumber, f_28_value);
+    > SetDeviceProperty(CrDeviceProperty_IsoSensitivity, iso_value);
+    > // Save settings to camera memory slot for recall
+    > ```
+    >
+    > **5. Timelapse Capture Loop (Every 1 Second):**
+    > ```cpp
+    > while (capture_active) {
+    >     SendCommand(CrCommandId_Release, CrCommandParam_Down);
+    >     Sleep(35); // ms
+    >     SendCommand(CrCommandId_Release, CrCommandParam_Up);
+    >     Sleep(965); // Wait remaining time for 1-second interval
+    > }
+    > ```
+    >
+    > **Recommended Connection**: Wired LAN (Ethernet) for reliable continuous operation during flight
+
+    **Use when**: You have a specific application and need to map it to SDK operations
+  </Accordion>
+
+  <Accordion title="Feature-Specific Workflow" icon="list-check">
+    **Prompt:**
+    ```
+    I need to implement [specific feature, e.g., "live view streaming"].
+
+    What's the recommended workflow? What APIs do I need to call,
+    in what order, and what are the prerequisites?
+    ```
+
+    **What Iris Returns:**
+    - Complete step-by-step operation guides with API sequences
+    - Timing considerations and camera state requirements
+    - Prerequisites and property dependencies
+
+    **Example Response Snippet (Live View Streaming):**
+    > **Prerequisites:**
+    > - Camera must be connected in RemoteControlMode
+    > - Check `CrDeviceProperty_LiveViewStatus` is supported
+    > - Camera may not accept operations immediately after connection—wait for `OnConnected()` callback
+    >
+    > **Workflow:**
+    > ```
+    > 1. Enable Live View:
+    >    SetDeviceProperty(CrDeviceProperty_LiveView_Enable, CrLiveView_Enable)
+    >
+    > 2. Configure Live View Quality (optional):
+    >    SetDeviceProperty(CrDeviceProperty_LiveView_Image_Quality, quality_setting)
+    >
+    > 3. Start Image Retrieval Loop:
+    >    while (streaming) {
+    >        GetLiveViewImage() // Returns JPEG image data
+    >        Display image on screen
+    >        Process at 30fps or camera's native rate
+    >    }
+    >
+    > 4. Cleanup:
+    >    SetDeviceProperty(CrDeviceProperty_LiveView_Enable, CrLiveView_Disable)
+    > ```
+    >
+    > **Important Notes:**
+    > - Network traffic affects stability; avoid simultaneous heavy operations
+    > - Image data is retrieved from internal buffer updated by background task
+    > - Camera Remote SDK does not support "Enlarge Screen" mode—disable it on camera
+
+    **Use when**: Implementing a specific SDK feature
+  </Accordion>
+
+  <Accordion title="Multi-Camera Setup" icon="users">
+    **Prompt:**
+    ```
+    I need to control multiple cameras simultaneously from one host PC.
+
+    What are the limitations, and how should I structure my application
+    to handle multiple camera connections?
+    ```
+
+    **What Iris Returns:**
+    - Multi-camera connection limits and constraints
+    - Architecture patterns for multi-camera control
+    - Device handle management strategies
+    - Callback handling for multiple cameras
+
+    **Example Response Snippet:**
+    > **Multi-Camera Limitations:**
+    > - **Per Camera**: Maximum 5 simultaneous connections from different hosts/applications
+    > - **Per Host PC**: No SDK-imposed limit on number of cameras (limited by system resources)
+    > - **Connection Completion**: Connection isn't complete until `OnConnected()` callback is received
+    > - **Exceeded Limit**: `Connect()` fails with error if camera already has 5 connections
+    >
+    > **Recommended Architecture:**
+    > ```cpp
+    > // 1. Single SDK instance manages all cameras
+    > Init(); // Call once for entire application
+    >
+    > // 2. Enumerate all connected cameras
+    > ICrEnumCameraObjectInfo* cameraList;
+    > EnumCameraObjects(&cameraList);
+    >
+    > // 3. Store device handles in a collection
+    > std::vector<CrDeviceHandle> cameras;
+    > for (int i = 0; i < cameraCount; i++) {
+    >     CrDeviceHandle handle;
+    >     Connect(cameraInfo[i], callback, &handle, mode);
+    >     cameras.push_back(handle);
+    > }
+    >
+    > // 4. Manage each camera independently
+    > for (auto handle : cameras) {
+    >     GetDeviceProperties(handle, ...);
+    >     SendCommand(handle, ...);
+    > }
+    > ```
+    >
+    > **Best Practices:**
+    > - Use separate callback objects or camera identifiers to distinguish events from different cameras
+    > - Implement thread-safe queue for handling callbacks from multiple cameras
+    > - Consider network bandwidth when using multiple cameras over LAN
+    > - For time-synchronized capture, account for network latency variations
+    > - Properly clean up each device handle with `Disconnect()` before `Release()`
+
+    **Use when**: Building multi-camera control systems
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 3. System Design
+
+**Purpose**: Plan APIs, dependencies, hardware, and architecture
+
+<AccordionGroup>
+  <Accordion title="API Selection" icon="code">
+    **Prompt:**
+    ```
+    For my use case [describe briefly], which specific SDK APIs should I use?
+
+    I need to:
+    - [Requirement 1, e.g., "connect to camera"]
+    - [Requirement 2, e.g., "set exposure settings"]
+    - [Requirement 3, e.g., "capture images"]
+
+    What's the minimal set of APIs I need to implement?
+    ```
+
+    **What Iris Returns:**
+    - Complete list of required and optional APIs
+    - Function signatures with parameter descriptions
+    - Call order and dependencies
+
+    **Example Response Snippet:**
+    > **Minimal API Set for Basic Camera Control:**
+    >
+    > **Required (Core Operations):**
+    > - `Init()` - Initialize SDK at application start
+    > - `EnumCameraObjects()` - Discover connected cameras
+    > - `Connect(pCameraInfo, callback, &deviceHandle, mode)` - Establish camera connection
+    > - `Disconnect(deviceHandle)` - Close camera connection
+    > - `Release()` - Cleanup SDK resources at application end
+    >
+    > **Camera Property Management:**
+    > - `GetDeviceProperties(deviceHandle, &propList, &count)` - Read all camera properties
+    > - `SetDeviceProperty(deviceHandle, &property)` - Change writable properties
+    > - Property codes for your use case:
+    >   - `CrDeviceProperty_FNumber` - Aperture/F-stop
+    >   - `CrDeviceProperty_IsoSensitivity` - ISO setting
+    >   - `CrDeviceProperty_ShutterSpeed` - Shutter speed
+    >   - `CrDeviceProperty_ExposureProgramMode` - P/A/S/M mode
+    >
+    > **Image Capture:**
+    > - `SendCommand(deviceHandle, CrCommandId_Release, param)` - Trigger shutter (Down/Up)
+    > - `SetSaveInfo(deviceHandle, path, prefix, number)` - Configure file save location
+    > - `SetDeviceProperty(CrDeviceProperty_StillImageStoreDestination)` - Set save destination (camera/host/both)
+    >
+    > **Optional (Enhanced Features):**
+    > - `GetLiveViewImage()` - Live preview streaming
+    > - `GetLiveViewProperties()` - Live view-specific properties
+    > - `ReleaseDeviceProperties()` - Free property list memory
+
+    **Use when**: Determining which APIs your application needs
+  </Accordion>
+
+  <Accordion title="Hardware Requirements" icon="server">
+    **Prompt:**
+    ```
+    I'm designing a system with [camera model] that needs [connection type].
+
+    What hardware do I need? Are there specific network adapters,
+    cables, or other equipment required? Does this camera need SSH authentication?
+    ```
+
+    **What Iris Returns:**
+    - Camera-specific hardware requirements
+    - Network adapter recommendations
+    - Authentication requirements (SSH)
+    - Cable and connection specifications
+
+    **Example Response Snippet:**
+
+    > **Connection-Specific Hardware Requirements:**
+    >
+    > **USB Connection:**
+    > - Standard USB cable (camera-specific type - e.g., USB Type-C for newer models)
+    > - Direct connection to host PC USB port
+    > - Cable length limitation: ~5m maximum
+    > - No additional adapters needed for basic USB
+    >
+    > **Wired LAN (Ethernet) Connection:**
+    > - For ILX-LR1, ILME-FX6, MPC-2610: **USB Type-C to Gigabit Ethernet adapter required**
+    >   - Recommendation: Use Gigabit Ethernet compatible adapter for best performance
+    >   - Standard Ethernet cable (Cat5e or better)
+    >   - Can extend up to 100m+ with quality cables
+    > - For PXW-Z200, HXR-NX800, BRC-AM7: Built-in Ethernet port (no adapter needed)
+    >
+    > **Wireless LAN Connection:**
+    > - Camera's built-in Wi-Fi (if supported)
+    > - Wireless network infrastructure (router/access point)
+    > - Platform limitation: **Not supported on Linux ARMv7/ARMv8**
+    >
+    > **Authentication Requirements:**
+    > - **SSH authentication required** for: ILX-LR1, MPC-2610, ILME-FX6, PXW-Z200, HXR-NX800
+    >   - Default username: `admin`
+    >   - Password setup during initial pairing
+    >   - SSH fingerprint verification on first connection
+    > - Standard USB connection: No SSH authentication needed (most Alpha series cameras)
+    >
+    > **Multi-Camera Setups:**
+    > - Network switch/hub (for wired multi-camera with LAN)
+    > - Maximum 5 simultaneous connections per camera (MPC-2610 and similar models)
+    > - Adequate network bandwidth planning for live view streaming
+
+    **Use when**: Planning hardware and infrastructure
+  </Accordion>
+
+  <Accordion title="Compatibility Matrix" icon="table-cells">
+    **Prompt:**
+    ```
+    I need to control F-stop, ISO, and shutter speed on an [camera model]
+    via [connection type].
+
+    Can you check the compatibility: does this camera support these features
+    with this connection type? Are there any limitations?
+    ```
+
+    **What Iris Returns:**
+    - Detailed compatibility tables with feature support
+    - Connection type limitations by camera
+    - Property availability and access modes
+
+    **Example Response Snippet:**
+
+    > **Camera Connection Compatibility:**
+    >
+    > **ILX-LR1 Full Support Matrix:**
+    > - USB: RemoteControl ✓, ContentsTransfer ✓, RemoteTransfer ✓
+    > - Ethernet Wired: RemoteControl ✓, ContentsTransfer ✓, RemoteTransfer ✓
+    > - Ethernet Wireless: RemoteControl ✓, ContentsTransfer ✓, RemoteTransfer ✓
+    >
+    > **ILCE-7RM4A (Alpha 7R IV) Support Matrix:**
+    > - USB: RemoteControl ✓, ContentsTransfer ✓
+    > - Ethernet: Not supported
+    >
+    > **Property Feature Validation Approach:**
+    >
+    > To verify if specific features (F-stop, ISO, shutter speed) are supported on your camera:
+    >
+    > 1. **Call `GetDeviceProperties()` with property codes:**
+    >    ```cpp
+    >    SDK::CrDeviceProperty* prop_list = nullptr;
+    >    std::int32_t nprop = 0;
+    >    SDK::GetDeviceProperties(deviceHandle, &prop_list, &nprop);
+    >    ```
+    >
+    > 2. **Check `CrPropertyEnableFlag` for each property:**
+    >    - Property exists in the returned list → Feature is supported
+    >    - Property not in list → Feature not available on this camera
+    >
+    > 3. **Validate writability with `IsSetEnableCurrentValue()`:**
+    >    ```cpp
+    >    if (prop.IsSetEnableCurrentValue()) {
+    >        // Property is writable - you can set values
+    >    } else {
+    >        // Property is read-only or not currently settable
+    >    }
+    >    ```
+    >
+    > 4. **Example validation pattern from SDK:**
+    >    ```cpp
+    >    if (m_prop.f_number.writable == -1) {
+    >        tout << "F-stop control is not supported on this camera\n";
+    >        return false;
+    >    }
+    >    // Property is supported - safe to use
+    >    ```
+    >
+    > **Important Notes:**
+    > - Some properties may be read-only in certain camera modes (e.g., Auto mode)
+    > - Property availability can change based on camera settings (mode dial position, lens attached)
+    > - Always validate before attempting to set values to avoid SDK errors
+
+    **Use when**: Validating feature compatibility before implementation
+  </Accordion>
+
+  <Accordion title="Connection Mode Selection" icon="plug">
+    **Prompt:**
+    ```
+    What's the difference between RemoteControlMode, ContentsTransferMode,
+    and RemoteTransferMode?
+
+    For my use case [describe], which mode should I use and why?
+    ```
+
+    **What Iris Returns:**
+    - Mode descriptions and use cases
+    - SDK version requirements for each mode
+    - Camera support by mode
+    - Performance and capability trade-offs
+
+    **Example Response Snippet:**
+
+    > **Connection Mode Comparison & Decision Matrix:**
+    >
+    > | Mode | Abbreviation | SDK Version | Capabilities | Best For |
+    > |------|--------------|-------------|--------------|----------|
+    > | **RemoteControlMode** | R | 1.00.00+ | Camera control + automatic transfer of newly captured images | Studio setups, live control apps, automated capture workflows |
+    > | **ContentsTransferMode** | C | 1.05.00+ | Pull existing files from camera media (no control) | Backup operations, downloading existing images from SD card |
+    > | **RemoteTransferMode** | T | 1.13.00+ | Combined: control + transfer new captures + pull existing media | Remote production, full file management workflows |
+    >
+    > **Detailed Mode Characteristics:**
+    >
+    > **RemoteControlMode (R):**
+    > - Full camera remote control capabilities
+    > - Live view image streaming available
+    > - Real-time property changes (ISO, F-stop, shutter speed)
+    > - Capture commands and shutter control
+    > - **CAN automatically transfer newly captured images to host** (via `SetSaveInfo` + `StillImageStoreDestination`)
+    > - **CANNOT pull existing images from camera SD card/media**
+    > - Use when: You need control and automatic transfer of new captures, but don't need to access existing files on the card
+    >
+    > **ContentsTransferMode (C):**
+    > - File transfer ONLY - no camera control
+    > - Pull existing images from camera media slots
+    > - Cannot trigger captures or change settings
+    > - Requires disconnect/reconnect to switch to control mode
+    > - Use when: Batch downloading existing files from camera storage (no control needed)
+    >
+    > **RemoteTransferMode (T):**
+    > - **Full feature set**: control + automatic transfer of new captures + pull existing media files
+    > - Eliminates need for mode switching (disconnect/reconnect)
+    > - Can execute shooting process during content transfer
+    > - Maximizes efficiency for remote production workflows
+    > - **Trade-off**: Content transfer speed may decrease during simultaneous operations
+    > - **Recommendation**: Measure actual performance in your environment before production use
+    > - Use when: You need complete file management (new captures + existing media access) with camera control
+    >
+    > **Decision Tree:**
+    >
+    > ```
+    > Do you need to control the camera?
+    >   ├─ NO  → Use ContentsTransferMode (C)
+    >   │         (Just pulling existing files from media)
+    >   │
+    >   └─ YES → Do you need to pull existing files from SD card?
+    >             ├─ NO  → Use RemoteControlMode (R)
+    >             │         (Control + auto-transfer new captures only)
+    >             │
+    >             └─ YES → Use RemoteTransferMode (T)
+    >                       (Control + new captures + pull existing media)
+    >                       SDK 1.13.00+ required
+    > ```
+    >
+    > **Camera Support Notes:**
+    > - Check compatibility tables - not all cameras support all modes
+    > - ILX-LR1: Supports all three modes (R/C/T) on all connection types
+    > - Many Alpha series cameras: Only support RemoteControlMode (R)
+    > - Verify your specific camera model's capabilities before implementation
+
+    **Use when**: Choosing the right connection mode for your application
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 4. Execution
+
+**Purpose**: Generate production-ready code with proper SDK implementations
+
+<AccordionGroup>
+  <Accordion title="Complete Implementation" icon="file-code">
+    **Prompt:**
+    ```
+    Show me complete [C++/C#] code to:
+    1. Initialize the SDK
+    2. Enumerate and connect to an [camera model] via [connection type]
+    3. Set camera properties: [list specific properties]
+    4. Capture an image and save to host
+    5. Handle errors and cleanup
+
+    Use SDK V2.00.00 and include proper error handling.
+    ```
+
+    **What Iris Returns:**
+    - Complete, working code examples from SDK samples
+    - Proper initialization and cleanup patterns
+    - Error handling with SDK error codes
+    - Camera connection with SSH authentication (if required)
+
+    **Example Response Snippet (C++):**
+    ```cpp
+    bool CameraDevice::connect(SCRSDK::CrSdkControlMode openMode,
+                               SCRSDK::CrReconnectingSet reconnect)
+    {
+        m_modeSDK = openMode;
+        const char* inputId = "admin";
+        char inputPassword[32] = { 0 };
+
+        // SSH fingerprint verification and password handling...
+
+        auto connect_status = SDK::Connect(m_info, this, &m_device_handle,
+                                          openMode, reconnect, inputId,
+                                          m_userPassword.c_str(),
+                                          m_fingerprint.c_str(),
+                                          (CrInt32u)m_fingerprint.size());
+        if (CR_FAILED(connect_status)) {
+            tout << "Failed to connect: 0x" << std::hex
+                 << connect_status << std::dec;
+            return false;
+        }
+        set_save_info();
+        return true;
+    }
+    ```
+
+    **Use when**: Building a feature from scratch with comprehensive code
+  </Accordion>
+
+  <Accordion title="Property Management" icon="sliders">
+    **Prompt:**
+    ```
+    Show me [C++/C#] code to get the current F-stop value,
+    check what values are available, and set it to f/2.8.
+
+    Include error handling for cases where the property isn't writable.
+    ```
+
+    **What Iris Returns:**
+    - Property loading and parsing code
+    - Writable status checking
+    - Value validation and setting
+    - Error handling patterns
+
+    **Example Response Snippet (C++):**
+    ```cpp
+    void CameraDevice::load_properties(CrInt32u num, CrInt32u* codes)
+    {
+        SDK::CrDeviceProperty* prop_list = nullptr;
+        std::int32_t nprop = 0;
+
+        SDK::CrError status = SDK::GetDeviceProperties(
+            m_device_handle, &prop_list, &nprop);
+
+        if (CR_FAILED(status)) {
+            tout << "Failed to get device properties.\n";
+            return;
+        }
+
+        for (std::int32_t i = 0; i < nprop; ++i) {
+            auto prop = prop_list[i];
+            switch (prop.GetCode()) {
+                case SDK::CrDevicePropertyCode::CrDeviceProperty_FNumber:
+                    m_prop.f_number.writable = prop.IsSetEnableCurrentValue();
+                    m_prop.f_number.current =
+                        static_cast<std::uint16_t>(prop.GetCurrentValue());
+                    // Parse possible values...
+                    break;
+            }
+        }
+        SDK::ReleaseDeviceProperties(m_device_handle, prop_list);
+    }
+    ```
+
+    **Use when**: Implementing camera property get/set operations
+  </Accordion>
+
+  <Accordion title="Callback Implementation" icon="webhook">
+    **Prompt:**
+    ```
+    Show me how to properly implement SDK callbacks in [C++/C#]:
+    - OnConnected
+    - OnDisconnected
+    - OnPropertyChanged
+    - OnError
+
+    What's the best practice for handling these events?
+    ```
+
+    **What Iris Returns:**
+    - Complete callback implementations
+    - Thread-safety considerations
+    - Event handling patterns
+    - Connection state management
+
+    **Example Response Snippet (C++):**
+    ```cpp
+    void CameraDevice::OnConnected(SDK::DeviceConnectionVersioin version)
+    {
+        m_connected.store(true);
+        text id(this->get_id());
+        tout << "Connected to " << m_info->GetModel()
+             << " (" << id.data() << ")\n";
+    }
+
+    void CameraDevice::OnError(CrInt32u error)
+    {
+        text msg = get_message_desc(error);
+        if (!msg.empty()) {
+            tout << std::endl << msg.data() << std::endl;
+
+            if (SDK::CrError_Connect_TimeOut == error) {
+                tout << "Please input '0' after Connect camera"
+                     << std::endl;
+                return;
+            }
+        }
+    }
+    ```
+
+    **Use when**: Setting up event-driven SDK integration
+  </Accordion>
+
+  <Accordion title="Image Capture" icon="camera">
+    **Prompt:**
+    ```
+    Show me [C++/C#] code to capture a single image using the shutter
+    release command. Include proper timing and error handling.
+    ```
+
+    **What Iris Returns:**
+    - Shutter control command sequences
+    - Timing recommendations between commands
+    - Image capture completion detection
+
+    **Example Response Snippet (C++):**
+    ```cpp
+    void CameraDevice::capture_image() const
+    {
+        tout << "Capture image...\n";
+        tout << "Shutter down\n";
+        SDK::SendCommand(m_device_handle,
+                        SDK::CrCommandId::CrCommandId_Release,
+                        SDK::CrCommandParam_Down);
+
+        // Wait, then send shutter up
+        std::this_thread::sleep_for(35ms);
+        tout << "Shutter up\n";
+        SDK::SendCommand(m_device_handle,
+                        SDK::CrCommandId::CrCommandId_Release,
+                        SDK::CrCommandParam_Up);
+    }
+    ```
+
+    **Use when**: Implementing image capture and file handling
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 5. Debugging
+
+**Purpose**: Resolve error codes, fix bugs, and clarify SDK concepts
+
+<AccordionGroup>
+  <Accordion title="Error Code Resolution" icon="triangle-exclamation">
+    **Prompt:**
+    ```
+    I'm getting error code [CrError_Connect_TimeOut / 0x80010001]
+    when trying to [describe operation].
+
+    What does this error mean, what causes it, and how do I fix it?
+    ```
+
+    **What Iris Returns:**
+    - Error code definitions and explanations
+    - Common causes and troubleshooting steps
+    - Code examples showing error handling
+    - Related error conditions
+
+    **Example Response Snippet:**
+    ```
+    Error Code: CrError_Connect_TimeOut
+    Explanation: "A connection operation timed out"
+
+    Common handling:
+    if (SDK::CrError_Connect_TimeOut == error) {
+        tout << "Please input '0' after Connect camera" << std::endl;
+        return;
+    }
+    ```
+
+    **Use when**: Encountering specific SDK error codes
+  </Accordion>
+
+  <Accordion title="Connection Issues" icon="plug-circle-xmark">
+    **Prompt:**
+    ```
+    I can't connect to my [camera model] via [connection type].
+
+    The camera is on and connected, but SDK::Connect() is failing.
+    What should I check? Do I need to configure anything on the camera?
+    ```
+
+    **What Iris Returns:**
+    - Camera pairing instructions
+    - Network configuration requirements
+    - Connection prerequisites and timing
+    - Camera menu settings to verify
+
+    **Example Response Snippet:**
+    > *"When connecting via wired LAN, you need to perform the 'Network > Cnct./Remote Sht. > Remote Shoot Function > Pairing' operation on the camera to make it memorize the host PC. Once the pairing is established, turn off the camera, pause for about 10 seconds, and then turn it back on again. (The information is stored in the camera when the power is turned off.)"*
+
+    **Use when**: Troubleshooting connection problems
+  </Accordion>
+
+  <Accordion title="Concept Clarification" icon="circle-question">
+    **Prompt:**
+    ```
+    I don't understand [SDK concept, e.g., "the difference between
+    GetDeviceProperties and GetSelectDeviceProperties"].
+
+    Can you explain what this means and when to use each?
+    ```
+
+    **What Iris Returns:**
+    - Detailed API explanations
+    - Use case comparisons
+    - Performance implications
+    - Code examples demonstrating differences
+
+    **Example Response Snippet:**
+    ```cpp
+    // Get all properties
+    if (0 == num) {
+        status = SDK::GetDeviceProperties(m_device_handle,
+                                         &prop_list, &nprop);
+    }
+    else {
+        // Get specific properties (more efficient)
+        status = SDK::GetSelectDeviceProperties(m_device_handle,
+                                               num, codes,
+                                               &prop_list, &nprop);
+    }
+    ```
+
+    **Use when**: Clarifying SDK concepts or terminology
+  </Accordion>
+
+  <Accordion title="Unexpected Behavior" icon="bug">
+    **Prompt:**
+    ```
+    My code successfully connects and sets properties, but when I try to
+    capture an image, nothing happens. No error is returned.
+
+    Here's my code: [paste relevant code]
+
+    What could be wrong?
+    ```
+
+    **What Iris Returns:**
+    - Common pitfalls and timing issues
+    - Camera state requirements
+    - Missing prerequisite operations
+    - Debugging strategies
+
+    **Example Response Snippet:**
+    > *"The camera may not accept shooting operations immediately after connection. Camera Remote SDK supports only the Remote-Control Protocol Version 3."*
+
+    **Use when**: Diagnosing unexpected SDK behavior
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### 6. Testing & Validation
+
+**Purpose**: Plan testing criteria and validate SDK integration
+
+<AccordionGroup>
+  <Accordion title="Integration Testing Plan" icon="flask-vial">
+    **Prompt:**
+    ```
+    I've implemented [describe feature] using the Camera Remote SDK.
+
+    What should I test to ensure it works correctly?
+    What edge cases and error conditions should I handle?
+    ```
+
+    **What Iris Returns:**
+    - Common error scenarios to test
+    - Connection state transitions
+    - Property value validation
+    - Timeout and disconnection handling
+
+    **Example Test Scenarios from SDK:**
+    - Connection timeout (CrError_Connect_TimeOut)
+    - Too many connections (CrError_Connect_FailBusy)
+    - SSH authentication failures
+    - Property write failures when not writable
+    - Spontaneous disconnection handling
+
+    **Use when**: Planning comprehensive integration tests
+  </Accordion>
+
+  <Accordion title="Performance Validation" icon="gauge-high">
+    **Prompt:**
+    ```
+    My application needs to capture images every [X] seconds for [Y] hours.
+
+    Are there any SDK limitations I should be aware of?
+    How can I validate that my implementation meets these requirements?
+    ```
+
+    **What Iris Returns:**
+    - Timing considerations and limitations
+    - Resource management best practices
+    - Long-running operation guidance
+    - Performance monitoring approaches
+
+    **Example Response Snippet:**
+    > *"The camera may not accept shooting operations immediately after connection. Wait for proper callback notifications before sending commands."*
+
+    **Use when**: Validating performance requirements
+  </Accordion>
+
+  <Accordion title="Multi-Camera Testing" icon="camera-retro">
+    **Prompt:**
+    ```
+    I need to test controlling [number] cameras simultaneously.
+
+    What's the recommended testing approach? What are common pitfalls
+    when managing multiple camera connections?
+    ```
+
+    **What Iris Returns:**
+    - Connection limits per camera
+    - Device handle management patterns
+    - Callback synchronization
+    - Resource cleanup requirements
+
+    **Example Response Snippet:**
+    > *"One camera can be controlled by multiple host PCs. The maximum number of simultaneous connections is 5 users (applications). If the number of Connect requests exceeds the limit, the Connect() will fail. Note that the connection is not complete until the OnConnected() callback is received."*
+
+    **Use when**: Testing multi-camera implementations
+  </Accordion>
+
+  <Accordion title="Cross-Platform Validation" icon="laptop">
+    **Prompt:**
+    ```
+    My code works on [OS 1] but fails on [OS 2].
+
+    Are there platform-specific considerations for the Camera Remote SDK?
+    What should I check?
+    ```
+
+    **What Iris Returns:**
+    - Platform-specific implementation details
+    - String handling differences (wide char vs. char)
+    - Path separator differences
+    - OS-specific limitations
+
+    **Example Response Snippet:**
+    > *"Camera Remote SDK for Linux 64bit (ARMv8) and Linux 32bit (ARMv7) are not supported for wireless connections."*
+
+    **Use when**: Validating cross-platform compatibility
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Advanced Tips
+
+### Combining Multiple Questions
+
+For complex workflows, you can combine multiple aspects in a single prompt:
+
+```
+I'm implementing a timelapse capture system for the ILX-LR1:
+
+1. Design: What connection mode and APIs should I use?
+2. Execution: Show me C++ code to capture every 2 seconds
+3. Validation: How do I test that this will run reliably for 8 hours?
+
+Please provide a comprehensive answer covering all three areas.
 ```
 
-### Multiline
+### Learning from Examples
 
-> Dorothy followed her through many of the beautiful rooms in her castle.
->
-> The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.
+Ask Iris to show you how the official sample apps implement features:
 
-```md
-> Dorothy followed her through many of the beautiful rooms in her castle.
->
-> The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.
+```
+How does the official SDK sample application implement [feature]?
+Show me the relevant code and explain the approach.
 ```
 
-### LaTeX
+### Understanding API Relationships
 
-Mintlify supports [LaTeX](https://www.latex-project.org) through the Latex component.
+Ask about how different APIs work together:
 
-<Latex>
-  8 x (vk x H1 - H2) = (0,1)
-</Latex>
-
-```md
-<Latex>8 x (vk x H1 - H2) = (0,1)</Latex>
 ```
+What's the relationship between SetSaveInfo, SendCommand for capture,
+and the callback notifications? Walk me through the complete flow.
+```
+
+---
+
+## Need More Help?
+
+- **Tool Reference**: See [Tools](/MCP-Server/tools) for detailed information about Iris's search capabilities
+- **Troubleshooting**: Check [Troubleshooting](/MCP-Server/troubleshooting) for common setup and usage issues
+- **Setup Guide**: Review [Setup](/MCP-Server/setup) if you need to reconfigure Iris
+
+<Tip>
+  The more specific and detailed your questions, the better Iris can help you learn and implement the Camera Remote SDK!
+</Tip>
