@@ -4,10 +4,10 @@ icon: "book"
 title: "Setup"
 ---
 
-The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), and ChatGPT (web). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
+The Iris MCP server is compatible with Claude (web, mobile, desktop, and CLI), and ChatGPT (web). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
 
 <Note>
-  You'll need the official MCP server URL to use Kando with your LLM provider. Since the tool is still in Private Beta, please do not share this URL with others.
+  You'll need the official MCP server URL to use Iris with your LLM provider. Since the tool is still in Private Beta, please do not share this URL with others.
 </Note>
 
 <Tabs>
@@ -22,28 +22,28 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     1. **Add the Connector**
        - Go to **Settings → Connectors**
        - Click **Add custom connector**
-       - Name it (e.g. `Kando`)
+       - Name it (e.g. `Iris`)
        - Paste the MCP Server URL into the "Remote MCP server URL" field
        - Click **Add**
        - Refresh if needed — you should now see your new connector
     2. **Configure Tools**
 
-       Kando enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retrieved when you ask a question.
+       Iris enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retrieved when you ask a question.
 
        There are currently 14 tools supported for Claude; you can view more details about each tool in the [Tools](/MCP-Server/tools) page.
 
        <Tip>
          Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
        </Tip>
-       To configure Kando's tools:
+       To configure Iris's tools:
        - Navigate to **Settings → Connectors**
-       - Next to the Kando connector, click the **Configure** button
-       - You'll now be able to see all available tools Kando offers
+       - Next to the Iris connector, click the **Configure** button
+       - You'll now be able to see all available tools Iris offers
 
        By default, all tools will be **enabled**.
 
        <Warning>
-         Disable the **search** and **fetch** tools before prompting with Kando. These tools are intended for use only with ChatGPT.
+         Disable the **search** and **fetch** tools before prompting with Iris. These tools are intended for use only with ChatGPT.
        </Warning>
     3. **Set Tool Permissions**
 
@@ -52,26 +52,26 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
        In this configuration, Claude will ask for permission every time it wants to use a tool. To allow automatic tool usage, set the permission to **allow unsupervised**.
 
        <Tip>
-         When using Kando for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
+         When using Iris for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
        </Tip>
 
-    ### Using Kando
+    ### Using Iris
 
-    To start using Kando's tools:
+    To start using Iris's tools:
 
     1. Open a **new chat window**
     2. Click the **search and tools** icon button in the chat box
-    3. You should see the Kando connector at the top of the list
+    3. You should see the Iris connector at the top of the list
     4. Toggle the connector **on** to enable it
     5. You can also toggle individual tools directly in the chat window
 
-    ### Removing Kando
+    ### Removing Iris
 
-    If you decide you no longer want to keep Kando as a connector:
+    If you decide you no longer want to keep Iris as a connector:
 
     - Go to **Settings → Connectors**
-    - Click the **More** icon button next to the Kando connector
-    - Click **Remove** to permanently remove the connector (you'll need to repeat the setup process to add Kando again)
+    - Click the **More** icon button next to the Iris connector
+    - Click **Remove** to permanently remove the connector (you'll need to repeat the setup process to add Iris again)
     - Click **Disconnect** to temporarily disable the connector
   </Tab>
   <Tab title="Claude Code">
@@ -90,7 +90,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     Available across all projects on your machine. Best for personal utility servers and frequently-used services.
 
     ```bash
-    claude mcp add Kando --scope user npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    claude mcp add Iris --scope user npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
     ```
 
     **Configuration stored in:** `~/.claude.json`
@@ -98,7 +98,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     ```json
     {
       "mcpServers": {
-        "Kando": {
+        "Iris": {
           "type": "stdio",
           "command": "npx",
           "args": [
@@ -116,7 +116,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     Shared with all team members via `.mcp.json` in the project root. Best for team collaboration.
 
     ```bash
-    claude mcp add Kando --scope project npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    claude mcp add Iris --scope project npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
     ```
 
     **Configuration stored in:** `.mcp.json` (project root)
@@ -124,7 +124,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     ```json
     {
       "mcpServers": {
-        "Kando": {
+        "Iris": {
           "type": "stdio",
           "command": "npx",
           "args": [
@@ -145,7 +145,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     Private to current user and project only. Best for personal development servers or experimental configurations.
 
     ```bash
-    claude mcp add Kando npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    claude mcp add Iris npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
     ```
 
     **Configuration stored in:** `~/.claude.json` (project-specific section)
@@ -165,7 +165,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     You should see:
 
     ```
-    Kando: npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp - ✓ Connected
+    Iris: npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp - ✓ Connected
     ```
 
     ### Managing MCP Servers
@@ -179,9 +179,9 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
     **Remove a server:**
 
     ```bash
-    claude mcp remove Kando --scope user    # Remove from user scope
-    claude mcp remove Kando --scope project # Remove from project scope
-    claude mcp remove Kando                 # Remove from local scope
+    claude mcp remove Iris --scope user    # Remove from user scope
+    claude mcp remove Iris --scope project # Remove from project scope
+    claude mcp remove Iris                 # Remove from local scope
     ```
 
     <Note>
@@ -217,7 +217,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
        - Toggle on **Developer mode** to enable custom connectors
     2. **Add the MCP Server**
        - In the Connectors settings, click **Add custom connector**
-       - Name it (e.g. `Kando`)
+       - Name it (e.g. `Iris`)
        - Paste the MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
        - Save changes — ChatGPT will automatically test the connection
     3. **Use in Chat**
@@ -226,7 +226,7 @@ The Kando MCP server is compatible with Claude (web, mobile, desktop, and CLI), 
        - Hover over **"more"** in the dropdown menu
        - Select **"Developer mode"** from the expanded list
        - Next to the **"Developer Mode"** chip, click **"add"**
-       - Select the Kando connector and toggle it **on**
+       - Select the Iris connector and toggle it **on**
 
     <Warning>
       - Developer mode does **not work** within ChatGPT Projects
