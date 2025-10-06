@@ -14,11 +14,11 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
 
 ## Platform Comparison
 
-| Platform                        | Account Required                   | Context Window | Tool Permissions                                                   | Code Generation                                           | Security                                      | Best For                         |
-| ------------------------------- | ---------------------------------- | -------------- | ------------------------------------------------------------------ | --------------------------------------------------------- | --------------------------------------------- | -------------------------------- |
-| **Claude (Web/Mobile/Desktop)** | Pro, Max, or Enterprise (\$20+/mo) | 200K tokens    | ✅ Granular UI controls<br />Per-tool "ask" vs "unsupervised"       | Excellent, access to your codebase for context.           | Cloud-based<br />Data retained per policy     | Most users, maximum control      |
+| Platform                        | Account Required                   | Context Window | Tool Permissions                                                   | Code Generation                                           | Security                                        | Best For                         |
+| ------------------------------- | ---------------------------------- | -------------- | ------------------------------------------------------------------ | --------------------------------------------------------- | ----------------------------------------------- | -------------------------------- |
+| **Claude (Web/Mobile/Desktop)** | Pro, Max, or Enterprise (\$20+/mo) | 200K tokens    | ✅ Granular UI controls<br />Per-tool "ask" vs "unsupervised"       | Excellent, access to your codebase for context.           | Cloud-based<br />Data retained per policy       | Most users, maximum control      |
 | **Claude Code (CLI)**           | Free with Claude account           | 200K tokens    | ✅ Granular file-based config<br />Approve server or specific tools | Good, smaller context window and no codebase access.      | Local configs<br />No additional data retention | Developers, automation workflows |
-| **ChatGPT**                     | Plus, Pro, Business, or EDU        | 128K tokens    | ⚠️ Basic (all tools or none)                                       | Poor, limited code-generation due to limited tool access. | Cloud-based<br />Varies by account type       | Existing ChatGPT subscribers     |
+| **ChatGPT**                     | Plus, Pro, Business, or EDU        | 128K tokens    | ⚠️ Basic (all tools or none)                                       | Poor, limited code-generation due to limited tool access. | Cloud-based<br />Varies by account type         | Existing ChatGPT subscribers     |
 
 ---
 
@@ -61,7 +61,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
     <Tip>
       For AI SDK Assistant, we recommend starting with "allow unsupervised" for all tools to enable seamless SDK searches. You can adjust permissions later based on your preferences.
     </Tip>
-
     ### Security & Privacy
 
     - **Cloud-based processing**: Queries and responses processed on Anthropic servers
@@ -72,7 +71,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
     <Note>
       Review [Anthropic's Privacy Policy](https://www.anthropic.com/legal/privacy) for detailed information about data handling.
     </Note>
-
     ### Getting Started
 
     See the [Setup Guide → Claude tab](/MCP-Server/setup) for detailed configuration instructions.
@@ -82,14 +80,14 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
 
     ### Why Use Claude Code
 
-    - **Free**: No subscription required (works with standard Claude account)
+    - **Claude Add-on**: Included if you have a paid Claude account.
     - **Granular Permissions**: Configure tool access via settings files
     - **Automation-Friendly**: Scriptable and integrates with development workflows
     - **Multiple Scopes**: User, project, or local MCP server configurations
 
     ### Account Requirements
 
-    - Standard Claude account (free)
+    - Paid Claude account
     - Claude Code CLI installed
 
     ### Tool Permission System
@@ -97,16 +95,18 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
     Claude Code supports **granular tool-level permissions** configured through settings files:
 
     **Approve all tools from a server:**
+
     ```json
-    "approvedTools": ["mcp__Kando"]
+    "approvedTools": ["mcp__CRSDK"]
     ```
 
     **Approve specific tools only:**
+
     ```json
     "approvedTools": [
-      "mcp__Kando__search_sdk",
-      "mcp__Kando__search_code_examples",
-      "mcp__Kando__search_documentation"
+      "mcp__CRSDK__search_sdk",
+      "mcp__CRSDK__search_code_examples",
+      "mcp__CRSDK__search_documentation"
     ]
     ```
 
@@ -144,7 +144,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
     <Note>
       **Code Execution Capability**: Claude Code can execute code and commands on your local machine when you grant permissions. Be mindful of what information you share in conversations, as Claude Code has broader system access than web-based Claude. Review tool permissions carefully and only approve actions you're comfortable with.
     </Note>
-
     ### Getting Started
 
     See the [Setup Guide → Claude Code tab](/MCP-Server/setup) for configuration commands and examples.
@@ -152,6 +151,9 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
   <Accordion title="ChatGPT - Alternative Option" icon="message">
     **Best for**: Users with existing ChatGPT subscriptions looking for an alternative
 
+    <Warning>
+      We currenlty do not recommend ChatGPT for use with the AI SDK Assistant due to differences in the MCP requirements for OpenAI, resulting in poor code-generation capabilities.
+    </Warning>
     ### Why Use ChatGPT
 
     - Works if you already have a ChatGPT subscription
@@ -205,7 +207,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
     <Note>
       Review [OpenAI's Privacy Policy](https://openai.com/policies/privacy-policy) for details on data handling and retention policies.
     </Note>
-
     ### Getting Started
 
     See the [Setup Guide → ChatGPT tab](/MCP-Server/setup) for detailed configuration steps.
