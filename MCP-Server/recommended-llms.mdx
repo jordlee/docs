@@ -6,7 +6,7 @@ icon: "brain"
 
 ## Overview
 
-AI SDK Assistant works with any AI platform that supports MCP (Model Context Protocol). Your choice of platform affects how you manage tool permissions, configure the connection, and interact with the SDK documentation.
+Sony's AI SDK Assistant works with any AI platform that supports MCP (Model Context Protocol). Your choice of platform affects how you manage tool permissions, configure the connection, and interact with the SDK documentation.
 
 All platforms provide access to the same underlying AI SDK Assistant capabilities—the difference is in the user experience and control options.
 
@@ -14,11 +14,11 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
 
 ## Platform Comparison
 
-| Platform | Account Required | Tool Permissions | Setup | Best For |
-|----------|------------------|------------------|-------|----------|
-| **Claude (Web/Mobile/Desktop)** | Pro, Max, or Enterprise ($20+/mo) | ✅ Granular UI controls<br/>Per-tool "ask" vs "unsupervised" | Easy (UI-based) | Most users, maximum control |
-| **Claude Code (CLI)** | Free with Claude account | ✅ Granular file-based config<br/>Approve server or specific tools | Medium (config files) | Developers, automation workflows |
-| **ChatGPT** | Plus, Pro, Business, or EDU | ⚠️ Basic (all tools or none) | Easy (UI-based) | Existing ChatGPT subscribers |
+| Platform                        | Account Required                   | Tool Permissions                                                   | Setup                 | Best For                         |
+| ------------------------------- | ---------------------------------- | ------------------------------------------------------------------ | --------------------- | -------------------------------- |
+| **Claude (Web/Mobile/Desktop)** | Pro, Max, or Enterprise (\$20+/mo) | ✅ Granular UI controls<br />Per-tool "ask" vs "unsupervised"       | Easy (UI-based)       | Most users, maximum control      |
+| **Claude Code (CLI)**           | Free with Claude account           | ✅ Granular file-based config<br />Approve server or specific tools | Medium (config files) | Developers, automation workflows |
+| **ChatGPT**                     | Plus, Pro, Business, or EDU        | ⚠️ Basic (all tools or none)                                       | Easy (UI-based)       | Existing ChatGPT subscribers     |
 
 ---
 
@@ -37,7 +37,7 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
 
     ### Account Requirements
 
-    - Claude Pro ($20/month), Max, or Enterprise account
+    - Claude Pro (\$20/month), Max, or Enterprise account
     - Standard free Claude accounts do not support MCP connectors
 
     ### Key Features
@@ -55,12 +55,10 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
     <Tip>
       For AI SDK Assistant, we recommend starting with "allow unsupervised" for all tools to enable seamless SDK searches. You can adjust permissions later based on your preferences.
     </Tip>
-
     ### Getting Started
 
     See the [Setup Guide → Claude tab](/MCP-Server/setup) for detailed configuration instructions.
   </Accordion>
-
   <Accordion title="Claude Code (CLI) - Recommended for Developers" icon="terminal">
     **Best for**: Developers, automation workflows, and CLI enthusiasts
 
@@ -81,11 +79,13 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
     Claude Code supports **granular tool-level permissions** configured through settings files:
 
     **Approve all tools from a server:**
+
     ```json
     "approvedTools": ["mcp__Kando"]
     ```
 
     **Approve specific tools only:**
+
     ```json
     "approvedTools": [
       "mcp__Kando__search_sdk",
@@ -99,7 +99,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
       - You must explicitly list each tool or approve the entire server
       - See [Claude Code IAM Documentation](https://docs.claude.com/en/docs/claude-code/iam#access-control-and-permissions) for details
     </Note>
-
     ### Configuration Scopes
 
     - **User scope**: Global across all projects (`~/.claude.json`)
@@ -117,7 +116,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
 
     See the [Setup Guide → Claude Code tab](/MCP-Server/setup) for configuration commands and examples.
   </Accordion>
-
   <Accordion title="ChatGPT - Alternative Option" icon="message">
     **Best for**: Users with existing ChatGPT subscriptions looking for an alternative
 
@@ -140,7 +138,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
       - **Developer mode required**: Must enable Developer mode in settings
       - **Basic tool control**: All tools enabled or disabled together (no granular control)
     </Warning>
-
     ### Setup Requirements
 
     1. Enable **Developer mode** in ChatGPT settings
