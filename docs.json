@@ -31,7 +31,7 @@
       "anchors": [
         {
           "anchor": "SDK Download",
-          "href": "https://pro.sony/ue_US/digital-imaging/sdk-download",
+          "href": "https://support.d-imaging.sony.co.jp/app/sdk/en/index.html",
           "icon": "download"
         },
         {
@@ -76,9 +76,8 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/jordlee/Windows-SDK-Demo-Application",
+      "linkedin": "https://www.linkedin.com/company/sony-electronics-professional-solutions-of-america/"
     }
   }
 }
