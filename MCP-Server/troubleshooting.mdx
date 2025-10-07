@@ -1,3 +1,4 @@
+
 ---
 title: "Troubleshooting"
 description: "Common issues and solutions when using the AI SDK Assistant"
@@ -25,7 +26,7 @@ While we've taken steps to ensure the smoothest experience possible using the AI
 - Disconnect and reconnect to the server
 - If this doesn't work, delete the server and add it again
 
-## Claude's response was interrupted. This can be caused by network problems or exceeding the maximum conversation length
+## Claude's response was interrupted
 
 **Most likely issue:** Connection to the server is successful, but connection was temporarily lost due to startup not complete.
 
@@ -40,10 +41,11 @@ While we've taken steps to ensure the smoothest experience possible using the AI
 **Solutions:**
 - Wait several seconds before making another request
 - If your LLM is making rapid consecutive requests, prompt it to space out tool calls
-- If the tool call body has a top_k (number of content to retrieve), exceeding >5, prompt it to keep top_k<5
-  ```json
-  {
-    "query": "exposure compensation",
-    "top_k": 1
-  }
-  ```
+- If the tool call body has a `top_k` (number of content to retrieve) greater than 5, prompt it to keep `top_k < 5`:
+
+    ```json
+    {
+      "query": "exposure compensation",
+      "top_k": 1
+    }
+    ```
