@@ -1,51 +1,62 @@
-
 ---
 title: "Troubleshooting"
 description: "Common issues and solutions when using the AI SDK Assistant"
-icon: "triangle-exclamation"
 ---
 
 While we've taken steps to ensure the smoothest experience possible using the AI SDK Assistant, you may encounter the following issues in the beta release.
 
-## Could not connect to MCP Server [server name]
+### "Could not connect to MCP Server [server name]"
 
-**Most likely issue:** Connection to the server timed out.
+<Check>
+  **Most likely issue:** Connection to the server timed out.
+</Check>
 
 **Solutions:**
+
 - Check to make sure your configuration aligns with the setup instructions
 - Stop generating the current response, refresh the page and try again
-- Disconnect and reconnect to the MCP server
-- If neither of these work, delete the server and add it again
-- If still doesn't work, contact jordan.lee@sony.com and fill out a bug report
+- Disconnect from and reconnect to the connector
+- If neither of these work, delete the connector and add it again
+- If it still doesn't work, contact [jordan.lee@sony.com](mailto:jordan.lee@sony.com) and fill out a bug report
 
-## Tool [tool name] not found
+### "Tool [tool name] not found"
 
-**Most likely issue:** Connection to the server was lost. Tools not available for use.
-
-**Solutions:**
-- Disconnect and reconnect to the server
-- If this doesn't work, delete the server and add it again
-
-## Claude's response was interrupted
-
-**Most likely issue:** Connection to the server is successful, but connection was temporarily lost due to startup not complete.
+<Check>
+  **Most likely issue:** Connection to the server was lost. Tools not available for use.
+</Check>
 
 **Solutions:**
+
+- Disconnect from and reconnect to the connector
+- If this doesn't work, delete the connector and add it again
+
+### "Claude's response was interrupted"
+
+<Check>
+  **Most likely issue:** Connection to the server is successful, but connection was temporarily lost due to startup not complete.
+</Check>
+
+**Solutions:**
+
 - Refresh the page, wait 30 seconds before making a query to the AI SDK Assistant
 - Make your first request smaller. After successful response, resume normal operation
 
-## Tool call [i.e. Search hybrid] returns no results or 429 error
+### "Tool call [tool name] returned no results or 429 error"
 
-**Most likely issue:** Rate limit exceeded (20 requests/second or 100 requests/minute)
+<Check>
+  **Most likely issue:** Rate limit exceeded (20 requests/second or 100 requests/minute)
+</Check>
 
 **Solutions:**
+
 - Wait several seconds before making another request
 - If your LLM is making rapid consecutive requests, prompt it to space out tool calls
 - If the tool call body has a `top_k` (number of content to retrieve) greater than 5, prompt it to keep `top_k < 5`:
 
-    ```json
-    {
-      "query": "exposure compensation",
-      "top_k": 1
-    }
-    ```
+  ```json
+  {
+    "query": "exposure compensation",
+    //top_k indicates the number of results to return in the response
+    "top_k": 1
+  }
+  ```
