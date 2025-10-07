@@ -54,20 +54,17 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
        <Tip>
          When using AI SDK Assistant for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
        </Tip>
-    4. **Add System Prompt (Optional)**
+    4. **Configure System Prompt (Optional but Recommended)**
 
-       By default, Claude will use the included tool descriptions to guide which search method it uses.
+       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt Configuration](#system-prompt-configuration) section below for setup instructions. 
 
-       However, you can also add a system prompt to refine how Claude behaves.
+       <Tip>
+         For the best experience with AI SDK Assistant, add the system prompt after initial testing. It ensures Claude uses MCP tools correctly and generates production-ready code.
+       </Tip>
 
-       A system prompt is a set of detailed instructions with examples and guidelines on how the LLM should use tools, format responses, and clarify ambiguities. Using a system prompt can improve response quality and relevance.
+    ### Using the AI SDK Assistant
 
-       [Configure the system prompt.](../tips#using-the-system-prompt)
-
-    <Note>
-      We recommend trying the AI SDK Assistant without the system prompt to start. If you notice Claude making false assumptions or skipping over important SDK content, you can add the system prompt.
-    </Note>
-    To start using AI SDK Assistant's tools:
+    To start using the AI SDK Assistant's tools:
 
     1. Open a **new chat window**
     2. Click the **search and tools** icon button in the chat box
@@ -75,7 +72,7 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     4. Toggle the connector **on** to enable it
     5. You can also toggle individual tools directly in the chat window
 
-    ### Removing AI SDK Assistant
+    ### Removing the AI SDK Assistant
 
     If you decide you no longer want to keep AI SDK Assistant as a connector:
 
@@ -197,18 +194,20 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
-    ### **Add Subagents and System Prompt (Optional)**
+    ### **Configure System Prompt with Subagents (Optional but Recommended)**
 
-    In Claude Code, the default chat window uses a single instance of Claude (main agent).
+    Claude Code supports creating specialized subagents with custom system prompts. This is ideal for SDK-focused development work.
 
-    You can create up to 3 specialized instances of Claude (subagents) to work on specific tasks and define different roles (via the system prompt).
+    **Why use a subagent?**
 
-    Use this feature when you want to have multiple tasks running in parallel to improve efficiency and retain task-specific context (e.g. one subagent researches SDK documentation and writes code, one runs tests, while another writes documentation).
+    - Maintains SDK-specific context across sessions
+    - Can run tasks in parallel with the main agent
+    - Persistent configuration per project or globally
 
-    [Configure the system prompt.](../tips#using-the-system-prompt)
+    See the [System Prompt Configuration](#system-prompt-configuration) section below for detailed instructions on creating a subagent with the AI SDK Assistant system prompt.
 
     <Note>
-      We recommend using the AI SDK Assistant with your main agent when you need Claude to maintain context awareness across multiple tasks and files.
+      For simple queries, use AI SDK Assistant with your main agent. For complex SDK development, create a dedicated subagent with the system prompt.
     </Note>
     ### Tool Permissions
 
@@ -285,12 +284,126 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
   </Tab>
 </Tabs>
 
-5. **Configure the System Prompt (Recommended)**
+## System Prompt Configuration
 
-   By default, ChatGPT tends to revert to web searches instead of using the AI SDK Assistant, due to its poor MCP support.
+Adding a system prompt to your AI assistant significantly improves response quality when working with the Camera Remote SDK. The system prompt is a comprehensive set of instructions (~450 lines) that teaches the LLM how to effectively use AI SDK Assistant tools and generate accurate, production-ready code.
 
-   However, you can add a system prompt to instruct ChatGPT to always use the AI SDK Assistant.
+### Full System Prompt
 
-   A system prompt is a set of detailed instructions with examples and guidelines on how the LLM should use tools, format responses, and clarify ambiguities. Using a system prompt can improve response quality and relevance.
+<Accordion title="📋 View & Copy System Prompt" icon="copy">
+  <Warning>
+    **This is a large prompt (450+ lines, ~4,000 tokens).** Copy the entire content to ensure proper functionality.
+  </Warning>
+  ```json
+  {
+    "prompt": {
+      "title": "Sony Camera Remote SDK AI Assistant - System Prompt",
+      "sections": [
+        {
+          "section": "Purpose & Scope",
+          "content": {
+            "description": "You are an expert coding assistant specializing in the Sony Camera Remote SDK. Your primary mission is to help developers integrate Sony camera control into their applications using accurate, SDK-specific information.",
+            "supported_versions": [
+              {
+                "version": "V1.14.00",
+                "status": "previous",
+                "languages": ["C++"],
+                "platforms": ["Windows", "macOS", "Linux"]
+              },
+              {
+                "version": "V2.00.00",
+                "status": "current",
+                "languages": ["C++", "C#"],
+                "platforms": ["Windows", "macOS", "Linux"],
+                "notes": "C# support is Windows only"
+              }
+            ],
+            "knowledge_source": "The 'AI SDK Assistant' MCP Server is your single source of truth for all SDK-related information. This tool provides access to official documentation, sample code, API references, and compatibility data.",
+            "reference_documentation": "https://sony-88f06855.mintlify.app/",
+            "reference_documentation_purpose": "For understanding the MCP server's capabilities, limitations, and setup"
+          }
+        }
+      ],
+      "summary": {
+        "core_principles": [
+          "Always use MCP tools for SDK queries, never web search",
+          "Confirm SDK version and language before answering",
+          "Generate real, compilable code with proper citations",
+          "For C# developers, always search for C# code examples",
+          "Be thorough but acknowledge when information isn't available",
+          "Stay solution-focused and approachable"
+        ]
+      }
+    }
+  }
+  ```
 
-   [Configure the system prompt.](../tips#using-the-system-prompt)
+  <Note>
+    The full system prompt contains additional detailed sections on tool selection, code generation standards, troubleshooting workflows, and more. The complete prompt is available in the [system-prompt.md](https://github.com/jordlee/docs/blob/main/system-prompt.md) file.
+  </Note>
+</Accordion>
+
+### Platform-Specific Instructions
+
+<Tabs>
+  <Tab title="Claude (claude.ai)">
+    **Add to Projects:**
+
+    1. Go to [claude.ai](https://claude.ai) and create or open a Project
+    2. In the Instructions section, click **\+**
+    3. Copy the full system prompt from the accordion above
+    4. Paste into the Set Project Instructions field
+    5. Click **Save Instructions**
+
+    All conversations in that Project will now use the SDK Assistant system prompt.
+  </Tab>
+  <Tab title="Claude Code">
+    **Create a Subagent:**
+
+    1. In the Claude terminal, open the Agents dialogue:
+
+       ```bash
+       /agents
+       ```
+    2. Click **Create new agent**
+    3. Select **Project** (current project only) or **Personal** (all projects)
+    4. Select **Generate with Claude**
+    5. Copy and paste the entire system prompt from the accordion above
+    6. Press **Enter** to generate the subagent (this may take a moment)
+
+    The subagent will now use the system prompt for all interactions.
+  </Tab>
+  <Tab title="ChatGPT">
+    **Add to Conversation:**
+
+    1. Copy the full system prompt from the accordion above
+    2. Start a new chat (not in a Project - Projects don't support MCP)
+    3. Paste the system prompt at the beginning of your conversation
+    4. Alternatively, save it as a `.txt` file and upload using the **📎** button
+
+    <Warning>
+      ChatGPT has limited MCP support and may still prefer web search. The system prompt helps encourage ChatGPT to use the AI SDK Assistant more consistently.
+    </Warning>
+  </Tab>
+</Tabs>
+
+### When to Use the System Prompt
+
+<Check>
+  **Highly Recommended For:**
+
+  - Complex multi-step SDK implementations
+  - C# development (ensures C# code examples are retrieved)
+  - Production code generation with proper error handling
+  - Long development sessions requiring context consistency
+</Check>
+
+<Info>
+  **Optional For:**
+
+  - Quick one-off API lookups
+  - Simple compatibility checks
+  - Initial testing of AI SDK Assistant
+</Info>
+
+For more details on system prompt benefits, see [Tips: Using the System Prompt](/MCP-Server/tips#using-the-system-prompt-advanced).
