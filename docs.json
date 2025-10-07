@@ -53,6 +53,11 @@
           "anchor": "Help Guide",
           "href": "https://www.sony.com/electronics/support/interchangeable-lens-cameras-e-mount-body/manuals",
           "icon": "circle-question"
+        },
+        {
+          "anchor": "Report Bug",
+          "href": "https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9",
+          "icon": "bug"
         }
       ]
     }
