@@ -54,9 +54,19 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
        <Tip>
          When using AI SDK Assistant for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
        </Tip>
+    4. **Add System Prompt (Optional)**
 
-    ### Using AI SDK Assistant
+       By default, Claude will use the included tool descriptions to guide which search method it uses.
 
+       However, you can also add a system prompt to refine how Claude behaves.
+
+       A system prompt is a set of detailed instructions with examples and guidelines on how the LLM should use tools, format responses, and clarify ambiguities. Using a system prompt can improve response quality and relevance.
+
+       [Configure the system prompt.](../tips#using-the-system-prompt)
+
+    <Note>
+      We recommend trying the AI SDK Assistant without the system prompt to start. If you notice Claude making false assumptions or skipping over important SDK content, you can add the system prompt.
+    </Note>
     To start using AI SDK Assistant's tools:
 
     1. Open a **new chat window**
@@ -187,16 +197,31 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
+    ### **Add Subagents and System Prompt (Optional)**
+
+    In Claude Code, the default chat window uses a single instance of Claude (main agent).
+
+    You can create up to 3 specialized instances of Claude (subagents) to work on specific tasks and define different roles (via the system prompt).
+
+    Use this feature when you want to have multiple tasks running in parallel to improve efficiency and retain task-specific context (e.g. one subagent researches SDK documentation and writes code, one runs tests, while another writes documentation).
+
+    [Configure the system prompt.](../tips#using-the-system-prompt)
+
+    <Note>
+      We recommend using the AI SDK Assistant with your main agent when you need Claude to maintain context awareness across multiple tasks and files.
+    </Note>
     ### Tool Permissions
 
     Claude Code supports **granular tool-level permissions** configured through settings files. You can approve all tools from a server or specific individual tools.
 
     **Approve all tools from the AI SDK Assistant server:**
+
     ```json
     "approvedTools": ["mcp__CRSDK"]
     ```
 
     **Approve specific tools only:**
+
     ```json
     "approvedTools": [
       "mcp__CRSDK__search_sdk",
@@ -208,12 +233,12 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     ```
 
     <Note>
-      - **Wildcards (`*`) are not supported** for MCP permissions
+      - **`Wildcards (*) are not supported`** for MCP permissions
       - You must explicitly list each tool or approve the entire server
       - See [Claude Code IAM Documentation](https://docs.claude.com/en/docs/claude-code/iam#access-control-and-permissions) for detailed permission configuration
     </Note>
-
     **Configuration scopes:**
+
     - **User scope**: Global across all projects (`~/.claude.json`)
     - **Project scope**: Per-project configuration (`.claude/config.json`)
     - **Local scope**: Repository-specific (`.claude.local.json`)
@@ -259,3 +284,13 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     </Warning>
   </Tab>
 </Tabs>
+
+5. **Configure the System Prompt (Recommended)**
+
+   By default, ChatGPT tends to revert to web searches instead of using the AI SDK Assistant, due to its poor MCP support.
+
+   However, you can add a system prompt to instruct ChatGPT to always use the AI SDK Assistant.
+
+   A system prompt is a set of detailed instructions with examples and guidelines on how the LLM should use tools, format responses, and clarify ambiguities. Using a system prompt can improve response quality and relevance.
+
+   [Configure the system prompt.](../tips#using-the-system-prompt)
