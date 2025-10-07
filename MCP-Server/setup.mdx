@@ -56,12 +56,15 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
        </Tip>
     4. **Configure System Prompt (Optional but Recommended)**
 
-       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt Configuration](#system-prompt-configuration) section below for setup instructions.
+       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt Configuration](#system-prompt-configuration) section below for setup instructions. 
 
-    <Tip>
-      For the best experience with AI SDK Assistant, add the system prompt after initial testing. It ensures Claude uses MCP tools correctly and generates production-ready code.
-    </Tip>
-    To start using AI SDK Assistant's tools:
+       <Tip>
+         For the best experience with AI SDK Assistant, add the system prompt after initial testing. It ensures Claude uses MCP tools correctly and generates production-ready code.
+       </Tip>
+
+    ### Using the AI SDK Assistant
+
+    To start using the AI SDK Assistant's tools:
 
     1. Open a **new chat window**
     2. Click the **search and tools** icon button in the chat box
@@ -69,7 +72,7 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     4. Toggle the connector **on** to enable it
     5. You can also toggle individual tools directly in the chat window
 
-    ### Removing AI SDK Assistant
+    ### Removing the AI SDK Assistant
 
     If you decide you no longer want to keep AI SDK Assistant as a connector:
 
@@ -196,6 +199,7 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     Claude Code supports creating specialized subagents with custom system prompts. This is ideal for SDK-focused development work.
 
     **Why use a subagent?**
+
     - Maintains SDK-specific context across sessions
     - Can run tasks in parallel with the main agent
     - Persistent configuration per project or globally
@@ -280,28 +284,9 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
   </Tab>
 </Tabs>
 
----
-
 ## System Prompt Configuration
 
 Adding a system prompt to your AI assistant significantly improves response quality when working with the Camera Remote SDK. The system prompt is a comprehensive set of instructions (~450 lines) that teaches the LLM how to effectively use AI SDK Assistant tools and generate accurate, production-ready code.
-
-### Benefits
-
-<CardGroup cols={2}>
-  <Card title="Accurate SDK Information" icon="bullseye">
-    Ensures AI always uses MCP tools instead of web search for SDK queries
-  </Card>
-  <Card title="Version-Aware Responses" icon="code-branch">
-    Confirms SDK version and programming language before answering
-  </Card>
-  <Card title="Production-Ready Code" icon="file-code">
-    Generates complete, compilable code with proper error handling and citations
-  </Card>
-  <Card title="C# Support" icon="hashtag">
-    Automatically retrieves C#-specific implementations for C# developers
-  </Card>
-</CardGroup>
 
 ### Full System Prompt
 
@@ -309,54 +294,53 @@ Adding a system prompt to your AI assistant significantly improves response qual
   <Warning>
     **This is a large prompt (450+ lines, ~4,000 tokens).** Copy the entire content to ensure proper functionality.
   </Warning>
-
-```json
-{
-  "prompt": {
-    "title": "Sony Camera Remote SDK AI Assistant - System Prompt",
-    "sections": [
-      {
-        "section": "Purpose & Scope",
-        "content": {
-          "description": "You are an expert coding assistant specializing in the Sony Camera Remote SDK. Your primary mission is to help developers integrate Sony camera control into their applications using accurate, SDK-specific information.",
-          "supported_versions": [
-            {
-              "version": "V1.14.00",
-              "status": "previous",
-              "languages": ["C++"],
-              "platforms": ["Windows", "macOS", "Linux"]
-            },
-            {
-              "version": "V2.00.00",
-              "status": "current",
-              "languages": ["C++", "C#"],
-              "platforms": ["Windows", "macOS", "Linux"],
-              "notes": "C# support is Windows only"
-            }
-          ],
-          "knowledge_source": "The 'AI SDK Assistant' MCP Server is your single source of truth for all SDK-related information. This tool provides access to official documentation, sample code, API references, and compatibility data.",
-          "reference_documentation": "https://sony-88f06855.mintlify.app/",
-          "reference_documentation_purpose": "For understanding the MCP server's capabilities, limitations, and setup"
+  ```json
+  {
+    "prompt": {
+      "title": "Sony Camera Remote SDK AI Assistant - System Prompt",
+      "sections": [
+        {
+          "section": "Purpose & Scope",
+          "content": {
+            "description": "You are an expert coding assistant specializing in the Sony Camera Remote SDK. Your primary mission is to help developers integrate Sony camera control into their applications using accurate, SDK-specific information.",
+            "supported_versions": [
+              {
+                "version": "V1.14.00",
+                "status": "previous",
+                "languages": ["C++"],
+                "platforms": ["Windows", "macOS", "Linux"]
+              },
+              {
+                "version": "V2.00.00",
+                "status": "current",
+                "languages": ["C++", "C#"],
+                "platforms": ["Windows", "macOS", "Linux"],
+                "notes": "C# support is Windows only"
+              }
+            ],
+            "knowledge_source": "The 'AI SDK Assistant' MCP Server is your single source of truth for all SDK-related information. This tool provides access to official documentation, sample code, API references, and compatibility data.",
+            "reference_documentation": "https://sony-88f06855.mintlify.app/",
+            "reference_documentation_purpose": "For understanding the MCP server's capabilities, limitations, and setup"
+          }
         }
+      ],
+      "summary": {
+        "core_principles": [
+          "Always use MCP tools for SDK queries, never web search",
+          "Confirm SDK version and language before answering",
+          "Generate real, compilable code with proper citations",
+          "For C# developers, always search for C# code examples",
+          "Be thorough but acknowledge when information isn't available",
+          "Stay solution-focused and approachable"
+        ]
       }
-    ],
-    "summary": {
-      "core_principles": [
-        "Always use MCP tools for SDK queries, never web search",
-        "Confirm SDK version and language before answering",
-        "Generate real, compilable code with proper citations",
-        "For C# developers, always search for C# code examples",
-        "Be thorough but acknowledge when information isn't available",
-        "Stay solution-focused and approachable"
-      ]
     }
   }
-}
-```
+  ```
 
-<Note>
-  The full system prompt contains additional detailed sections on tool selection, code generation standards, troubleshooting workflows, and more. The complete prompt is available in the [system-prompt.md](https://github.com/jordlee/docs/blob/main/system-prompt.md) file.
-</Note>
+  <Note>
+    The full system prompt contains additional detailed sections on tool selection, code generation standards, troubleshooting workflows, and more. The complete prompt is available in the [system-prompt.md](https://github.com/jordlee/docs/blob/main/system-prompt.md) file.
+  </Note>
 </Accordion>
 
 ### Platform-Specific Instructions
@@ -365,63 +349,61 @@ Adding a system prompt to your AI assistant significantly improves response qual
   <Tab title="Claude (claude.ai)">
     **Add to Projects:**
 
-1. Go to [claude.ai](https://claude.ai) and create or open a Project
-2. In the Instructions section, click **+**
-3. Copy the full system prompt from the accordion above
-4. Paste into the Set Project Instructions field
-5. Click **Save Instructions**
+    1. Go to [claude.ai](https://claude.ai) and create or open a Project
+    2. In the Instructions section, click **\+**
+    3. Copy the full system prompt from the accordion above
+    4. Paste into the Set Project Instructions field
+    5. Click **Save Instructions**
 
-All conversations in that Project will now use the SDK Assistant system prompt.
-
+    All conversations in that Project will now use the SDK Assistant system prompt.
   </Tab>
-
   <Tab title="Claude Code">
     **Create a Subagent:**
 
-1. In the Claude terminal, open the Agents dialogue:
-   ```bash
-   /agents
-   ```
-2. Click **Create new agent**
-3. Select **Project** (current project only) or **Personal** (all projects)
-4. Select **Generate with Claude**
-5. Copy and paste the entire system prompt from the accordion above
-6. Press **Enter** to generate the subagent (this may take a moment)
+    1. In the Claude terminal, open the Agents dialogue:
 
-The subagent will now use the system prompt for all interactions.
+       ```bash
+       /agents
+       ```
+    2. Click **Create new agent**
+    3. Select **Project** (current project only) or **Personal** (all projects)
+    4. Select **Generate with Claude**
+    5. Copy and paste the entire system prompt from the accordion above
+    6. Press **Enter** to generate the subagent (this may take a moment)
 
+    The subagent will now use the system prompt for all interactions.
   </Tab>
-
   <Tab title="ChatGPT">
     **Add to Conversation:**
 
-1. Copy the full system prompt from the accordion above
-2. Start a new chat (not in a Project - Projects don't support MCP)
-3. Paste the system prompt at the beginning of your conversation
-4. Alternatively, save it as a `.txt` file and upload using the **📎** button
+    1. Copy the full system prompt from the accordion above
+    2. Start a new chat (not in a Project - Projects don't support MCP)
+    3. Paste the system prompt at the beginning of your conversation
+    4. Alternatively, save it as a `.txt` file and upload using the **📎** button
 
-<Warning>
-ChatGPT has limited MCP support and may still prefer web search. The system prompt helps but isn't perfect.
-</Warning>
-
+    <Warning>
+      ChatGPT has limited MCP support and may still prefer web search. The system prompt helps encourage ChatGPT to use the AI SDK Assistant more consistently.
+    </Warning>
   </Tab>
 </Tabs>
 
 ### When to Use the System Prompt
 
 <Check>
-**Highly Recommended For:**
-- Complex multi-step SDK implementations
-- C# development (ensures C# code examples are retrieved)
-- Production code generation with proper error handling
-- Long development sessions requiring context consistency
+  **Highly Recommended For:**
+
+  - Complex multi-step SDK implementations
+  - C# development (ensures C# code examples are retrieved)
+  - Production code generation with proper error handling
+  - Long development sessions requiring context consistency
 </Check>
 
 <Info>
-**Optional For:**
-- Quick one-off API lookups
-- Simple compatibility checks
-- Initial testing of AI SDK Assistant
+  **Optional For:**
+
+  - Quick one-off API lookups
+  - Simple compatibility checks
+  - Initial testing of AI SDK Assistant
 </Info>
 
 For more details on system prompt benefits, see [Tips: Using the System Prompt](/MCP-Server/tips#using-the-system-prompt-advanced).
