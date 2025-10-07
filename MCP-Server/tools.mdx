@@ -12,8 +12,6 @@ The AI SDK Assistant provides **13+ specialized tools** that your AI assistant c
   You don't need to manually specify which tool to use—your AI assistant (Claude, ChatGPT, etc.) will automatically choose the most appropriate tool based on your query.
 </Note>
 
----
-
 ## General Search Tools
 
 These are the most commonly used tools for broad searches across all content types.
@@ -51,8 +49,6 @@ These are the most commonly used tools for broad searches across all content typ
 - ⚠️ Slower than other tools (AI processing time)
 - ⚠️ May timeout on very complex queries
 
----
-
 ### search_hybrid
 
 **Purpose**: Combined semantic and exact match search
@@ -85,8 +81,6 @@ These are the most commonly used tools for broad searches across all content typ
 
 - ⚠️ Less flexible with natural language
 
----
-
 ### search_with_intent_analysis
 
 **Purpose**: Advanced query expansion for complex questions
@@ -118,8 +112,6 @@ These are the most commonly used tools for broad searches across all content typ
 - ⚠️ Slowest tool (deep AI processing)
 - ⚠️ Higher chance of timeout
 - ⚠️ May return too many results
-
----
 
 ## Specialized Search Tools
 
@@ -158,8 +150,6 @@ These tools filter results by content type for more targeted searches.
 - ⚠️ Limited to available SDK examples
 - ⚠️ May not cover all edge cases
 
----
-
 ### search_documentation
 
 **Purpose**: Search guides, tutorials, and explanatory text only
@@ -185,8 +175,6 @@ These tools filter results by content type for more targeted searches.
 **Limitations**:
 
 - ⚠️ Doesn't include API details
-
----
 
 ### search_api_functions
 
@@ -214,8 +202,6 @@ These tools filter results by content type for more targeted searches.
 
 - ⚠️ Doesn't include usage examples
 
----
-
 ### search_compatibility
 
 **Purpose**: Search camera compatibility tables
@@ -242,8 +228,6 @@ These tools filter results by content type for more targeted searches.
 
 - ⚠️ Only as current as indexed tables
 - ⚠️ May not include latest camera models
-
----
 
 ## Exact Match Tools
 
@@ -276,8 +260,6 @@ These tools perform precise lookups using exact names or codes.
 - ⚠️ Requires exact API name
 - ⚠️ Won't find results with typos
 
----
-
 ### search_error_codes
 
 **Purpose**: Look up SDK error codes
@@ -302,8 +284,6 @@ These tools perform precise lookups using exact names or codes.
 
 - ⚠️ Limited to documented error codes
 
----
-
 ### search_warning_codes
 
 **Purpose**: Look up SDK warning codes
@@ -318,8 +298,6 @@ These tools perform precise lookups using exact names or codes.
 
 - ✅ Specific to warnings (not errors)
 - ✅ Helps distinguish warning severity
-
----
 
 ### search_by_source_file
 
@@ -351,8 +329,6 @@ These tools perform precise lookups using exact names or codes.
 - ⚠️ Requires knowing file names
 - ⚠️ Very specific use case
 
----
-
 ## Version Management Tools
 
 These tools let you switch between SDK versions or check which version you're querying.
@@ -365,8 +341,6 @@ These tools let you switch between SDK versions or check which version you're qu
 
 **Use case**: Verify you're searching the right version
 
----
-
 ### list_sdk_versions
 
 **Purpose**: See all available SDK versions
@@ -374,8 +348,6 @@ These tools let you switch between SDK versions or check which version you're qu
 **Returns**: List of indexed SDK versions (V1.14.00, V2.00.00)
 
 **Use case**: Discover which versions AI SDK Assistant supports
-
----
 
 ### set_sdk_version
 
@@ -398,8 +370,6 @@ These tools let you switch between SDK versions or check which version you're qu
 
 **Note**: Changes persist for your session
 
----
-
 ## System Information Tools
 
 ### get_sdk_stats
@@ -413,8 +383,6 @@ These tools let you switch between SDK versions or check which version you're qu
 - Database health status
 
 **Use case**: Understand AI SDK Assistant's knowledge base scope
-
----
 
 ## Tool Selection Guide
 
@@ -430,8 +398,6 @@ These tools let you switch between SDK versions or check which version you're qu
 | Check compatibility  | `search_compatibility`        | Hardware-specific data         |
 | Complex question     | `search_with_intent_analysis` | Advanced AI processing         |
 | Balanced search      | `search_hybrid`               | Speed + accuracy               |
-
----
 
 ## Best Practices
 
@@ -450,8 +416,6 @@ These tools let you switch between SDK versions or check which version you're qu
   - Not all camera models may be in compatibility tables
   - Code examples are limited to what's in the SDK samples
 </Warning>
-
----
 
 ## Need Help?
 
