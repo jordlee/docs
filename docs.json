@@ -30,8 +30,13 @@
     "global": {
       "anchors": [
         {
-          "anchor": "SDK Download",
+          "anchor": "C++ SDK Download",
           "href": "https://support.d-imaging.sony.co.jp/app/sdk/en/index.html",
+          "icon": "download"
+        },
+        {
+          "anchor": "C# SDK Download",
+          "href": "https://sonyipsamarketing.cimediacloud.com/r/YvFlmszMaZMr",
           "icon": "download"
         },
         {
