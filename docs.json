@@ -67,7 +67,7 @@
         {
           "anchor": "Status Page",
           "href": "https://sonydevplat.instatus.com",
-          "icon": "alert-circle"
+          "icon": "check-circle"
         }
       ]
     }
