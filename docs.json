@@ -63,6 +63,11 @@
           "anchor": "Report Bug",
           "href": "https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9",
           "icon": "bug"
+        },
+        {
+          "anchor": "Status Page",
+          "href": "https://sonydevplat.instatus.com",
+          "icon": "alert-circle"
         }
       ]
     }
