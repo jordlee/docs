@@ -80,15 +80,22 @@ Each AI assistant has its own data policies. Check with your specific provider t
 
 Coding agents, like Claude Code and ChatGPT Codex, are specialized LLMs that can independently perform tasks, plan actions, and be given access to external resources. They typically are accessed from your IDE or command line.
 
-These "agentic" AI platforms have built in guardrails to protect against unauthorized access, prompt injection, and unwanted file modifications. 
+These "agentic" AI platforms have built in guardrails to protect against unauthorized access, prompt injection, and unwanted file modifications.
 
 **The AI SDK Assistant does not have control over the agentic capabilities of Claude Code or any other LLM. All exisitng preferences and guardrails you set for your agents will be respected.**
 
-For example, in Claude Code, you have control over which directories in your filesystem Claude has access to, as well as the permission level.
+For example, in Claude Code, you have control over which directories in your filesystem Claude has access to, as well as the permission level. [View the official feature description here.](https://claudelog.com/faqs/--add-dir/)
 
 ![image.png](/images/image.png)
 
-When prompting Claude, you can control how much autonomy it has when executing tasks. 
+When prompting Claude, you can control how much autonomy it has when executing tasks. By toggling through the options, you can ensure that Claude waits for approval before taking aciton. For more information on Anthropic's agentic modes, [view the offical site here.](https://claudelog.com/mechanics/plan-mode/)
+
+<img
+  src="/images/Screenshot2025-11-18at12.42.33PM.png"
+  alt="Screenshot2025 11 18at12 42 33PM Pn"
+  title="Screenshot2025 11 18at12 42 33PM Pn"
+  style={{ width:"100%" }}
+/>
 
 ## MCP (Model Context Protocol)
 
