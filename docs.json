@@ -21,7 +21,8 @@
               "MCP-Server/tips",
               "MCP-Server/troubleshooting",
               "MCP-Server/recommended-llms",
-              "MCP-Server/tools"
+              "MCP-Server/tools",
+              "MCP-Server/privacy"
             ]
           }
         ]
