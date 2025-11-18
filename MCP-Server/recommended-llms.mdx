@@ -6,17 +6,16 @@ icon: "brain"
 
 ## Overview
 
-Sony's AI SDK Assistant works with any AI platform that supports MCP (Model Context Protocol). Your choice of platform affects how you manage tool permissions, configure the connection, and interact with the SDK documentation.
+Sony's AI SDK Assistant works with any AI platform that supports MCP (Model Context Protocol). Your choice of platform affects how you manage tool permissions, configure the connection, and interact with the SDK documentation. **However, we only guarantee support for Anthropic's Claude products.**
 
 All platforms provide access to the same underlying AI SDK Assistant capabilities—the difference is in the user experience and control options.
 
 ## Platform Comparison
 
-| Platform                        | Account Required                   | Context Window | Tool Permissions                                                   | Code Generation                                           | Security                                        | Best For                         |
-| ------------------------------- | ---------------------------------- | -------------- | ------------------------------------------------------------------ | --------------------------------------------------------- | ----------------------------------------------- | -------------------------------- |
-| **Claude (Web/Mobile/Desktop)** | Pro, Max, or Enterprise (\$20+/mo) | 200K tokens    | ✅ Granular UI controls<br />Per-tool "ask" vs "unsupervised"       | Good, but no codebase access.                             | Cloud-based<br />Data retained per policy       | Most users, maximum control      |
-| **Claude Code (CLI)**           | Included with paid Claude account  | 200K tokens    | ✅ Granular file-based config<br />Approve server or specific tools | Excellent, access to your codebase for context.           | Local configs<br />No additional data retention | Developers, automation workflows |
-| **ChatGPT**                     | Plus, Pro, Business, or EDU        | 128K tokens    | ⚠️ Basic (all tools or none)                                       | Poor, limited code-generation due to limited tool access. | Cloud-based<br />Varies by account type         | Existing ChatGPT subscribers     |
+| Platform                        | Account Required                   | Context Window | Tool Permissions                                                   | Code Generation                                      | Security                                        | Best For                         |
+| ------------------------------- | ---------------------------------- | -------------- | ------------------------------------------------------------------ | ---------------------------------------------------- | ----------------------------------------------- | -------------------------------- |
+| **Claude (Web/Mobile/Desktop)** | Pro, Max, or Enterprise (\$20+/mo) | 200K tokens    | ✅ Granular UI controls<br />Per-tool "ask" vs "unsupervised"       | Excellent, access to your codebase for context.      | Cloud-based<br />Data retained per policy       | Most users, maximum control      |
+| **Claude Code (CLI)**           | Free with Claude account           | 200K tokens    | ✅ Granular file-based config<br />Approve server or specific tools | Good, smaller context window and no codebase access. | Local configs<br />No additional data retention | Developers, automation workflows |
 
 ## Detailed Platform Reviews
 
@@ -144,78 +143,6 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
 
     See the [Setup Guide → Claude Code tab](/MCP-Server/setup) for configuration commands and examples.
   </Accordion>
-  <Accordion title="ChatGPT - Alternative Option" icon="message">
-    **Best for**: Users with existing ChatGPT subscriptions looking for an alternative
-
-    <Warning>
-      **Not Recommended Unless You Already Have a ChatGPT Subscription**
-
-      Due to OpenAI's unofficial support for MCP servers, we do not recommend using ChatGPT with the AI SDK Assistant unless you already have an active subscription. The tool may not function correctly due to:
-      - **Poor code generation**: Produces pseudo-code only, not production-ready SDK implementations
-      - **Limited MCP support**: Unofficial implementation with reduced functionality
-      - **Unreliable tool usage**: May prefer web search over AI SDK Assistant tools
-      - **Basic tool control**: Cannot selectively enable/disable specific search tools
-
-      **We strongly recommend using Claude (web, mobile, desktop, or CLI) for SDK development work.**
-    </Warning>
-
-    ### Why Use ChatGPT
-
-    - Works if you already have a ChatGPT subscription
-    - Familiar interface for ChatGPT users
-    - Alternative to Claude platforms
-
-    ### Account Requirements
-
-    - ChatGPT Plus, Pro, Business, or EDU account
-    - Free ChatGPT accounts do not support custom MCP connectors
-
-    ### Important Limitations
-
-    <Warning>
-      - **Poor Code Generation**: Does not reliably produce actual SDK code examples (psuedo-code only)
-      - **No ChatGPT Projects support**: Must use standalone chats
-      - **No Deep Research mode**: MCP servers don't work with Deep Research
-      - **Developer mode required**: Must enable Developer mode in settings
-      - **Basic tool control**: All tools enabled or disabled together (no granular control)
-    </Warning>
-    ### Setup Requirements
-
-    1. Enable **Developer mode** in ChatGPT settings
-    2. Add AI SDK Assistant as a custom connector
-    3. Create a **new standalone chat** (not in a Project)
-    4. Enable Developer mode chip in the chat
-    5. Toggle on the AI SDK Assistant connector
-
-    ### Context Window & Performance
-
-    - **128K token context window**: Smaller than Claude's 200K tokens
-    - Still sufficient for most SDK queries and documentation searches
-    - May need to break very long conversations into multiple chats
-
-    ### Key Differences from Claude
-
-    - ⚠️ More setup steps required
-    - ⚠️ Poor code generation capabilities for SDK examples
-    - ⚠️ Cannot use in Projects or Deep Research
-    - ⚠️ Less flexible tool permissions
-    - ⚠️ Smaller context window (128K vs 200K)
-    - ✅ Works if you prefer ChatGPT's interface
-
-    ### Security & Privacy
-
-    - **Cloud-based processing**: Queries processed on OpenAI servers
-    - **Data retention**: Varies by account type (Plus, Pro, Business, EDU)
-    - **Business/EDU accounts**: Enhanced privacy and data controls available
-    - **MCP connections**: Developer mode connections subject to OpenAI's policies
-
-    <Note>
-      Review [OpenAI's Privacy Policy](https://openai.com/policies/privacy-policy) for details on data handling and retention policies.
-    </Note>
-    ### Getting Started
-
-    See the [Setup Guide → ChatGPT tab](/MCP-Server/setup) for detailed configuration steps.
-  </Accordion>
 </AccordionGroup>
 
 ## Which Platform Should You Choose?
@@ -236,13 +163,14 @@ All platforms provide access to the same underlying AI SDK Assistant capabilitie
 - Want version-controlled MCP configurations
 - Prefer file-based configuration over UI
 
-### Choose **ChatGPT** if you:
+### Choose **another LLM provider** if you:
 
-- Already have a ChatGPT Plus/Pro subscription
-- Don't need detailed code integration
-- Prefer ChatGPT's interface and features
-- Are comfortable with the platform limitations
-- Want an alternative to Claude
+<Danger>
+  We do not recommend using ChatGPT with the AI SDK Assistant, as OpenAI has recently restricted support for MCP servers, leading to unpredictable information retreival and poor code-generation.
+</Danger>
+
+- Already have another subscription that supports custom MCP servers (ChatGPT, Copilot Studio, Grok, Gemini CLI)
+- Are aware that responses and code-generation may fail and are not guaranteed with LLMs other than Claude.
 
 ## Getting Started
 

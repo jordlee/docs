@@ -20,6 +20,18 @@ While we've taken steps to ensure the smoothest experience possible using the AI
 - If neither of these work, delete the connector and add it again
 - If it still doesn't work, contact [jordan.lee@sony.com](mailto:jordan.lee@sony.com) and [report a bug](https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiMGNmZDVmZmE4MGQyNGZiNGFlZTQ1MGVhYTU2M2JkODciLCJwIjoiaiJ9).
 
+### Claude makes 10+ tool calls before providing an answer.
+
+<Check>
+  **Most likely issue:** Claude is doing an exhaustive search of the documentation for completeness.
+</Check>
+
+**Solutions:**
+
+- Use the [system prompt](/MCP-Server/setup#system-prompt-configuration) to refine Claude's search approach.
+- Modify the system prompt to instruct Claude to prioritize quick answers over deep research.
+- Interrupt Claude's response and ask it to summarize the information it found.
+
 ### "Tool [tool name] not found"
 
 <Check>

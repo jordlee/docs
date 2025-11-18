@@ -4,11 +4,7 @@ icon: "book"
 title: "Setup"
 ---
 
-The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop, and CLI), and ChatGPT (web). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
-
-<Warning>
-  **Claude Recommended**: Due to OpenAI's unofficial support for MCP servers, ChatGPT has significant limitations with code generation and tool functionality. We strongly recommend using Claude for SDK development. Only use ChatGPT if you already have an active subscription and cannot access Claude.
-</Warning>
+The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
 
 <Note>
   You'll need the official MCP server URL to use AI SDK Assistant with your LLM provider. Since the tool is still in Private Beta, please do not share this URL with others.
@@ -21,6 +17,9 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     - Claude Pro, Max, or Enterprise account (starting at \$20/month)
     - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
+    <Info>
+      If you intend to use both [claude.ai](http://claude.ai) (web browser) \*\*and \*\*Claude Code, you must perform the setup process for each application. Although your Anthropic credentials are shared between the two platforms, MCP servers (like the AI SDK Assistant) live locally within their respective installations and are not automatically transferred.
+    </Info>
     ### Configuration Steps
 
     1. **Add the Connector**
@@ -60,7 +59,7 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
        </Tip>
     4. **Configure System Prompt (Optional but Recommended)**
 
-       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt Configuration](#system-prompt-configuration) section below for setup instructions. 
+       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt Configuration](#system-prompt-configuration) section below for setup instructions.
 
        <Tip>
          For the best experience with AI SDK Assistant, add the system prompt after initial testing. It ensures Claude uses MCP tools correctly and generates production-ready code.
@@ -92,6 +91,9 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     - MCP Server URL
     - System Prompt
 
+    <Info>
+      If you intend to use both [claude.ai](http://claude.ai) (web browser) \*\*and \*\*Claude Code, you must perform the setup process for each application. Although your Anthropic credentials are shared between the two platforms, MCP servers (like the AI SDK Assistant) live locally within their respective installations and are not automatically transferred.
+    </Info>
     ### Configuration Scopes
 
     Claude Code supports three configuration scopes for MCP servers:
@@ -253,51 +255,6 @@ The AI SDK Assistant MCP server is compatible with Claude (web, mobile, desktop,
     - ✅ Granular tool-level permissions via settings files
     - ✅ Multiple configuration scopes (user, project, local)
   </Tab>
-  <Tab title="ChatGPT">
-    <Warning>
-      **Not Recommended Unless You Already Have a ChatGPT Subscription**
-
-      Due to OpenAI's unofficial support for MCP servers, ChatGPT has significant limitations with the AI SDK Assistant:
-      - Poor code generation (pseudo-code only, not production-ready SDK code)
-      - Limited tool access and search capabilities
-      - Cannot be used in ChatGPT Projects or Deep Research mode
-      - Basic tool permissions (all or nothing)
-
-      We strongly recommend using Claude instead for SDK development. Only use ChatGPT if you already have an active subscription and cannot access Claude.
-    </Warning>
-
-    ### Requirements
-
-    - ChatGPT Plus, Pro, Business, or EDU account
-    - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
-
-    ### Configuration Steps
-
-    1. **Enable Developer Mode**
-       - Log in to your ChatGPT account
-       - Open **Account Settings** (left sidebar)
-       - Navigate to the **Connectors** tab
-       - Scroll to the bottom and expand **Advanced settings**
-       - Toggle on **Developer mode** to enable custom connectors
-    2. **Add the MCP Server**
-       - In the Connectors settings, click **Add custom connector**
-       - Name it (e.g. `AI SDK Assistant`)
-       - Paste the MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
-       - Save changes — ChatGPT will automatically test the connection
-    3. **Use in Chat**
-       - Open a **new chat** (must not be nested in a project)
-       - Click the **"+"** icon in the chat window
-       - Hover over **"more"** in the dropdown menu
-       - Select **"Developer mode"** from the expanded list
-       - Next to the **"Developer Mode"** chip, click **"add"**
-       - Select the AI SDK Assistant connector and toggle it **on**
-
-    <Warning>
-      - Developer mode does **not work** within ChatGPT Projects
-      - The MCP server cannot be used in **Deep Research** mode
-      - Must create a standalone chat to use custom connectors
-    </Warning>
-  </Tab>
 </Tabs>
 
 ## System Prompt Configuration
@@ -394,13 +351,13 @@ Adding a system prompt to your AI assistant significantly improves response qual
       **Not Recommended Unless You Already Have a ChatGPT Subscription**
 
       Due to OpenAI's unofficial support for MCP servers, ChatGPT has significant limitations:
+
       - Poor code generation capabilities (pseudo-code only)
       - Unreliable tool usage and may still prefer web search
       - Limited functionality compared to Claude
 
       We strongly recommend using Claude instead. Only use ChatGPT if you already have an active subscription.
     </Warning>
-
     **Add to Conversation:**
 
     1. Copy the full system prompt from the accordion above
