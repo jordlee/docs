@@ -30,8 +30,13 @@
     "global": {
       "anchors": [
         {
-          "anchor": "SDK Download",
+          "anchor": "C++ SDK Download",
           "href": "https://support.d-imaging.sony.co.jp/app/sdk/en/index.html",
+          "icon": "download"
+        },
+        {
+          "anchor": "C# SDK Download",
+          "href": "https://sonyipsamarketing.cimediacloud.com/r/YvFlmszMaZMr",
           "icon": "download"
         },
         {
@@ -62,7 +67,7 @@
         {
           "anchor": "Status Page",
           "href": "https://sonydevplat.instatus.com",
-          "icon": "alert-circle"
+          "icon": "eye"
         }
       ]
     }
@@ -75,7 +80,7 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:jordan.lee@sony.com"
       }
     ],
     "primary": {
