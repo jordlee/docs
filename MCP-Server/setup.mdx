@@ -4,10 +4,17 @@ icon: "book"
 title: "Setup"
 ---
 
-The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor.
+Sony provides two MCP servers for AI-assisted development:
+
+| Server | Description | URL |
+|--------|-------------|-----|
+| **AI SDK Assistant** | Camera Remote SDK documentation, API references, and code examples | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+| **AI Camera Assistant** | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
+
+Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor.
 
 <Note>
-  You'll need the official MCP server URL to use AI SDK Assistant with your LLM provider. Since the tool is still in Private Beta, please do not share this URL with others.
+  These tools are still in Private Beta. Please do not share the MCP server URLs with others.
 </Note>
 
 <Tabs>
@@ -375,3 +382,152 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     | Tools not available in chat | Verify the server is connected in **Settings > Features > MCP**. |
   </Tab>
 </Tabs>
+
+---
+
+## AI Camera Assistant Setup
+
+The AI Camera Assistant is a separate MCP server that provides help guide documentation for **24 Sony camera models** with **55,000+** indexed help guide entries. It covers camera settings, features, shooting modes, and troubleshooting across Alpha, FX, ZV, and other Sony camera lines.
+
+<Info>
+  The Camera Assistant uses the same setup process as the SDK Assistant above — just with a different server URL and name. You can run both servers simultaneously.
+</Info>
+
+<Tabs>
+  <Tab title="Claude">
+    Follow the same steps as the [SDK Assistant setup above](#configuration-steps), but use:
+
+    - **Name:** `AI Camera Assistant`
+    - **URL:** `https://camera-rag-agent-production.up.railway.app/mcp`
+  </Tab>
+  <Tab title="Claude Code">
+    ### Quick Setup (CLI)
+
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```bash
+        claude mcp add CameraAssistant --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
+        ```
+      </Tab>
+      <Tab title="Windows (PowerShell or CMD)">
+        ```bash
+        claude mcp add CameraAssistant --scope user -- cmd /c npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
+        ```
+      </Tab>
+    </Tabs>
+
+    Verify it's connected:
+
+    ```bash
+    claude mcp list
+    ```
+
+    ### Manual Setup (JSON Config)
+
+    Add alongside your existing `CRSDK` server in your MCP config file:
+
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```json
+        {
+          "mcpServers": {
+            "CRSDK": {
+              "type": "stdio",
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            },
+            "CameraAssistant": {
+              "type": "stdio",
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://camera-rag-agent-production.up.railway.app/mcp"
+              ]
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```json
+        {
+          "mcpServers": {
+            "CRSDK": {
+              "type": "stdio",
+              "command": "cmd",
+              "args": [
+                "/c", "npx", "mcp-remote",
+                "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            },
+            "CameraAssistant": {
+              "type": "stdio",
+              "command": "cmd",
+              "args": [
+                "/c", "npx", "mcp-remote",
+                "https://camera-rag-agent-production.up.railway.app/mcp"
+              ]
+            }
+          }
+        }
+        ```
+      </Tab>
+    </Tabs>
+
+    ### Tool Permissions
+
+    Auto-approve Camera Assistant tools:
+
+    ```json
+    {
+      "approvedTools": ["mcp__CameraAssistant"]
+    }
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    Follow the same steps as the [SDK Assistant setup above](#quick-setup-settings-ui), but use:
+
+    - **Name:** `CameraAssistant`
+    - **Command:** `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp`
+
+    Or add to your `.cursor/mcp.json` alongside the SDK server:
+
+    ```json
+    {
+      "mcpServers": {
+        "CRSDK": {
+          "command": "npx",
+          "args": [
+            "mcp-remote",
+            "https://sdk-rag-agent-production.up.railway.app/mcp"
+          ]
+        },
+        "CameraAssistant": {
+          "command": "npx",
+          "args": [
+            "mcp-remote",
+            "https://camera-rag-agent-production.up.railway.app/mcp"
+          ]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Available Camera Models
+
+The AI Camera Assistant has help guides indexed for the following cameras:
+
+| Category | Models |
+|----------|--------|
+| **Alpha (Full Frame)** | ILCE-1, ILCE-1M2, ILCE-7C, ILCE-7CM2, ILCE-7CR, ILCE-7M4, ILCE-7RM4, ILCE-7RM4A, ILCE-7RM5, ILCE-7SM3, ILCE-9M2, ILCE-9M3 |
+| **Alpha (APS-C)** | ILCE-6700 |
+| **Cinema Line** | ILME-FR7, ILME-FX2, ILME-FX3, ILME-FX3A, ILME-FX30 |
+| **ZV Series** | ZV-E1, ZV-E10M2 |
+| **Professional** | PXW-Z200 / HXR-NX800, BRC-AM7 |
+| **Compact** | DSC-RX0M2 |
+| **Industrial** | ILX-LR1 |
