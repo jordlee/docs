@@ -68,7 +68,7 @@ Adding a system prompt to your AI assistant significantly improves response qual
     **Add to Projects:**
 
     1. Go to [claude.ai](https://claude.ai) and create or open a Project
-    2. In the Instructions section, click **+**
+    2. In the Instructions section, click **\+**
     3. Copy the full system prompt from the accordion above
     4. Paste into the Set Project Instructions field
     5. Click **Save Instructions**
@@ -105,7 +105,7 @@ Adding a system prompt to your AI assistant significantly improves response qual
     **Add to Rules for AI:**
 
     1. Open Cursor Settings (`Cmd + ,` on macOS / `Ctrl + ,` on Windows/Linux)
-    2. Navigate to **General > Rules for AI**
+    2. Navigate to **General \> Rules for AI**
     3. Copy the full system prompt from the accordion above
     4. Paste it into the **User Rules** text area
     5. Click **Save**
@@ -119,29 +119,6 @@ Adding a system prompt to your AI assistant significantly improves response qual
     <Tip>
       Project-level `.cursorrules` files are ideal for team collaboration — commit the file to version control so all team members benefit from the system prompt.
     </Tip>
-  </Tab>
-  <Tab title="ChatGPT">
-    <Warning>
-      **Not Recommended Unless You Already Have a ChatGPT Subscription**
-
-      Due to OpenAI's unofficial support for MCP servers, ChatGPT has significant limitations:
-
-      - Poor code generation capabilities (pseudo-code only)
-      - Unreliable tool usage and may still prefer web search
-      - Limited functionality compared to Claude
-
-      We strongly recommend using Claude instead. Only use ChatGPT if you already have an active subscription.
-    </Warning>
-    **Add to Conversation:**
-
-    1. Copy the full system prompt from the accordion above
-    2. Start a new chat (not in a Project — Projects don't support MCP)
-    3. Paste the system prompt at the beginning of your conversation
-    4. Alternatively, save it as a `.txt` file and upload using the attachment button
-
-    <Note>
-      Even with the system prompt, ChatGPT has limited MCP support and may still prefer web search over the AI SDK Assistant tools.
-    </Note>
   </Tab>
 </Tabs>
 
