@@ -24,7 +24,7 @@
               "MCP-Server/system-prompt",
               "MCP-Server/tips",
               "MCP-Server/troubleshooting",
-              "MCP-Server/recommended-llms",
+              "MCP-Server/compatibility",
               "MCP-Server/tools",
               "MCP-Server/privacy"
             ]
