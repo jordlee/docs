@@ -7,6 +7,9 @@
     "light": "#FFA07A",
     "dark": "#CD6600"
   },
+  "background": {
+    "decoration": "grid"
+  },
   "favicon": "/favicon.png",
   "navigation": {
     "tabs": [
