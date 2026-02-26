@@ -12,6 +12,50 @@
   },
   "favicon": "/favicon.png",
   "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "C++ SDK Download",
+          "icon": "download",
+          "href": "https://support.d-imaging.sony.co.jp/app/sdk/en/index.html"
+        },
+        {
+          "anchor": "C# SDK Download",
+          "icon": "download",
+          "href": "https://sonyipsamarketing.cimediacloud.com/r/YvFlmszMaZMr"
+        },
+        {
+          "anchor": "Solutions",
+          "icon": "lightbulb",
+          "href": "https://pro.sony/ue_US/digital-imaging/camera-remote-toolkit"
+        },
+        {
+          "anchor": "Case Studies",
+          "icon": "book-open",
+          "href": "https://pro.sony/ue_US/digital-imaging/digital-imaging-insights"
+        },
+        {
+          "anchor": "Products",
+          "icon": "camera",
+          "href": "https://electronics.sony.com/imaging/interchangeable-lens-cameras/c/all-interchangeable-lens-cameras?currentPage=1"
+        },
+        {
+          "anchor": "Help Guide",
+          "icon": "circle-question",
+          "href": "https://www.sony.com/electronics/support/interchangeable-lens-cameras-e-mount-body/manuals"
+        },
+        {
+          "anchor": "Report Bug",
+          "icon": "bug",
+          "href": "https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9"
+        },
+        {
+          "anchor": "Status Page",
+          "icon": "eye",
+          "href": "https://sonydevplat.instatus.com"
+        }
+      ]
+    },
     "tabs": [
       {
         "tab": "Guides",
@@ -22,60 +66,16 @@
               "MCP-Server/overview",
               "MCP-Server/setup",
               "MCP-Server/system-prompt",
-              "MCP-Server/tips",
               "MCP-Server/troubleshooting",
               "MCP-Server/compatibility",
               "MCP-Server/tools",
+              "MCP-Server/tips",
               "MCP-Server/privacy"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "C++ SDK Download",
-          "href": "https://support.d-imaging.sony.co.jp/app/sdk/en/index.html",
-          "icon": "download"
-        },
-        {
-          "anchor": "C# SDK Download",
-          "href": "https://sonyipsamarketing.cimediacloud.com/r/YvFlmszMaZMr",
-          "icon": "download"
-        },
-        {
-          "anchor": "Solutions",
-          "href": "https://pro.sony/ue_US/digital-imaging/camera-remote-toolkit",
-          "icon": "lightbulb"
-        },
-        {
-          "anchor": "Case Studies",
-          "href": "https://pro.sony/ue_US/digital-imaging/digital-imaging-insights",
-          "icon": "book-open"
-        },
-        {
-          "anchor": "Products",
-          "href": "https://electronics.sony.com/imaging/interchangeable-lens-cameras/c/all-interchangeable-lens-cameras?currentPage=1",
-          "icon": "camera"
-        },
-        {
-          "anchor": "Help Guide",
-          "href": "https://www.sony.com/electronics/support/interchangeable-lens-cameras-e-mount-body/manuals",
-          "icon": "circle-question"
-        },
-        {
-          "anchor": "Report Bug",
-          "href": "https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9",
-          "icon": "bug"
-        },
-        {
-          "anchor": "Status Page",
-          "href": "https://sonydevplat.instatus.com",
-          "icon": "eye"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.png",
