@@ -4,7 +4,7 @@ icon: "book"
 title: "Setup"
 ---
 
-The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code). These platforms use what are colloquially termed "connectors" to access MCP servers directly from the existing UI.
+The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor.
 
 <Note>
   You'll need the official MCP server URL to use AI SDK Assistant with your LLM provider. Since the tool is still in Private Beta, please do not share this URL with others.
@@ -18,8 +18,9 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
     <Info>
-      If you intend to use both [claude.ai](http://claude.ai) (web browser) \*\*and \*\*Claude Code, you must perform the setup process for each application. Although your Anthropic credentials are shared between the two platforms, MCP servers (like the AI SDK Assistant) live locally within their respective installations and are not automatically transferred.
+      If you intend to use both [claude.ai](http://claude.ai) and Claude Code, you must set up each application separately. MCP servers are not shared between them.
     </Info>
+
     ### Configuration Steps
 
     1. **Add the Connector**
@@ -38,6 +39,7 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
        <Tip>
          Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
        </Tip>
+
        To configure AI SDK Assistant's tools:
        - Navigate to **Settings → Connectors**
        - Next to the AI SDK Assistant connector, click the **Configure** button
@@ -59,11 +61,7 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
        </Tip>
     4. **Configure System Prompt (Optional but Recommended)**
 
-       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt Configuration](#system-prompt-configuration) section below for setup instructions.
-
-       <Tip>
-         For the best experience with AI SDK Assistant, add the system prompt after initial testing. It ensures Claude uses MCP tools correctly and generates production-ready code.
-       </Tip>
+       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt](/MCP-Server/system-prompt) page for setup instructions.
 
     ### Using the AI SDK Assistant
 
@@ -88,88 +86,35 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     ### Requirements
 
     - Claude Code CLI installed
-    - MCP Server URL
-    - System Prompt
+    - Node.js v18+ with `npx` available on your PATH
+    - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
     <Info>
-      If you intend to use both [claude.ai](http://claude.ai) (web browser) \*\*and \*\*Claude Code, you must perform the setup process for each application. Although your Anthropic credentials are shared between the two platforms, MCP servers (like the AI SDK Assistant) live locally within their respective installations and are not automatically transferred.
+      If you intend to use both [claude.ai](http://claude.ai) and Claude Code, you must set up each application separately. MCP servers are not shared between them.
     </Info>
-    ### Configuration Scopes
 
-    Claude Code supports three configuration scopes for MCP servers:
+    <Warning>
+      The server name **must not contain spaces**. Use `CRSDK` consistently across all configuration files.
+    </Warning>
 
-    #### User Scope (Global)
+    ### Quick Setup (CLI)
 
-    Available across all projects on your machine. Best for personal utility servers and frequently-used services.
+    Run a single command to add the server:
 
-    ```bash
-    claude mcp add AI SDK Assistant --scope user npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
-    ```
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```bash
+        claude mcp add CRSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        ```
+      </Tab>
+      <Tab title="Windows (PowerShell or CMD)">
+        ```bash
+        claude mcp add CRSDK --scope user -- cmd /c npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        ```
+      </Tab>
+    </Tabs>
 
-    **Configuration stored in:** `~/.claude.json`
-
-    ```json
-    {
-      "mcpServers": {
-        "AI SDK Assistant": {
-          "type": "stdio",
-          "command": "npx",
-          "args": [
-            "mcp-remote",
-            "https://sdk-rag-agent-production.up.railway.app/mcp"
-          ],
-          "env": {}
-        }
-      }
-    }
-    ```
-
-    #### Project Scope (Team Shared)
-
-    Shared with all team members via `.mcp.json` in the project root. Best for team collaboration.
-
-    ```bash
-    claude mcp add AI SDK Assistant --scope project npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
-    ```
-
-    **Configuration stored in:** `.mcp.json` (project root)
-
-    ```json
-    {
-      "mcpServers": {
-        "AI SDK Assistant": {
-          "type": "stdio",
-          "command": "npx",
-          "args": [
-            "mcp-remote",
-            "https://sdk-rag-agent-production.up.railway.app/mcp"
-          ],
-          "env": {}
-        }
-      }
-    }
-    ```
-
-    <Tip>
-      Commit `.mcp.json` to version control to share MCP server configuration with your team.
-    </Tip>
-    #### Local Scope (Private)
-
-    Private to current user and project only. Best for personal development servers or experimental configurations.
-
-    ```bash
-    claude mcp add AI SDK Assistant npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
-    ```
-
-    **Configuration stored in:** `~/.claude.json` (project-specific section)
-
-    ### Scope Priority
-
-    When multiple scopes define the same server, Claude Code uses this priority order: **Local \> Project \> User**
-
-    ### Verification
-
-    After adding the MCP server, verify it's connected:
+    Then verify it's connected:
 
     ```bash
     claude mcp list
@@ -178,216 +123,255 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     You should see:
 
     ```
-    AI SDK Assistant: npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp - ✓ Connected
+    CRSDK: npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp - ✓ Connected
     ```
 
-    ### Managing MCP Servers
+    <Tip>
+      For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
+    </Tip>
 
-    **List all servers:**
+    ---
 
-    ```bash
-    claude mcp list
+    ### Manual Setup (JSON Config)
+
+    If the CLI has issues or you prefer editing config files directly, paste the JSON into the appropriate file for your desired scope.
+
+    #### Project Scope — `.mcp.json` (Team Shared)
+
+    Create a `.mcp.json` file in your **project root**:
+
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```json
+        {
+          "mcpServers": {
+            "CRSDK": {
+              "type": "stdio",
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="Windows">
+        On Windows, `npx` must be wrapped with `cmd /c`:
+
+        ```json
+        {
+          "mcpServers": {
+            "CRSDK": {
+              "type": "stdio",
+              "command": "cmd",
+              "args": [
+                "/c",
+                "npx",
+                "mcp-remote",
+                "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            }
+          }
+        }
+        ```
+      </Tab>
+    </Tabs>
+
+    <Tip>
+      Commit `.mcp.json` to version control to share MCP server configuration with your team.
+    </Tip>
+
+    #### User Scope — `~/.claude.json` (Global)
+
+    Available across all projects on your machine. Merge into your existing `~/.claude.json` (create it if it doesn't exist).
+
+    | OS | Path |
+    |----|------|
+    | **macOS** | `/Users/<your-username>/.claude.json` |
+    | **Linux** | `/home/<your-username>/.claude.json` |
+    | **Windows** | `C:\Users\<your-username>\.claude.json` |
+
+    This is a **hidden file** (starts with `.`). To see it:
+    - **macOS Finder:** Press `Cmd + Shift + .` to toggle hidden files
+    - **Windows Explorer:** View → Show → Hidden items
+    - **Terminal:** `code ~/.claude.json` (VS Code) or `notepad %USERPROFILE%\.claude.json` (Windows)
+
+    Uses the same JSON format as Project Scope above.
+
+    #### Local Scope — `.claude.local.json` (Private)
+
+    Private to the current user and project only. Place in your project root. Uses the same JSON format as above.
+
+    #### Scope Priority
+
+    When the same server is defined in multiple scopes: **Local > Project > User**
+
+    ---
+
+    ### Tool Permissions
+
+    Auto-approve tools by adding to your settings config (`~/.claude.json`, `.claude/settings.json`, or `.claude/settings.local.json`):
+
+    **Approve all AI SDK Assistant tools:**
+
+    ```json
+    {
+      "approvedTools": ["mcp__CRSDK"]
+    }
     ```
 
-    **Remove a server:**
+    **Or approve specific tools only:**
+
+    ```json
+    {
+      "approvedTools": [
+        "mcp__CRSDK__search_sdk",
+        "mcp__CRSDK__search_code_examples",
+        "mcp__CRSDK__search_documentation",
+        "mcp__CRSDK__search_api_functions",
+        "mcp__CRSDK__search_compatibility",
+        "mcp__CRSDK__search_hybrid",
+        "mcp__CRSDK__search_exact_api",
+        "mcp__CRSDK__search_error_codes",
+        "mcp__CRSDK__search_warning_codes",
+        "mcp__CRSDK__search_by_source_file",
+        "mcp__CRSDK__get_sdk_context",
+        "mcp__CRSDK__get_current_sdk_version",
+        "mcp__CRSDK__set_sdk_version",
+        "mcp__CRSDK__set_sdk_language"
+      ]
+    }
+    ```
+
+    <Note>
+      Wildcards (`*`) are not supported — you must explicitly list each tool or approve the entire server.
+    </Note>
+
+    ---
+
+    ### Managing & Removing Servers
 
     ```bash
-    claude mcp remove AI SDK Assistant --scope user    # Remove from user scope
-    claude mcp remove AI SDK Assistant --scope project # Remove from project scope
-    claude mcp remove AI SDK Assistant                 # Remove from local scope
+    claude mcp list                                  # List all servers
+    claude mcp remove CRSDK --scope user             # Remove from user scope
+    claude mcp remove CRSDK --scope project          # Remove from project scope
+    claude mcp remove CRSDK                          # Remove from local scope
     ```
 
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
-    ### **Configure System Prompt with Subagents (Optional but Recommended)**
 
-    Claude Code supports creating specialized subagents with custom system prompts. This is ideal for SDK-focused development work.
+    ### Troubleshooting
 
-    **Why use a subagent?**
-
-    - Maintains SDK-specific context across sessions
-    - Can run tasks in parallel with the main agent
-    - Persistent configuration per project or globally
-
-    See the [System Prompt Configuration](#system-prompt-configuration) section below for detailed instructions on creating a subagent with the AI SDK Assistant system prompt.
-
-    <Note>
-      For simple queries, use AI SDK Assistant with your main agent. For complex SDK development, create a dedicated subagent with the system prompt.
-    </Note>
-    ### Tool Permissions
-
-    Claude Code supports **granular tool-level permissions** configured through settings files. You can approve all tools from a server or specific individual tools.
-
-    **Approve all tools from the AI SDK Assistant server:**
-
-    ```json
-    "approvedTools": ["mcp__CRSDK"]
-    ```
-
-    **Approve specific tools only:**
-
-    ```json
-    "approvedTools": [
-      "mcp__CRSDK__search_sdk",
-      "mcp__CRSDK__search_code_examples",
-      "mcp__CRSDK__search_documentation",
-      "mcp__CRSDK__search_api_functions",
-      "mcp__CRSDK__search_compatibility"
-    ]
-    ```
-
-    <Note>
-      - **`Wildcards (*) are not supported`** for MCP permissions
-      - You must explicitly list each tool or approve the entire server
-      - See [Claude Code IAM Documentation](https://docs.claude.com/en/docs/claude-code/iam#access-control-and-permissions) for detailed permission configuration
-    </Note>
-    **Configuration scopes:**
-
-    - **User scope**: Global across all projects (`~/.claude.json`)
-    - **Project scope**: Per-project configuration (`.claude/config.json`)
-    - **Local scope**: Repository-specific (`.claude.local.json`)
-
-    **What's different from Claude web:**
-
-    - ❌ No visual UI for tool management
-    - ✅ File-based configuration (version control friendly)
-    - ✅ Granular tool-level permissions via settings files
-    - ✅ Multiple configuration scopes (user, project, local)
+    | Issue | Solution |
+    |-------|---------|
+    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`. |
+    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
+    | Server not connecting | Ensure you're not behind a proxy/VPN blocking `railway.app`. |
+    | `approvedTools` not working | Verify the server name in your MCP config matches the prefix in `approvedTools` (both should use `CRSDK`). |
+    | `.mcp.json` not detected | File must be in the **project root** directory. Restart Claude Code after creating it. |
+    | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue. |
   </Tab>
-</Tabs>
+  <Tab title="Cursor">
+    ### Requirements
 
-## System Prompt Configuration
+    - [Cursor](https://cursor.com) IDE installed
+    - Node.js v18+ with `npx` available on your PATH
+    - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
-Adding a system prompt to your AI assistant significantly improves response quality when working with the Camera Remote SDK. The system prompt is a comprehensive set of instructions (~450 lines) that teaches the LLM how to effectively use AI SDK Assistant tools and generate accurate, production-ready code.
+    ### Quick Setup (Settings UI)
 
-### Full System Prompt
+    1. Open Cursor Settings (`Cmd + ,` on macOS / `Ctrl + ,` on Windows/Linux)
+    2. Navigate to **Features > MCP**
+    3. Click **+ Add New MCP Server**
+    4. Enter the following:
+       - **Name:** `CRSDK`
+       - **Transport Type:** `command` (stdio)
+       - **Command:** `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp`
+    5. Click **Save**
+    6. Verify the server shows as connected in the MCP settings panel
 
-<Accordion title="📋 View & Copy System Prompt" icon="copy">
-  <Warning>
-    **This is a large prompt (450+ lines, ~4,000 tokens).** Copy the entire content to ensure proper functionality.
-  </Warning>
-  ```json
-  {
-    "prompt": {
-      "title": "Sony Camera Remote SDK AI Assistant - System Prompt",
-      "sections": [
+    <Tip>
+      For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
+    </Tip>
+
+    ---
+
+    ### Manual Setup (JSON Config)
+
+    You can also add the MCP server by editing the config file directly.
+
+    #### Project Scope
+
+    Create a `.cursor/mcp.json` file in your **project root**:
+
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```json
         {
-          "section": "Purpose & Scope",
-          "content": {
-            "description": "You are an expert coding assistant specializing in the Sony Camera Remote SDK. Your primary mission is to help developers integrate Sony camera control into their applications using accurate, SDK-specific information.",
-            "supported_versions": [
-              {
-                "version": "V1.14.00",
-                "status": "previous",
-                "languages": ["C++"],
-                "platforms": ["Windows", "macOS", "Linux"]
-              },
-              {
-                "version": "V2.00.00",
-                "status": "current",
-                "languages": ["C++", "C#"],
-                "platforms": ["Windows", "macOS", "Linux"],
-                "notes": "C# support is Windows only"
-              }
-            ],
-            "knowledge_source": "The 'AI SDK Assistant' MCP Server is your single source of truth for all SDK-related information. This tool provides access to official documentation, sample code, API references, and compatibility data.",
-            "reference_documentation": "https://sony-88f06855.mintlify.app/",
-            "reference_documentation_purpose": "For understanding the MCP server's capabilities, limitations, and setup"
+          "mcpServers": {
+            "CRSDK": {
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            }
           }
         }
-      ],
-      "summary": {
-        "core_principles": [
-          "Always use MCP tools for SDK queries, never web search",
-          "Confirm SDK version and language before answering",
-          "Generate real, compilable code with proper citations",
-          "For C# developers, always search for C# code examples",
-          "Be thorough but acknowledge when information isn't available",
-          "Stay solution-focused and approachable"
-        ]
-      }
-    }
-  }
-  ```
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```json
+        {
+          "mcpServers": {
+            "CRSDK": {
+              "command": "cmd",
+              "args": [
+                "/c",
+                "npx",
+                "mcp-remote",
+                "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            }
+          }
+        }
+        ```
+      </Tab>
+    </Tabs>
 
-  <Note>
-    The full system prompt contains additional detailed sections on tool selection, code generation standards, troubleshooting workflows, and more. The complete prompt is available in the [system-prompt.md](https://github.com/jordlee/docs/blob/main/system-prompt.md) file.
-  </Note>
-</Accordion>
+    #### Global Scope
 
-### Platform-Specific Instructions
+    For access across all projects, create or edit `~/.cursor/mcp.json` with the same JSON format above.
 
-<Tabs>
-  <Tab title="Claude (claude.ai)">
-    **Add to Projects:**
+    | OS | Path |
+    |----|------|
+    | **macOS** | `~/.cursor/mcp.json` |
+    | **Linux** | `~/.cursor/mcp.json` |
+    | **Windows** | `C:\Users\<your-username>\.cursor\mcp.json` |
 
-    1. Go to [claude.ai](https://claude.ai) and create or open a Project
-    2. In the Instructions section, click **\+**
-    3. Copy the full system prompt from the accordion above
-    4. Paste into the Set Project Instructions field
-    5. Click **Save Instructions**
+    ---
 
-    All conversations in that Project will now use the SDK Assistant system prompt.
-  </Tab>
-  <Tab title="Claude Code">
-    **Create a Subagent:**
+    ### Using AI SDK Assistant in Cursor
 
-    1. In the Claude terminal, open the Agents dialogue:
-
-       ```bash
-       /agents
-       ```
-    2. Click **Create new agent**
-    3. Select **Project** (current project only) or **Personal** (all projects)
-    4. Select **Generate with Claude**
-    5. Copy and paste the entire system prompt from the accordion above
-    6. Press **Enter** to generate the subagent (this may take a moment)
-
-    The subagent will now use the system prompt for all interactions.
-  </Tab>
-  <Tab title="ChatGPT">
-    <Warning>
-      **Not Recommended Unless You Already Have a ChatGPT Subscription**
-
-      Due to OpenAI's unofficial support for MCP servers, ChatGPT has significant limitations:
-
-      - Poor code generation capabilities (pseudo-code only)
-      - Unreliable tool usage and may still prefer web search
-      - Limited functionality compared to Claude
-
-      We strongly recommend using Claude instead. Only use ChatGPT if you already have an active subscription.
-    </Warning>
-    **Add to Conversation:**
-
-    1. Copy the full system prompt from the accordion above
-    2. Start a new chat (not in a Project - Projects don't support MCP)
-    3. Paste the system prompt at the beginning of your conversation
-    4. Alternatively, save it as a `.txt` file and upload using the **📎** button
+    1. Open a new chat in Cursor (`Cmd + L` / `Ctrl + L`)
+    2. The AI SDK Assistant tools will be available automatically
+    3. Ask SDK-related questions and Cursor will use the MCP tools to retrieve accurate information
 
     <Note>
-      Even with the system prompt, ChatGPT has limited MCP support and may still prefer web search over the AI SDK Assistant tools.
+      Cursor supports MCP servers using `stdio`, `sse`, and `streamable-http` transport types. The `stdio` transport (via `npx`) is the recommended approach for the AI SDK Assistant.
     </Note>
+
+    ### Troubleshooting
+
+    | Issue | Solution |
+    |-------|---------|
+    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. |
+    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows config above. |
+    | Server not appearing | Restart Cursor after saving the config file. |
+    | Tools not available in chat | Verify the server is connected in **Settings > Features > MCP**. |
   </Tab>
 </Tabs>
-
-### When to Use the System Prompt
-
-<Check>
-  **Highly Recommended For:**
-
-  - Complex multi-step SDK implementations
-  - C# development (ensures C# code examples are retrieved)
-  - Production code generation with proper error handling
-  - Long development sessions requiring context consistency
-</Check>
-
-<Info>
-  **Optional For:**
-
-  - Quick one-off API lookups
-  - Simple compatibility checks
-  - Initial testing of AI SDK Assistant
-</Info>
-
-For more details on system prompt benefits, see [Tips: Using the System Prompt](/MCP-Server/tips#using-the-system-prompt-advanced).
