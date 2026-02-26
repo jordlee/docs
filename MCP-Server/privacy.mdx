@@ -59,14 +59,6 @@ When using AI SDK Assistant with Claude, Anthropic's data policies apply to your
 - **Claude Web/Mobile**: Follow Anthropic's terms regarding conversation storage and usage
 - Review [Anthropic's Privacy Policy](https://www.anthropic.com/legal/privacy) for details
 
-### ChatGPT (OpenAI)
-
-When using AI SDK Assistant with ChatGPT, OpenAI's data policies apply:
-
-- Conversations may be used to improve OpenAI's models unless you opt out
-- Review [OpenAI's Privacy Policy](https://openai.com/privacy/) for details
-- Consider using OpenAI's data retention controls if available
-
 ### Other AI Assistants
 
 Each AI assistant has its own data policies. Check with your specific provider to understand how they handle:
@@ -94,7 +86,6 @@ When prompting Claude, you can control how much autonomy it has when executing t
   src="/images/Screenshot2025-11-18at12.42.33PM.png"
   alt="Screenshot2025 11 18at12 42 33PM Pn"
   title="Screenshot2025 11 18at12 42 33PM Pn"
-  style={{ width:"100%" }}
 />
 
 ## MCP (Model Context Protocol)
@@ -195,10 +186,10 @@ For sensitive development work:
 If you have questions about data privacy or governance:
 
 <CardGroup cols={2}>
-  <Card title="Report Issues" icon="bug" href="https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9">
+  <Card icon="bug" href="https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9" title="Report Issues">
     Submit a bug report or privacy concern
   </Card>
-  <Card title="Contact Support" icon="envelope" href="mailto:jordan.lee@sony.com">
+  <Card icon="envelope" href="mailto:jordan.lee@sony.com" title="Contact Support">
     Email our support team
   </Card>
 </CardGroup>
@@ -206,19 +197,19 @@ If you have questions about data privacy or governance:
 ## Summary
 
 <AccordionGroup>
-  <Accordion title="What data does AI SDK Assistant collect?" icon="database">
+  <Accordion icon="database" title="What data does AI SDK Assistant collect?">
     AI SDK Assistant processes your search queries in real-time but does not store individual query histories or personal information. Basic anonymized analytics may be collected for service improvement.
   </Accordion>
-  <Accordion title="Is my code safe?" icon="code">
+  <Accordion icon="code" title="Is my code safe?">
     Yes. AI SDK Assistant only searches SDK documentation—it doesn't access or store your project code. Don't paste sensitive code into AI conversations as a general security practice.
   </Accordion>
-  <Accordion title="Who can see my questions?" icon="eye">
+  <Accordion icon="eye" title="Who can see my questions?">
     Your questions are processed by AI SDK Assistant's search service and your chosen AI assistant (Claude, ChatGPT, etc.). Each AI provider has its own privacy policy governing conversation data.
   </Accordion>
-  <Accordion title="How long is data retained?" icon="clock">
+  <Accordion icon="clock" title="How long is data retained?">
     AI SDK Assistant doesn't retain individual search queries. Your AI assistant may retain conversation history according to their policies—check with your specific provider.
   </Accordion>
-  <Accordion title="Can I use this for commercial projects?" icon="building">
+  <Accordion icon="building" title="Can I use this for commercial projects?">
     Yes. AI SDK Assistant is a free tool for searching Sony's SDK documentation. For commercial SDK usage, review Sony's SDK license agreements.
   </Accordion>
 </AccordionGroup>
