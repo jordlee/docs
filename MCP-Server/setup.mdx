@@ -94,11 +94,9 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     <Info>
       If you intend to use both [claude.ai](http://claude.ai) (web browser) **and** Claude Code, you must perform the setup process for each application. MCP servers live locally within their respective installations and are not automatically transferred.
     </Info>
-
     <Warning>
       The server name **must not contain spaces**. Use `CRSDK` consistently across all configuration files. The CLI `claude mcp add` command has known issues with spaces in server names — we recommend pasting the JSON config directly instead.
     </Warning>
-
     ### Quick Setup (Recommended)
 
     Instead of using the CLI, paste the JSON directly into the appropriate config file for your platform.
@@ -149,22 +147,21 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
         ```
       </Tab>
     </Tabs>
-
     <Tip>
       Commit `.mcp.json` to version control to share MCP server configuration with your team.
     </Tip>
-
     #### User Scope — `~/.claude.json` (Global)
 
     Available across all projects on your machine. Merge the config below into your existing `~/.claude.json` (create it if it doesn't exist).
 
-    | OS | Path |
-    |----|------|
-    | **macOS** | `/Users/<your-username>/.claude.json` |
-    | **Linux** | `/home/<your-username>/.claude.json` |
+    | OS          | Path                                    |
+    | ----------- | --------------------------------------- |
+    | **macOS**   | `/Users/<your-username>/.claude.json`   |
+    | **Linux**   | `/home/<your-username>/.claude.json`    |
     | **Windows** | `C:\Users\<your-username>\.claude.json` |
 
     This is a **hidden file** (starts with `.`). To see it:
+
     - **macOS Finder:** Press `Cmd + Shift + .` to toggle hidden files
     - **Windows Explorer:** View → Show → Hidden items
     - **Terminal:** Open directly with `code ~/.claude.json` (VS Code) or `notepad %USERPROFILE%\.claude.json` (Windows)
@@ -205,14 +202,13 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
         ```
       </Tab>
     </Tabs>
-
     #### Local Scope — `.claude.local.json` (Private)
 
     Private to the current user and project only. Place this in your project root. Uses the same JSON format as above.
 
     ### Scope Priority
 
-    When the same server is defined in multiple scopes, Claude Code uses this priority order: **Local > Project > User**
+    When the same server is defined in multiple scopes, Claude Code uses this priority order: **Local \> Project \> User**
 
     ### CLI Alternative
 
@@ -230,7 +226,6 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
         ```
       </Tab>
     </Tabs>
-
     ### Verification
 
     After saving the config, restart Claude Code or start a new session, then run:
@@ -264,7 +259,6 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
-
     ### Configure System Prompt with Subagents (Optional but Recommended)
 
     Claude Code supports creating specialized subagents with custom system prompts. This is ideal for SDK-focused development work.
@@ -280,7 +274,6 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     <Note>
       For simple queries, use AI SDK Assistant with your main agent. For complex SDK development, create a dedicated subagent with the system prompt.
     </Note>
-
     ### Tool Permissions
 
     Claude Code supports **granular tool-level permissions** configured through settings files. You can approve all tools from a server or specific individual tools.
@@ -323,21 +316,20 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     - **Local scope:** `.claude/settings.local.json`
 
     <Note>
-      - **Wildcards (`*`) are not supported** for MCP permissions
+      - **`Wildcards (*) are not supported`** for MCP permissions
       - You must explicitly list each tool or approve the entire server
       - See [Claude Code IAM Documentation](https://docs.claude.com/en/docs/claude-code/iam#access-control-and-permissions) for detailed permission configuration
     </Note>
-
     ### Troubleshooting
 
-    | Issue | Solution |
-    |-------|---------|
-    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`. |
-    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
-    | Server not connecting | Ensure you're not behind a proxy/VPN blocking `railway.app`. |
-    | `approvedTools` not working | Verify the server name in your MCP config matches the prefix in `approvedTools` (both should use `CRSDK`). |
-    | `.mcp.json` not detected | File must be in the **project root** directory. Restart Claude Code after creating it. |
-    | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue. |
+    | Issue                                 | Solution                                                                                                                               |
+    | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+    | `npx` not found                       | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`.                                             |
+    | Windows: `npx` not recognized         | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
+    | Server not connecting                 | Ensure you're not behind a proxy/VPN blocking `railway.app`.                                                                           |
+    | `approvedTools` not working           | Verify the server name in your MCP config matches the prefix in `approvedTools` (both should use `CRSDK`).                             |
+    | `.mcp.json` not detected              | File must be in the **project root** directory. Restart Claude Code after creating it.                                                 |
+    | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue.                                 |
   </Tab>
   <Tab title="Cursor">
     ### Requirements
@@ -349,8 +341,8 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     ### Configuration via Settings UI
 
     1. Open Cursor Settings (`Cmd + ,` on macOS / `Ctrl + ,` on Windows/Linux)
-    2. Navigate to **Features > MCP**
-    3. Click **+ Add New MCP Server**
+    2. Navigate to **Features \> MCP**
+    3. Click **\+ Add New MCP Server**
     4. Enter the following:
        - **Name:** `CRSDK`
        - **Transport Type:** `command` (stdio)
@@ -399,15 +391,14 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
         ```
       </Tab>
     </Tabs>
-
     #### Global Scope
 
     For access across all projects, create or edit `~/.cursor/mcp.json` with the same JSON format above.
 
-    | OS | Path |
-    |----|------|
-    | **macOS** | `~/.cursor/mcp.json` |
-    | **Linux** | `~/.cursor/mcp.json` |
+    | OS          | Path                                        |
+    | ----------- | ------------------------------------------- |
+    | **macOS**   | `~/.cursor/mcp.json`                        |
+    | **Linux**   | `~/.cursor/mcp.json`                        |
     | **Windows** | `C:\Users\<your-username>\.cursor\mcp.json` |
 
     ### Verification
@@ -415,7 +406,7 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     After adding the configuration:
 
     1. Restart Cursor or reload the window
-    2. Open **Settings > Features > MCP** to confirm the server shows as connected
+    2. Open **Settings \> Features \> MCP** to confirm the server shows as connected
     3. Open a chat and ask Cursor to list its available tools — you should see the CRSDK tools
 
     ### Using AI SDK Assistant in Cursor
@@ -427,15 +418,14 @@ The AI SDK Assistant MCP server is compatible with Anthropic's LLMs (claude.ai, 
     <Note>
       Cursor supports MCP servers using `stdio`, `sse`, and `streamable-http` transport types. The `stdio` transport (via `npx`) is the recommended approach for the AI SDK Assistant.
     </Note>
-
     ### Troubleshooting
 
-    | Issue | Solution |
-    |-------|---------|
-    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. |
-    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows config above. |
-    | Server not appearing | Restart Cursor after saving the config file. |
-    | Tools not available in chat | Verify the server is connected in **Settings > Features > MCP**. |
+    | Issue                         | Solution                                                           |
+    | ----------------------------- | ------------------------------------------------------------------ |
+    | `npx` not found               | Ensure Node.js (v18+) is installed and `npx` is on your PATH.      |
+    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows config above.     |
+    | Server not appearing          | Restart Cursor after saving the config file.                       |
+    | Tools not available in chat   | Verify the server is connected in **Settings \> Features \> MCP**. |
   </Tab>
 </Tabs>
 
@@ -445,7 +435,7 @@ Adding a system prompt to your AI assistant significantly improves response qual
 
 ### Full System Prompt
 
-<Accordion title="📋 View & Copy System Prompt" icon="copy">
+<Accordion icon="copy" title="📋 View & Copy System Prompt">
   <Warning>
     **This is a large prompt (450+ lines, ~4,000 tokens).** Copy the entire content to ensure proper functionality.
   </Warning>
@@ -527,29 +517,6 @@ Adding a system prompt to your AI assistant significantly improves response qual
     6. Press **Enter** to generate the subagent (this may take a moment)
 
     The subagent will now use the system prompt for all interactions.
-  </Tab>
-  <Tab title="ChatGPT">
-    <Warning>
-      **Not Recommended Unless You Already Have a ChatGPT Subscription**
-
-      Due to OpenAI's unofficial support for MCP servers, ChatGPT has significant limitations:
-
-      - Poor code generation capabilities (pseudo-code only)
-      - Unreliable tool usage and may still prefer web search
-      - Limited functionality compared to Claude
-
-      We strongly recommend using Claude instead. Only use ChatGPT if you already have an active subscription.
-    </Warning>
-    **Add to Conversation:**
-
-    1. Copy the full system prompt from the accordion above
-    2. Start a new chat (not in a Project - Projects don't support MCP)
-    3. Paste the system prompt at the beginning of your conversation
-    4. Alternatively, save it as a `.txt` file and upload using the **📎** button
-
-    <Note>
-      Even with the system prompt, ChatGPT has limited MCP support and may still prefer web search over the AI SDK Assistant tools.
-    </Note>
   </Tab>
 </Tabs>
 
