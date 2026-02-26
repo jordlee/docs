@@ -21,6 +21,7 @@
             "pages": [
               "MCP-Server/overview",
               "MCP-Server/setup",
+              "MCP-Server/system-prompt",
               "MCP-Server/tips",
               "MCP-Server/troubleshooting",
               "MCP-Server/recommended-llms",
