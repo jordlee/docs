@@ -1,0 +1,138 @@
+---
+title: "Events (SSE)"
+description: "Real-time camera callbacks via Server-Sent Events"
+---
+
+Real-time event stream from the camera SDK. Subscribe to events from all cameras or a specific camera.
+
+## Subscribe to All Events
+
+<ParamField path="method" type="GET">`GET /api/events`</ParamField>
+
+```javascript
+const events = new EventSource("http://localhost:8080/api/events");
+
+events.addEventListener("downloadComplete", (e) => {
+  console.log("File saved:", JSON.parse(e.data).filename);
+});
+
+events.addEventListener("afStatus", (e) => {
+  console.log("AF:", JSON.parse(e.data).state);
+});
+```
+
+## Subscribe to Camera Events
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/events`</ParamField>
+
+Same event types, filtered to a single camera.
+
+```javascript
+const events = new EventSource(
+  "http://localhost:8080/api/cameras/D10F60149B0C/events"
+);
+```
+
+---
+
+## Event Types
+
+| Event | SDK Callback | Description |
+|-------|-------------|-------------|
+| `connected` | `OnConnected` | Camera connection established |
+| `disconnected` | `OnDisconnected` | Camera disconnected |
+| `propertyChanged` | `OnPropertyChangedCodes` | Property values changed |
+| `warning` | `OnWarning` | Camera warning/notification |
+| `afStatus` | `OnWarningExt` | Autofocus state change |
+| `downloadComplete` | `OnCompleteDownload` | Auto-transferred image saved |
+| `transferProgress` | `OnNotifyRemoteTransferResult` | File pull completed |
+| `error` | `OnError` | SDK error occurred |
+
+---
+
+## Event Data
+
+### connected
+```json
+{"cameraId": "D10F60149B0C"}
+```
+
+### disconnected
+```json
+{"error": "0x00000000"}
+```
+
+### propertyChanged
+```json
+{"codes": ["0x104", "0x105"], "count": 2}
+```
+
+### warning
+```json
+{"code": "0x20011", "message": "Captured_Event"}
+```
+Code `0x20011` = image captured (shutter fired).
+
+### afStatus
+```json
+{"state": "focused"}
+```
+States: `focused`, `unlocked`, `tracking`
+
+### downloadComplete
+```json
+{"filename": "/path/to/DSC09596.JPG", "type": "image"}
+```
+Only fires in `remote` connection mode with `still-image-store-destination` set to Host PC or Both.
+
+### transferProgress
+```json
+{"percent": 100, "notify": "0x20093", "filename": "/path/to/DSC09598.JPG"}
+```
+Only fires in `remote-transfer` mode after explicit file pull.
+
+### error
+```json
+{"code": "0x00008001", "message": "Generic error"}
+```
+
+---
+
+## Event Sequence Examples
+
+### Capture with auto-transfer (`remote` mode)
+
+```
+event: afStatus
+data: {"state":"focused"}
+
+event: warning
+data: {"code":"0x20011","message":"Captured_Event"}
+
+event: downloadComplete
+data: {"filename":"/path/to/DSC09596.JPG","type":"image"}
+
+event: afStatus
+data: {"state":"unlocked"}
+```
+
+### SD card file pull (`remote-transfer` mode)
+
+```
+event: transferProgress
+data: {"percent":100,"notify":"0x20093","filename":"/path/to/DSC09598.JPG"}
+```
+
+---
+
+## File Transfer by Mode
+
+| Mode | Auto-transfer? | SSE Event | Mechanism |
+|------|---------------|-----------|-----------|
+| `remote` | Yes (if StoreDestination = HostPC/Both) | `downloadComplete` | SDK pushes via `OnCompleteDownload` |
+| `remote-transfer` | No — explicit pull | `transferProgress` | Pull via `POST .../download` |
+| `contents-transfer` | No — pull only | `contentsTransfer` | Pull-only, no shooting |
+
+## Keepalive
+
+The server sends a `: keepalive` comment every 30 seconds to detect dead connections.

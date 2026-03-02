@@ -1,0 +1,87 @@
+---
+title: "Server"
+description: "Health check, logs, and graceful shutdown"
+---
+
+## Server Status
+
+<ParamField path="method" type="GET">`GET /api/server/status`</ParamField>
+
+Health check endpoint. Returns server version, uptime, platform, and camera counts. Used by the TypeScript `ServerManager` to confirm the server is ready.
+
+<CodeGroup>
+```bash Request
+curl http://localhost:8080/api/server/status
+```
+
+```json Response
+{
+  "success": true,
+  "server": {
+    "version": "3.0.0",
+    "sdkVersion": "V1.14.00",
+    "uptime": 42,
+    "platform": "darwin-arm64"
+  },
+  "cameras": {
+    "connected": 1,
+    "discovered": 2
+  }
+}
+```
+</CodeGroup>
+
+---
+
+## Server Logs
+
+<ParamField path="method" type="GET">`GET /api/server/logs`</ParamField>
+
+Returns buffered server log output. Useful for debugging without terminal access.
+
+<ParamField query="lines" type="integer" default="100">Number of recent log lines</ParamField>
+<ParamField query="level" type="string" default="info">`debug`, `info`, `warn`, or `error`</ParamField>
+
+<CodeGroup>
+```bash Request
+curl http://localhost:8080/api/server/logs
+```
+
+```json Response
+{
+  "success": true,
+  "logs": [
+    {
+      "timestamp": "2026-03-02T12:18:45",
+      "level": "info",
+      "message": "GET /api/server/status"
+    },
+    {
+      "timestamp": "2026-03-02T12:18:30",
+      "level": "info",
+      "message": "POST /api/cameras/D10F60149B0C/connection"
+    }
+  ],
+  "total": 47
+}
+```
+</CodeGroup>
+
+---
+
+## Shutdown
+
+<ParamField path="method" type="POST">`POST /api/server/shutdown`</ParamField>
+
+Initiates graceful shutdown: disconnects all cameras, closes SSE/WebSocket connections, then exits. The TypeScript `CameraServer.stop()` calls this before falling back to SIGTERM.
+
+```bash
+curl -X POST http://localhost:8080/api/server/shutdown
+```
+
+```json
+{
+  "success": true,
+  "message": "Shutdown initiated"
+}
+```

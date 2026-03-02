@@ -1,0 +1,78 @@
+---
+title: "Settings"
+description: "Save path configuration and camera settings file management"
+---
+
+## Save Info
+
+Configure where auto-transferred images are saved on the host PC.
+
+### Get Save Info
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/settings/save-info`</ParamField>
+
+```json
+{
+  "success": true,
+  "data": {
+    "path": "/Users/me/Photos",
+    "prefix": "DSC",
+    "startNo": "1"
+  }
+}
+```
+
+### Set Save Info
+
+<ParamField path="method" type="PUT">`PUT /api/cameras/{cameraId}/settings/save-info`</ParamField>
+
+<ParamField body="path" type="string">Directory path on host PC</ParamField>
+<ParamField body="prefix" type="string">Filename prefix</ParamField>
+<ParamField body="startNo" type="integer">Starting file number</ParamField>
+
+```bash
+curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/settings/save-info \
+  -H "Content-Type: application/json" \
+  -d '{"path": "/Users/me/Photos", "prefix": "SHOOT", "startNo": 1}'
+```
+
+---
+
+## Camera Settings Files
+
+Save and restore complete camera configurations.
+
+### Download Settings to PC
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/settings/download`</ParamField>
+
+<ParamField body="filename" type="string">Settings filename (e.g. `CUMSET.DAT`)</ParamField>
+
+```bash
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/settings/download \
+  -H "Content-Type: application/json" \
+  -d '{"filename": "CUMSET.DAT"}'
+```
+
+### Upload Settings to Camera
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/settings/upload`</ParamField>
+
+<ParamField body="filename" type="string">Settings filename to restore</ParamField>
+
+```bash
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/settings/upload \
+  -H "Content-Type: application/json" \
+  -d '{"filename": "CUMSET.DAT"}'
+```
+
+### List Settings Files
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/settings/files`</ParamField>
+
+```json
+{
+  "success": true,
+  "files": ["CUMSET.DAT", "CUMSET_Backup.DAT"]
+}
+```

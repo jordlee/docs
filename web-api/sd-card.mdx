@@ -1,0 +1,71 @@
+---
+title: "SD Card"
+description: "Browse and download files from the camera's SD card"
+---
+
+<Warning>Requires `remote-transfer` or `contents-transfer` connection mode.</Warning>
+
+## List Files
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files`</ParamField>
+
+<ParamField path="slotNumber" type="integer" required>SD card slot: `1` or `2`</ParamField>
+
+<CodeGroup>
+```bash Request
+curl http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
+```
+
+```json Response
+{
+  "success": true,
+  "slot": 1,
+  "file_count": 3,
+  "files": [
+    {
+      "content_id": 12345,
+      "file_id": 67890,
+      "file_path": "DCIM/100MSDCF/DSC00001.ARW",
+      "file_size": 25165824
+    },
+    {
+      "content_id": 12345,
+      "file_id": 67891,
+      "file_path": "DCIM/100MSDCF/DSC00001.JPG",
+      "file_size": 8388608
+    }
+  ]
+}
+```
+</CodeGroup>
+
+---
+
+## Download File
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/download`</ParamField>
+
+Download a specific file from the SD card to the host PC.
+
+<ParamField path="contentId" type="integer" required>Content ID from file listing</ParamField>
+<ParamField path="fileId" type="integer" required>File ID from file listing</ParamField>
+<ParamField body="save_path" type="string">Directory on host PC to save the file</ParamField>
+
+<CodeGroup>
+```bash Request
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files/12345/67890/download \
+  -H "Content-Type: application/json" \
+  -d '{"save_path": "/Users/me/Photos"}'
+```
+
+```json Response
+{
+  "success": true,
+  "filename": "DSC00001.ARW",
+  "progress": 100,
+  "saved_path": "/Users/me/Photos/DSC00001.ARW"
+}
+```
+</CodeGroup>
+
+Listen for `transferProgress` SSE events to track download progress in `remote-transfer` mode.

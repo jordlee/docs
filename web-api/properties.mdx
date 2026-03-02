@@ -1,0 +1,200 @@
+---
+title: "Properties"
+description: "Read and write camera properties — ISO, aperture, shutter speed, and more"
+---
+
+## Get Property
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/properties/{propertyName}`</ParamField>
+
+Returns the current value, human-readable format, writability flag, and all values the camera currently accepts.
+
+<ParamField path="propertyName" type="string" required>
+  One of: `iso`, `aperture`, `shutter-speed`, `exposure-program-mode`, `focus-mode`, `focus-area`, `white-balance`, `drive-mode`, `file-format`, `image-quality`, `raw-compression`, `still-image-store-destination`, `focus-position`, `focus-position-current`, `focus-driving-status`, `focus-distance`, `zoom-distance`
+</ParamField>
+
+<CodeGroup>
+```bash Request
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-speed
+```
+
+```json Response
+{
+  "success": true,
+  "data": {
+    "property": "shutter-speed",
+    "value": "0x1007d",
+    "formatted": "1/125",
+    "writable": "true",
+    "available_values": [
+      { "value": "0x11f40", "formatted": "1/8000" },
+      { "value": "0x10fa0", "formatted": "1/4000" },
+      { "value": "0x107d0", "formatted": "1/2000" },
+      { "value": "0x103e8", "formatted": "1/1000" },
+      { "value": "0x101f4", "formatted": "1/500" },
+      { "value": "0x100fa", "formatted": "1/250" },
+      { "value": "0x1007d", "formatted": "1/125" }
+    ]
+  }
+}
+```
+</CodeGroup>
+
+<ResponseField name="data.value" type="string">Hex-encoded current value — use this for SET requests</ResponseField>
+<ResponseField name="data.formatted" type="string">Human-readable display value</ResponseField>
+<ResponseField name="data.writable" type="string">`"true"` or `"false"` — whether the property can be changed in the current mode</ResponseField>
+<ResponseField name="data.available_values" type="array">All values the camera currently accepts</ResponseField>
+
+---
+
+## Set Property
+
+<ParamField path="method" type="PUT">`PUT /api/cameras/{cameraId}/properties/{propertyName}`</ParamField>
+
+Set a camera property. Accepts hex values from `available_values` or human-readable strings.
+
+<ParamField body="value" type="string" required>
+  The value to set. Accepts multiple formats:
+</ParamField>
+
+| Format | Example | Description |
+|--------|---------|-------------|
+| Hex | `"0x1007d"` | Copy from GET response `available_values` — always works |
+| Human-readable | `"1/125"` | For shutter speed |
+| F-stop | `"f/5.6"` | For aperture |
+| Decimal | `"400"` | For ISO |
+| String enum | `"wide"` | For focus area, drive mode, etc. |
+
+<Tip>The safest approach: GET the property first, pick a `value` from `available_values`, and send it back in your PUT.</Tip>
+
+<CodeGroup>
+```bash Hex Value
+curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-speed \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x100fa"}'
+```
+
+```bash Human-Readable
+curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-speed \
+  -H "Content-Type: application/json" \
+  -d '{"value": "1/250"}'
+```
+
+```json Response
+{
+  "success": true,
+  "message": "Property shutter-speed set successfully",
+  "data": {
+    "property": "shutter-speed",
+    "requested_value": "1/250",
+    "value": "0x100fa"
+  }
+}
+```
+</CodeGroup>
+
+<Warning>
+The server validates against the camera's current `available_values` and checks writability before sending to the SDK. If the property is not writable (e.g. shutter speed in Aperture Priority mode), you'll get a `400` error.
+</Warning>
+
+---
+
+## Get All Properties
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/properties/all`</ParamField>
+
+Returns all mapped properties with their current formatted values.
+
+<CodeGroup>
+```bash Request
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/all
+```
+
+```json Response
+{
+  "success": true,
+  "properties": {
+    "iso": "ISO 400",
+    "aperture": "F5.6",
+    "shutter-speed": "1/250",
+    "white-balance": "Auto",
+    "focus-mode": "AF-C",
+    "drive-mode": "Single",
+    "file-format": "RAW+JPEG"
+  }
+}
+```
+</CodeGroup>
+
+---
+
+## Priority Key
+
+<Warning>Priority key **must** be set to `pc-remote` before the camera accepts any property changes or shooting commands.</Warning>
+
+### Get Priority Key
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/priority-key`</ParamField>
+
+<CodeGroup>
+```bash Request
+curl http://localhost:8080/api/cameras/D10F60149B0C/priority-key
+```
+
+```json Response
+{
+  "success": true,
+  "data": {
+    "setting": "pc-remote",
+    "rawValue": "2"
+  }
+}
+```
+</CodeGroup>
+
+### Set Priority Key
+
+<ParamField path="method" type="PUT">`PUT /api/cameras/{cameraId}/priority-key`</ParamField>
+
+<ParamField body="setting" type="string" required>
+  `pc-remote` or `camera-position`
+</ParamField>
+
+<CodeGroup>
+```bash Request
+curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/priority-key \
+  -H "Content-Type: application/json" \
+  -d '{"setting": "pc-remote"}'
+```
+
+```json Response
+{
+  "success": true,
+  "message": "Priority key set to pc-remote"
+}
+```
+</CodeGroup>
+
+---
+
+## Property Reference
+
+| Property | Read/Write | Description |
+|----------|-----------|-------------|
+| `iso` | R/W | ISO sensitivity (Auto, 125, 200, 400, ...) |
+| `aperture` | R/W | F-number (f/1.4, f/2.0, ..., f/22) |
+| `shutter-speed` | R/W | Shutter speed (1/8000, ..., 30s, Bulb) |
+| `exposure-program-mode` | Read-only | Dial-controlled: P, A, S, M, Auto |
+| `focus-mode` | R/W | Manual, AF-S, AF-C, AF-A, DMF |
+| `focus-area` | R/W | Wide, Zone, Center, Flexible Spot, Tracking |
+| `white-balance` | R/W | Auto, Daylight, Shade, Cloudy, etc. |
+| `drive-mode` | R/W | Single, Continuous Hi/Lo, Timer, Bracket |
+| `file-format` | R/W | RAW, JPEG, RAW+JPEG, HEIF |
+| `image-quality` | R/W | Fine, Standard, Extra Fine |
+| `raw-compression` | R/W | Uncompressed, Compressed, Lossless |
+| `still-image-store-destination` | R/W | Host PC (`0x0001`), Memory Card (`0x0002`), Both (`0x0003`) |
+| `focus-position` | R/W | Absolute position 0–65535 |
+| `focus-position-current` | Read-only | Actual lens position |
+| `focus-driving-status` | Read-only | Not Driving / Driving |
+| `focus-distance` | Read-only | Distance in 1/1000 meter units |
+| `zoom-distance` | Read-only | Focal length in 0.001mm units |

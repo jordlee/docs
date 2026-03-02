@@ -1,0 +1,86 @@
+---
+title: "Overview"
+description: "RESTful control for Sony cameras — shooting, settings, live view, and file transfer"
+---
+
+The Camera Remote Web API provides HTTP endpoints to control Sony cameras connected via USB or network. It runs as a local server and supports multi-camera simultaneous operation.
+
+## Connection Modes
+
+<CardGroup cols={3}>
+  <Card title="remote" icon="camera">
+    Full camera control: shooting, settings, live view. Auto-transfer images to host PC.
+  </Card>
+  <Card title="remote-transfer" icon="camera-retro">
+    Camera control + explicit SD card file access. Most capable mode.
+  </Card>
+  <Card title="contents-transfer" icon="sd-card">
+    SD card file access only. No shooting or settings control.
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+<Steps>
+  <Step title="Discover cameras">
+    ```bash
+    GET /api/cameras
+    ```
+  </Step>
+  <Step title="Connect">
+    ```bash
+    POST /api/cameras/{id}/connection
+    {"mode": "remote"}
+    ```
+  </Step>
+  <Step title="Set Priority Key">
+    ```bash
+    PUT /api/cameras/{id}/priority-key
+    {"setting": "pc-remote"}
+    ```
+    <Warning>Priority key **must** be set to `pc-remote` before the camera accepts remote commands.</Warning>
+  </Step>
+  <Step title="Configure settings">
+    ```bash
+    PUT /api/cameras/{id}/properties/iso
+    {"value": "400"}
+    ```
+  </Step>
+  <Step title="Shoot">
+    ```bash
+    POST /api/cameras/{id}/actions/af-shutter
+    ```
+  </Step>
+  <Step title="Disconnect">
+    ```bash
+    DELETE /api/cameras/{id}/connection
+    ```
+  </Step>
+</Steps>
+
+## Base URL
+
+```
+http://localhost:8080
+```
+
+The server runs locally. The port is configurable via `--port` flag or the TypeScript `CameraServer({ port })` option.
+
+## Response Format
+
+All endpoints return JSON with a consistent shape:
+
+```json
+{
+  "success": true,
+  "message": "Description of what happened",
+  "camera": {
+    "connected": true,
+    "model": "ILCE-9M3",
+    "id": "D10F60149B0C"
+  },
+  "data": { ... }
+}
+```
+
+Errors return `"success": false` with an HTTP status of `400`, `404`, or `500`.

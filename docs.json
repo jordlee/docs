@@ -74,6 +74,25 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Web API",
+            "pages": [
+              "web-api/overview",
+              "web-api/connection",
+              "web-api/properties",
+              "web-api/actions",
+              "web-api/live-view",
+              "web-api/events",
+              "web-api/sd-card",
+              "web-api/settings",
+              "web-api/server"
+            ]
+          }
+        ]
       }
     ]
   },
