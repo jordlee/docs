@@ -1,0 +1,163 @@
+---
+title: "Live View & OSD"
+description: "Live view streaming with optional camera UI overlay"
+---
+
+Per-camera live view with optional OSD (On-Screen Display) overlay. All endpoints are scoped to a specific camera.
+
+## Workflow
+
+<Steps>
+  <Step title="Start streaming">
+    `POST /api/cameras/{id}/live-view/start` — auto-enables live view if disabled
+  </Step>
+  <Step title="Get frames">
+    `GET /api/cameras/{id}/live-view/frame` — single JPEG frame
+  </Step>
+  <Step title="Optional: Enable OSD">
+    `POST /api/cameras/{id}/live-view/osd-enable` — overlay camera UI
+  </Step>
+  <Step title="Get OSD frames">
+    `GET /api/cameras/{id}/live-view/osd-frame` — composited JPEG (~189KB vs ~119KB raw)
+  </Step>
+  <Step title="Stop">
+    `POST /api/cameras/{id}/live-view/stop`
+  </Step>
+</Steps>
+
+---
+
+## Enable Live View
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/enable`</ParamField>
+
+Sends the SDK `Setting_Key_EnableLiveView` command to the camera.
+
+---
+
+## Disable Live View
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/disable`</ParamField>
+
+---
+
+## Live View Status
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/status`</ParamField>
+
+```json
+{
+  "success": true,
+  "data": {
+    "enabled": "true",
+    "streaming": "true"
+  }
+}
+```
+
+---
+
+## Start Streaming
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/start`</ParamField>
+
+Starts the frame capture worker thread. Auto-enables live view if disabled.
+
+---
+
+## Stop Streaming
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/stop`</ParamField>
+
+---
+
+## Get Frame
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/frame`</ParamField>
+
+Returns the latest live view frame as a JPEG image (`Content-Type: image/jpeg`). Streaming must be started first.
+
+```bash
+curl -o frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/frame
+```
+
+---
+
+## Enable OSD
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/osd-enable`</ParamField>
+
+Enable On-Screen Display overlay. The camera renders its UI (exposure info, focus points, histogram, etc.) as an overlay image.
+
+---
+
+## Disable OSD
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/osd-disable`</ParamField>
+
+---
+
+## OSD Status
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/osd-status`</ParamField>
+
+```json
+{
+  "success": true,
+  "data": {
+    "supported": "true",
+    "enabled": "true"
+  }
+}
+```
+
+---
+
+## Get OSD Frame
+
+<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/osd-frame`</ParamField>
+
+Returns a composited JPEG — live view image with camera UI overlay on top.
+
+```bash
+curl -o osd-frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/osd-frame
+```
+
+---
+
+## WebSocket Streaming
+
+For continuous frame streaming at ~15fps, use the WebSocket endpoint.
+
+**Endpoint:** `ws://localhost:8080/ws`
+
+Connect with `binaryType: 'arraybuffer'`. Each binary message is a complete JPEG frame.
+
+### Commands (send as JSON text)
+
+```json
+// Start live view for a specific camera
+{"action": "start_liveview", "cameraId": "D10F60149B0C"}
+
+// Stop live view
+{"action": "stop_liveview"}
+```
+
+### Client Example
+
+```javascript
+const ws = new WebSocket('ws://localhost:8080/ws');
+ws.binaryType = 'arraybuffer';
+
+ws.onopen = () => {
+  ws.send(JSON.stringify({
+    action: 'start_liveview',
+    cameraId: 'D10F60149B0C'
+  }));
+};
+
+ws.onmessage = (event) => {
+  const blob = new Blob([event.data], { type: 'image/jpeg' });
+  document.getElementById('liveView').src = URL.createObjectURL(blob);
+};
+```

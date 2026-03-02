@@ -58,7 +58,7 @@
     },
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
             "group": "MCP Server",
@@ -71,6 +71,30 @@
               "MCP-Server/tools",
               "MCP-Server/tips",
               "MCP-Server/privacy"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "web-api/overview"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "web-api/connection",
+              "web-api/properties",
+              "web-api/actions",
+              "web-api/live-view",
+              "web-api/events",
+              "web-api/sd-card",
+              "web-api/settings",
+              "web-api/server"
             ]
           }
         ]

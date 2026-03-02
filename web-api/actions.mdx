@@ -1,0 +1,105 @@
+---
+title: "Actions"
+description: "Shooting commands, zoom, and focus control"
+---
+
+## Shutter
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/shutter`</ParamField>
+
+Take a single photo, or control continuous shooting with `down`/`up`.
+
+<ParamField body="action" type="string">
+  Optional. `down` to start continuous shooting, `up` to stop. Omit for single shot.
+</ParamField>
+
+<CodeGroup>
+```bash Single Shot
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter
+```
+
+```bash Continuous Start
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter \
+  -H "Content-Type: application/json" \
+  -d '{"action": "down"}'
+```
+
+```bash Continuous Stop
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter \
+  -H "Content-Type: application/json" \
+  -d '{"action": "up"}'
+```
+</CodeGroup>
+
+<Note>For continuous shooting, set drive mode to a continuous mode first (e.g. `Continuous Hi`).</Note>
+
+---
+
+## Half-Press (Focus Lock)
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/half-press`</ParamField>
+
+Half-press the shutter button to lock autofocus (S1 press). No body required.
+
+```bash
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/half-press
+```
+
+---
+
+## AF + Shutter
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/af-shutter`</ParamField>
+
+Autofocus then immediately capture in one operation. No body required.
+
+```bash
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/af-shutter
+```
+
+---
+
+## Zoom
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/zoom`</ParamField>
+
+Control power zoom lenses. Requires a power zoom lens to be attached.
+
+<ParamField body="direction" type="string" required>`in` or `out`</ParamField>
+<ParamField body="speed" type="string" required>`normal` or `fast`</ParamField>
+
+```bash
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/zoom \
+  -H "Content-Type: application/json" \
+  -d '{"direction": "in", "speed": "normal"}'
+```
+
+---
+
+## Focus Near/Far
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/focus-near-far`</ParamField>
+
+Move focus in discrete steps. Range: `-7` (near, max speed) to `+7` (far, max speed). Magnitude controls speed. `0` is not valid.
+
+<ParamField body="step" type="integer" required>
+  `-7` to `+7`. Negative = near, positive = far.
+</ParamField>
+
+<CodeGroup>
+```bash Focus Near (fine)
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/focus-near-far \
+  -H "Content-Type: application/json" \
+  -d '{"step": -1}'
+```
+
+```bash Focus Far (fast)
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/focus-near-far \
+  -H "Content-Type: application/json" \
+  -d '{"step": 7}'
+```
+</CodeGroup>
+
+<Tip>
+For absolute focus positioning, use `PUT /api/cameras/{id}/properties/focus-position` with a value from 0 (infinity) to 65535 (closest).
+</Tip>
