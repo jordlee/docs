@@ -58,7 +58,7 @@
     },
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
             "group": "MCP Server",
@@ -79,9 +79,14 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "Web API",
+            "group": "Getting Started",
             "pages": [
-              "web-api/overview",
+              "web-api/overview"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
               "web-api/connection",
               "web-api/properties",
               "web-api/actions",
