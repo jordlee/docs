@@ -81,7 +81,8 @@
           {
             "group": "Getting Started",
             "pages": [
-              "web-api/overview"
+              "web-api/overview",
+              "web-api/client-sdk"
             ]
           },
           {

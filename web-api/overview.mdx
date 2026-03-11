@@ -14,49 +14,72 @@ The Camera Remote Web API provides HTTP endpoints to control Sony cameras connec
   <Card title="remote-transfer" icon="camera-retro">
     Camera control + explicit SD card file access. Most capable mode.
   </Card>
-  <Card title="contents-transfer" icon="sd-card">
+  <Card title="contents" icon="sd-card">
     SD card file access only. No shooting or settings control.
   </Card>
 </CardGroup>
 
 ## Quick Start
 
-<Steps>
-  <Step title="Discover cameras">
-    ```bash
-    GET /api/cameras
+<Tabs>
+  <Tab title="TypeScript (CameraManager)">
+    ```typescript
+    import { CameraManager } from 'camera-remote-web-api/server';
+
+    const manager = new CameraManager({ port: 8080 });
+
+    manager.on('camera-ready', async ({ cameraId }) => {
+      await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+      await manager.client.setProperty(cameraId, 'iso', { value: '400' });
+      await manager.client.triggerShutter(cameraId);
+    });
+
+    await manager.start();
     ```
-  </Step>
-  <Step title="Connect">
-    ```bash
-    POST /api/cameras/{id}/connection
-    {"mode": "remote"}
-    ```
-  </Step>
-  <Step title="Set Priority Key">
-    ```bash
-    PUT /api/cameras/{id}/priority-key
-    {"setting": "pc-remote"}
-    ```
-    <Warning>Priority key **must** be set to `pc-remote` before the camera accepts remote commands.</Warning>
-  </Step>
-  <Step title="Configure settings">
-    ```bash
-    PUT /api/cameras/{id}/properties/iso
-    {"value": "400"}
-    ```
-  </Step>
-  <Step title="Shoot">
-    ```bash
-    POST /api/cameras/{id}/actions/af-shutter
-    ```
-  </Step>
-  <Step title="Disconnect">
-    ```bash
-    DELETE /api/cameras/{id}/connection
-    ```
-  </Step>
-</Steps>
+    <Info>See the [Client SDK guide](/web-api/client-sdk) for full CameraManager documentation.</Info>
+  </Tab>
+  <Tab title="curl">
+    <Steps>
+      <Step title="Discover cameras">
+        ```bash
+        curl http://localhost:8080/api/cameras
+        ```
+      </Step>
+      <Step title="Connect">
+        ```bash
+        curl -X POST http://localhost:8080/api/cameras/{id}/connection \
+          -H "Content-Type: application/json" \
+          -d '{"mode": "remote"}'
+        ```
+      </Step>
+      <Step title="Set Priority Key">
+        ```bash
+        curl -X PUT http://localhost:8080/api/cameras/{id}/priority-key \
+          -H "Content-Type: application/json" \
+          -d '{"setting": "pc-remote"}'
+        ```
+        <Warning>Priority key **must** be set to `pc-remote` before the camera accepts remote commands.</Warning>
+      </Step>
+      <Step title="Configure settings">
+        ```bash
+        curl -X PUT http://localhost:8080/api/cameras/{id}/properties/iso \
+          -H "Content-Type: application/json" \
+          -d '{"value": "400"}'
+        ```
+      </Step>
+      <Step title="Shoot">
+        ```bash
+        curl -X POST http://localhost:8080/api/cameras/{id}/actions/af-shutter
+        ```
+      </Step>
+      <Step title="Disconnect">
+        ```bash
+        curl -X DELETE http://localhost:8080/api/cameras/{id}/connection
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
 
 ## Base URL
 

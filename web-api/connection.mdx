@@ -12,11 +12,13 @@ description: "Discover, connect, and disconnect cameras"
 Enumerate all cameras connected via USB and network.
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl http://localhost:8080/api/cameras
 ```
 
+```typescript TypeScript
+const { cameras } = await client.listCameras();
+```
 
 ```json Response
 {
@@ -32,7 +34,6 @@ curl http://localhost:8080/api/cameras
   ]
 }
 ```
-
 </CodeGroup>
 
 <ResponseField name="cameras" type="array">
@@ -67,7 +68,7 @@ Establish connection in the specified mode.
 </ParamField>
 
 <ParamField body="mode" default="remote" type="string">
-  Connection mode: `remote`, `remote-transfer`, or `contents-transfer`
+  Connection mode: `remote`, `remote-transfer`, or `contents`
 </ParamField>
 
 <ParamField body="reconnecting" type="string">
@@ -84,13 +85,15 @@ Establish connection in the specified mode.
 
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/connection \
   -H "Content-Type: application/json" \
   -d '{"mode": "remote"}'
 ```
 
+```typescript TypeScript
+await client.connectCamera('D10F60149B0C', { mode: 'remote' });
+```
 
 ```json Response
 {
@@ -103,7 +106,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/connection \
   }
 }
 ```
-
 </CodeGroup>
 
 ---
@@ -117,11 +119,13 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/connection \
 Check whether a camera is currently connected.
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl http://localhost:8080/api/cameras/D10F60149B0C/connection
 ```
 
+```typescript TypeScript
+await client.getConnectionStatus('D10F60149B0C');
+```
 
 ```json Response
 {
@@ -133,7 +137,6 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/connection
   }
 }
 ```
-
 </CodeGroup>
 
 ---
@@ -147,11 +150,13 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/connection
 Disconnect a camera. Clears event callbacks and waits for clean disconnection.
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl -X DELETE http://localhost:8080/api/cameras/D10F60149B0C/connection
 ```
 
+```typescript TypeScript
+await client.disconnectCamera('D10F60149B0C');
+```
 
 ```json Response
 {
@@ -159,5 +164,4 @@ curl -X DELETE http://localhost:8080/api/cameras/D10F60149B0C/connection
   "message": "Camera disconnected successfully"
 }
 ```
-
 </CodeGroup>

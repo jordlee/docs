@@ -3,15 +3,23 @@ title: "Server"
 description: "Health check, logs, and graceful shutdown"
 ---
 
+<Info>
+For TypeScript projects, use [CameraManager](/web-api/client-sdk#cameramanager-server) instead of calling these endpoints directly — it manages the binary lifecycle, camera connections, and SSE events automatically.
+</Info>
+
 ## Server Status
 
 <ParamField path="method" type="GET">`GET /api/server/status`</ParamField>
 
-Health check endpoint. Returns server version, uptime, platform, and camera counts. Used by the TypeScript `ServerManager` to confirm the server is ready.
+Health check endpoint. Returns server version, uptime, platform, and camera counts. Used by `ServerManager` and `CameraManager` to confirm the server is ready.
 
 <CodeGroup>
-```bash Request
+```bash curl
 curl http://localhost:8080/api/server/status
+```
+
+```typescript TypeScript
+await manager.isRunning(); // true — uses this endpoint internally
 ```
 
 ```json Response
@@ -19,7 +27,7 @@ curl http://localhost:8080/api/server/status
   "success": true,
   "server": {
     "version": "3.0.0",
-    "sdkVersion": "V1.14.00",
+    "sdkVersion": "V2.01.00",
     "uptime": 42,
     "platform": "darwin-arm64"
   },
@@ -43,7 +51,7 @@ Returns buffered server log output. Useful for debugging without terminal access
 <ParamField query="level" type="string" default="info">`debug`, `info`, `warn`, or `error`</ParamField>
 
 <CodeGroup>
-```bash Request
+```bash curl
 curl http://localhost:8080/api/server/logs
 ```
 
@@ -73,7 +81,7 @@ curl http://localhost:8080/api/server/logs
 
 <ParamField path="method" type="POST">`POST /api/server/shutdown`</ParamField>
 
-Initiates graceful shutdown: disconnects all cameras, closes SSE/WebSocket connections, then exits. The TypeScript `CameraServer.stop()` calls this before falling back to SIGTERM.
+Initiates graceful shutdown: disconnects all cameras, closes SSE/WebSocket connections, then exits. `CameraManager.close()` and `ServerManager.stop()` call this before falling back to SIGTERM.
 
 ```bash
 curl -X POST http://localhost:8080/api/server/shutdown
