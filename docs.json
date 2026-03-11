@@ -76,13 +76,38 @@
         ]
       },
       {
+        "tab": "Client SDK",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "sdk/overview",
+              "sdk/camera-manager"
+            ]
+          },
+          {
+            "group": "Usage",
+            "pages": [
+              "sdk/events",
+              "sdk/examples"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "sdk/direct-api",
+              "sdk/reference"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "API Reference",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
-              "web-api/overview",
-              "web-api/client-sdk"
+              "web-api/overview"
             ]
           },
           {

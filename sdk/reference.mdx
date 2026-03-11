@@ -1,0 +1,100 @@
+---
+title: "Reference"
+description: "Connection modes, CLI commands, supported platforms, and requirements"
+---
+
+## Connection Modes
+
+| Mode | Use Case |
+|------|----------|
+| `remote` | Full camera control + auto-transfer photos to host |
+| `remote-transfer` | Full camera control + explicit SD card file pull |
+| `contents` | SD card browsing and file download only |
+
+### Choosing a mode
+
+<AccordionGroup>
+  <Accordion title="I want to shoot and auto-save photos to my computer" icon="camera" defaultOpen>
+    Use `remote`. Set `still-image-store-destination` to `0x1` (Host PC) or `0x3` (Both) for auto-transfer.
+  </Accordion>
+
+  <Accordion title="I want to shoot AND browse the SD card" icon="camera-retro">
+    Use `remote-transfer`. You get full shooting control plus explicit file download from the SD card via `POST .../download`.
+  </Accordion>
+
+  <Accordion title="I only need to download files from the SD card" icon="sd-card">
+    Use `contents`. No shooting or settings control — just file browsing and download.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## CLI
+
+The `camera-server` CLI is included with the npm package.
+
+```bash
+npx camera-server info                           # Version and binary info
+npx camera-server install [--platform <name>]    # Install platform binary
+npx camera-server uninstall [--platform <name>]  # Remove platform binary
+npx camera-server doctor                         # Check system prerequisites
+npx camera-server platforms                      # List available platforms
+npx camera-server docs                           # Open API docs in browser
+npx camera-server mcp                            # Configure MCP servers
+```
+
+### Cross-Platform Development
+
+Install binaries for other platforms (e.g., for CI/CD or remote deployment):
+
+```bash
+npx camera-server install --platform linux-x64
+npx camera-server install --platform linux-arm64
+npx camera-server install --platform win32-x64
+```
+
+---
+
+## Supported Platforms
+
+| Platform | Architecture | Package |
+|----------|-------------|---------|
+| macOS | Apple Silicon (ARM64) | `@alpha-sdk/darwin-arm64` |
+| Linux | x64 | `@alpha-sdk/linux-x64` |
+| Linux | ARM64 | `@alpha-sdk/linux-arm64` |
+| Windows | x64 | `@alpha-sdk/win32-x64` |
+
+npm automatically installs the correct platform binary via `optionalDependencies`.
+
+---
+
+## Requirements
+
+- **Node.js** 18+
+- **Camera:** Sony camera with Remote SDK support (USB or network)
+- **Windows:** libusbK 3.0 driver required for USB connections
+- **macOS:** macOS 12.1+ (Monterey)
+- **Linux:** Ubuntu 20.04+ or equivalent
+
+---
+
+## Package Exports
+
+The npm package has two entry points:
+
+| Import | Environment | Includes |
+|--------|-------------|----------|
+| `camera-remote-web-api` | Browser + Node.js | `CameraManager`, `CameraClient`, `EventStream`, all types |
+| `camera-remote-web-api/server` | Node.js only | `CameraManager` (server), `ServerManager`, `LiveViewStream`, `CameraServer` |
+
+```typescript
+// Browser-safe (no Node.js dependencies)
+import { CameraManager, CameraClient, EventStream } from 'camera-remote-web-api';
+
+// Node.js only (spawns binary, uses WebSocket)
+import { CameraManager, ServerManager, LiveViewStream } from 'camera-remote-web-api/server';
+```
+
+<Warning>
+The `CameraManager` exported from `camera-remote-web-api/server` is a different class than the one from `camera-remote-web-api`. The server variant includes binary management (`start()` is async, `getPort()`, `getPid()`, etc.).
+</Warning>

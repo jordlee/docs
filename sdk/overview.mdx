@@ -1,0 +1,72 @@
+---
+title: "Overview"
+description: "TypeScript client for controlling Sony cameras — install, quick start, and choosing your approach"
+---
+
+## Install
+
+```bash
+npm install camera-remote-web-api
+```
+
+npm automatically installs the correct native binary for your platform (macOS ARM64, Linux x64/ARM64, Windows x64).
+
+---
+
+## Quick Start
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+
+manager.on('camera-ready', async ({ cameraId, camera }) => {
+  console.log(`${camera.model} connected`);
+
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  await manager.client.triggerShutter(cameraId);
+});
+
+manager.on('camera-disconnected', ({ cameraId, error }) => {
+  console.log(`Camera ${cameraId} disconnected`, error ?? '');
+});
+
+await manager.start();
+// Binary boots → cameras discovered → auto-connected → 'camera-ready' fires
+```
+
+---
+
+## Which approach should I use?
+
+<AccordionGroup>
+  <Accordion title="I want to control cameras from a Node.js server" icon="server" defaultOpen>
+    Use **CameraManager** from `camera-remote-web-api/server`. It starts the native binary, discovers cameras, auto-connects, and handles reconnection — all in one `start()` call.
+
+    ```typescript
+    import { CameraManager } from 'camera-remote-web-api/server';
+    ```
+
+    [CameraManager docs](/sdk/camera-manager)
+  </Accordion>
+
+  <Accordion title="I want to control cameras from the browser" icon="browser">
+    Use **CameraManager** from `camera-remote-web-api`. It connects to an already-running server, discovers cameras, and manages connection lifecycle.
+
+    ```typescript
+    import { CameraManager } from 'camera-remote-web-api';
+    ```
+
+    [CameraManager (Browser)](/sdk/camera-manager#browser)
+  </Accordion>
+
+  <Accordion title="I want direct HTTP control without managed state" icon="code">
+    Use **CameraClient** for typed REST calls and **EventStream** for SSE — no auto-connect or reconnection logic.
+
+    ```typescript
+    import { CameraClient, EventStream } from 'camera-remote-web-api';
+    ```
+
+    [Direct API Access](/sdk/direct-api)
+  </Accordion>
+</AccordionGroup>
