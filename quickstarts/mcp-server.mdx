@@ -1,0 +1,77 @@
+---
+title: "MCP Server Quickstart"
+description: "Connect AI SDK Assistant to your AI tool in under 5 minutes"
+---
+
+AI SDK Assistant lets you ask questions about Sony's Camera Remote SDK in plain English and get instant answers with code examples.
+
+## Choose Your Tool
+
+<Tabs>
+  <Tab title="Claude">
+    1. Go to **Settings > Connectors**
+    2. Click **Add custom connector**
+    3. Name it `AI SDK Assistant`
+    4. Paste the URL:
+    ```
+    https://sdk-rag-agent-production.up.railway.app/mcp
+    ```
+    5. Click **Add**
+    6. Open a new chat, click the **search and tools** icon, and toggle the connector **on**
+  </Tab>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add CRSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    ```
+
+    Verify it's connected:
+
+    ```bash
+    claude mcp list
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    1. Open Settings (`Cmd + ,` / `Ctrl + ,`)
+    2. Navigate to **Features > MCP**
+    3. Click **+ Add New MCP Server**
+    4. Enter:
+       - **Name:** `CRSDK`
+       - **Transport Type:** `command` (stdio)
+       - **Command:** `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp`
+    5. Click **Save**
+  </Tab>
+</Tabs>
+
+## Try Your First Query
+
+Ask your AI assistant:
+
+> "How do I connect to a Sony camera and capture a photo using the Camera Remote SDK in C++?"
+
+The AI assistant will automatically search through 13,000+ pieces of SDK documentation, API references, and code examples to give you an accurate answer.
+
+## Example Questions
+
+- "What cameras support remote shooting via USB?"
+- "Show me C# code for setting ISO and shutter speed"
+- "What does error code CrError_Connect_TimeOut mean?"
+- "How do I start live view streaming?"
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Full Setup Guide" icon="gear" href="/MCP-Server/setup">
+    Detailed configuration, tool permissions, and troubleshooting
+  </Card>
+  <Card title="System Prompt" icon="message" href="/MCP-Server/system-prompt">
+    Optimize AI responses with a recommended system prompt
+  </Card>
+  <Card title="Prompting Tips" icon="lightbulb" href="/MCP-Server/tips">
+    Best practices and starter prompts for SDK questions
+  </Card>
+  <Card title="Available Tools" icon="wrench" href="/MCP-Server/tools">
+    See all 14 search tools AI SDK Assistant provides
+  </Card>
+</CardGroup>

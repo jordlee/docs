@@ -1,64 +1,47 @@
 ---
 title: "Introduction"
-description: "AI-powered documentation search for Sony's Camera Remote SDK"
+description: "Sony Camera Remote SDK — developer tools for programmatic camera control"
 ---
 
 <img
   src="/images/hero.jpg"
-  alt="AI SDK Assistant Hero"
+  alt="Sony Developer Platform"
   style={{ borderRadius:"12px" }}
 />
 
-### Welcome to AI SDK Assistant
+### Sony Developer Platform
 
-AI SDK Assistant is an intelligent search tool that helps developers learn and implement Sony's Camera Remote SDK faster. Instead of manually searching through hundreds of pages of documentation, ask questions in plain English and get instant, accurate answers with code examples.
+Build applications that control Sony cameras programmatically. From TypeScript packages to raw HTTP endpoints to AI-powered documentation search — choose the integration that fits your project.
 
 <CardGroup cols={2}>
-  <Card title="What is AI SDK Assistant?" icon="circle-question" href="/MCP-Server/overview">
-    Learn how AI SDK Assistant works and what makes it different
+  <Card title="Quickstarts" icon="rocket" href="/quickstarts/overview">
+    Get up and running in under 5 minutes with step-by-step guides
   </Card>
-  <Card title="Quick Setup" icon="rocket" href="/MCP-Server/setup">
-    Get started in minutes with Claude (recommended) or other AI assistants
+  <Card title="SDKs" icon="cube" href="/sdk/overview">
+    TypeScript Client SDK, Camera Remote SDK (C++/C#), and Camera Remote Command SDK
+  </Card>
+  <Card title="API Reference" icon="book" href="/web-api/overview">
+    RESTful HTTP endpoints for camera connection, shooting, settings, live view, and more
+  </Card>
+  <Card title="MCP Server" icon="robot" href="/MCP-Server/overview">
+    AI-powered SDK documentation search for Claude, Claude Code, and Cursor
   </Card>
 </CardGroup>
 
-## Getting Started
+## Product Overview
 
-<Warning>
-  **ChatGPT Not Recommended**: Due to OpenAI's unofficial support for MCP servers, ChatGPT has poor code generation and limited functionality with AI SDK Assistant. We strongly recommend using Claude for SDK development. Only use ChatGPT if you already have an active subscription.
-</Warning>
+| Product | What It Does | Language |
+|---------|-------------|----------|
+| [Client SDK](/sdk/overview) | TypeScript wrapper — managed camera lifecycle, typed APIs, auto-reconnection | TypeScript |
+| [HTTP API](/web-api/overview) | RESTful endpoints on localhost — works from any language | Any |
+| [Camera Remote SDK](/sdk/camera-remote-sdk) | Sony's official native SDK — the foundation everything else is built on | C++, C# |
+| [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) | PTP-based direct camera commands for specialized integrations | C++ |
+| [AI SDK Assistant](/MCP-Server/overview) | MCP server connecting AI assistants to 13,000+ pieces of SDK documentation | -- |
 
-<CardGroup cols={2}>
-  <Card title="Setup Guide" icon="plug" href="/MCP-Server/setup">
-    Connect AI SDK Assistant to your preferred AI assistant (Claude recommended)
-  </Card>
-  <Card title="Prompting Tips" icon="lightbulb" href="/MCP-Server/tips">
-    Learn best practices and starter prompts for Camera Remote SDK questions
-  </Card>
-  <Card title="Recommended LLMs" icon="brain" href="/MCP-Server/recommended-llms">
-    See which AI assistants work best with AI SDK Assistant
-  </Card>
-  <Card title="Troubleshooting" icon="triangle-exclamation" href="/MCP-Server/troubleshooting">
-    Common issues and solutions for using AI SDK Assistant
-  </Card>
-</CardGroup>
+## How It All Fits Together
 
-## What You Can Do
+The **Camera Remote SDK** (C++/C#) is the native foundation. The **Camera Remote Web API Server** wraps it as a local HTTP service. The **Client SDK** (TypeScript) manages that server automatically. The **AI SDK Assistant** helps you learn and implement any layer faster.
 
-AI SDK Assistant helps you with:
-
-- 🔍 **Find SDK Information**: Search through documentation, API references, and compatibility tables
-- 💻 **Get Code Examples**: Access working C++ and C# implementations from the SDK
-- 🐛 **Debug Errors**: Look up error codes and get explanations with solutions
-- 📊 **Check Compatibility**: Verify camera model and feature support before implementation
-- 🎯 **Learn Workflows**: Understand SDK patterns for connection, capture, and file management
-
-## How It Works
-
-1. **Ask a Question**: Use natural language to ask about the Camera Remote SDK
-2. **AI SDK Assistant Searches**: Automatically searches through 8,962+ pieces of SDK content
-3. **Get Instant Answers**: Receive accurate responses with code examples and documentation references
-
-<Card title="Start with Prompting Tips" icon="lightbulb" href="/MCP-Server/tips">
-  See example prompts and learn how to get the best results from AI SDK Assistant
+<Card title="Get Started" icon="arrow-right" href="/quickstarts/overview">
+  Choose your integration path and start building
 </Card>

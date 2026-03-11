@@ -1,39 +1,13 @@
 ---
 title: "Overview"
-description: "TypeScript client for controlling Sony cameras — install, quick start, and choosing your approach"
+description: "TypeScript client for controlling Sony cameras — choose your approach and explore the API"
 ---
 
-## Install
+The Client SDK (`camera-remote-web-api`) is a TypeScript package that wraps the [Camera Remote Web API](/web-api/overview) HTTP server. It manages the native server binary, discovers cameras, handles connections and reconnection, and provides typed APIs for camera control — from both Node.js and the browser.
 
-```bash
-npm install camera-remote-web-api
-```
-
-npm automatically installs the correct native binary for your platform (macOS ARM64, Linux x64/ARM64, Windows x64).
-
----
-
-## Quick Start
-
-```typescript
-import { CameraManager } from 'camera-remote-web-api/server';
-
-const manager = new CameraManager({ port: 8080 });
-
-manager.on('camera-ready', async ({ cameraId, camera }) => {
-  console.log(`${camera.model} connected`);
-
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-  await manager.client.triggerShutter(cameraId);
-});
-
-manager.on('camera-disconnected', ({ cameraId, error }) => {
-  console.log(`Camera ${cameraId} disconnected`, error ?? '');
-});
-
-await manager.start();
-// Binary boots → cameras discovered → auto-connected → 'camera-ready' fires
-```
+<Card title="Quick Start" icon="rocket" href="/quickstarts/client-sdk">
+  Install, capture a photo, and run it — in under 5 minutes
+</Card>
 
 ---
 

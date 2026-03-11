@@ -1,0 +1,41 @@
+---
+title: "Quickstarts"
+description: "Choose the right integration path for your project"
+---
+
+## Architecture
+
+Sony's camera control stack has three layers:
+
+```
+Your Application
+    |
+    ├── Client SDK (TypeScript)     ── npm package, manages cameras automatically
+    ├── HTTP API (curl / any lang)  ── RESTful endpoints on localhost
+    |       |
+    |   Camera Remote Web API Server (native binary, bundled with Client SDK)
+    |       |
+    └── Camera Remote SDK (C++ / C#) ── Sony's official native SDK
+            |
+        Sony Camera (USB / Network)
+```
+
+The **Camera Remote Web API Server** is a local HTTP server built on Sony's native Camera Remote SDK. The **Client SDK** is a TypeScript wrapper that manages the server binary and provides a high-level API. You can also call the HTTP endpoints directly from any language.
+
+The **MCP Server** connects AI assistants to SDK documentation for intelligent search.
+
+---
+
+## What are you building?
+
+<CardGroup cols={3}>
+  <Card title="TypeScript / Node.js App" icon="js" href="/quickstarts/client-sdk">
+    Use the **Client SDK** for managed camera control with auto-discovery, reconnection, and typed APIs.
+  </Card>
+  <Card title="Any Language (HTTP)" icon="globe" href="/quickstarts/http-api">
+    Call the **HTTP API** directly with curl, Python, Go, or any HTTP client.
+  </Card>
+  <Card title="AI-Assisted Development" icon="robot" href="/quickstarts/mcp-server">
+    Connect **AI SDK Assistant** to Claude or Cursor for intelligent SDK documentation search.
+  </Card>
+</CardGroup>

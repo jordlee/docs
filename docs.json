@@ -58,45 +58,43 @@
     },
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Quickstarts",
         "groups": [
           {
-            "group": "MCP Server",
+            "group": "Get Started",
             "pages": [
-              "MCP-Server/overview",
-              "MCP-Server/setup",
-              "MCP-Server/system-prompt",
-              "MCP-Server/troubleshooting",
-              "MCP-Server/compatibility",
-              "MCP-Server/tools",
-              "MCP-Server/tips",
-              "MCP-Server/privacy"
+              "quickstarts/overview",
+              "quickstarts/client-sdk",
+              "quickstarts/http-api",
+              "quickstarts/mcp-server"
             ]
           }
         ]
       },
       {
-        "tab": "Client SDK",
+        "tab": "SDKs",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Client SDKs",
             "pages": [
               "sdk/overview",
-              "sdk/camera-manager"
-            ]
-          },
-          {
-            "group": "Usage",
-            "pages": [
+              "sdk/camera-manager",
               "sdk/events",
-              "sdk/examples"
-            ]
-          },
-          {
-            "group": "Advanced",
-            "pages": [
+              "sdk/examples",
               "sdk/direct-api",
               "sdk/reference"
+            ]
+          },
+          {
+            "group": "Camera Remote SDK",
+            "pages": [
+              "sdk/camera-remote-sdk"
+            ]
+          },
+          {
+            "group": "Camera Remote Command SDK",
+            "pages": [
+              "sdk/camera-remote-command-sdk"
             ]
           }
         ]
@@ -121,6 +119,29 @@
               "web-api/sd-card",
               "web-api/settings",
               "web-api/server"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "MCP Server",
+        "groups": [
+          {
+            "group": "AI SDK Assistant",
+            "pages": [
+              "MCP-Server/overview",
+              "MCP-Server/setup",
+              "MCP-Server/system-prompt",
+              "MCP-Server/tools",
+              "MCP-Server/tips"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "MCP-Server/compatibility",
+              "MCP-Server/troubleshooting",
+              "MCP-Server/privacy"
             ]
           }
         ]

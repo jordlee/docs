@@ -1,0 +1,63 @@
+---
+title: "Client SDK Quickstart"
+description: "Control a Sony camera from TypeScript in under 5 minutes"
+---
+
+## 1. Install
+
+```bash
+npm install camera-remote-web-api
+```
+
+The package includes the native Camera Remote Web API Server binary for your platform (macOS ARM64, Linux x64/ARM64, Windows x64).
+
+## 2. Capture a Photo
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+
+manager.on('camera-ready', async ({ cameraId, camera }) => {
+  console.log(`${camera.model} connected`);
+
+  // Take control of the camera
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+
+  // Shoot
+  await manager.client.triggerShutter(cameraId);
+  console.log('Photo captured!');
+});
+
+await manager.start();
+// Binary boots → cameras discovered → auto-connected → 'camera-ready' fires
+```
+
+## 3. Run It
+
+Connect your Sony camera via USB, then:
+
+```bash
+npx tsx your-script.ts
+```
+
+You should see the camera model name printed, followed by "Photo captured!".
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="CameraManager" icon="server" href="/sdk/camera-manager">
+    Full lifecycle management, events, and multi-camera support
+  </Card>
+  <Card title="Events" icon="bolt" href="/sdk/events">
+    React to property changes, downloads, and camera state
+  </Card>
+  <Card title="Examples" icon="code" href="/sdk/examples">
+    Interval shooting, live view, browser control, and more
+  </Card>
+  <Card title="Direct API Access" icon="terminal" href="/sdk/direct-api">
+    Low-level CameraClient and EventStream without managed state
+  </Card>
+</CardGroup>

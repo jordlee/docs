@@ -1,0 +1,71 @@
+---
+title: "HTTP API Quickstart"
+description: "Control a Sony camera with curl in under 5 minutes"
+---
+
+## 1. Start the Server
+
+If you installed the Client SDK:
+
+```bash
+npx camera-remote-web-api --port 8080
+```
+
+The server discovers cameras connected via USB or network automatically.
+
+## 2. Discover Cameras
+
+```bash
+curl http://localhost:8080/api/cameras
+```
+
+Note the camera `id` from the response — you'll use it in all subsequent calls.
+
+## 3. Connect
+
+```bash
+curl -X POST http://localhost:8080/api/cameras/{id}/connection \
+  -H "Content-Type: application/json" \
+  -d '{"mode": "remote"}'
+```
+
+## 4. Take Control
+
+```bash
+curl -X PUT http://localhost:8080/api/cameras/{id}/priority-key \
+  -H "Content-Type: application/json" \
+  -d '{"setting": "pc-remote"}'
+```
+
+<Warning>Priority key **must** be set to `pc-remote` before the camera accepts remote commands.</Warning>
+
+## 5. Shoot
+
+```bash
+curl -X POST http://localhost:8080/api/cameras/{id}/actions/af-shutter
+```
+
+## 6. Disconnect
+
+```bash
+curl -X DELETE http://localhost:8080/api/cameras/{id}/connection
+```
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="book" href="/web-api/overview">
+    Full endpoint documentation with response formats
+  </Card>
+  <Card title="Connection Modes" icon="plug" href="/web-api/connection">
+    remote, remote-transfer, and contents-transfer modes
+  </Card>
+  <Card title="Properties" icon="sliders" href="/web-api/properties">
+    Read and set ISO, shutter speed, aperture, and more
+  </Card>
+  <Card title="Live View" icon="video" href="/web-api/live-view">
+    Stream real-time camera preview over HTTP
+  </Card>
+</CardGroup>
