@@ -12,9 +12,9 @@ Sony provides three MCP servers for AI-assisted development:
 
 | Server | Name | Description | URL |
 |--------|------|-------------|-----|
-| **[Web API Docs](/MCP-Server/web-api-docs)** | `Kando` | Camera Remote Web API endpoints, Client SDK (TypeScript) | `https://crsdk.app/mcp` |
-| **[SDK Docs](/MCP-Server/sdk-docs)** | `CRSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#) | `https://sdk-rag-agent-production.up.railway.app/mcp` |
-| **[Help Guides](/MCP-Server/help-guides)** | `CameraAssistant` | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
+| **[Web API Docs](/MCP-Server/web-api-docs)** | `CameraWebAPI` | Camera Remote Web API endpoints, Client SDK (TypeScript) | `https://crsdk.app/mcp` |
+| **[SDK Docs](/MCP-Server/sdk-docs)** | `CameraRemoteSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#) | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+| **[Help Guides](/MCP-Server/help-guides)** | `CameraHelp` | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
 
 All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor. You can install one, two, or all three.
 
@@ -43,7 +43,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     1. **Add the Connector**
        - Go to **Settings → Connectors**
        - Click **Add custom connector**
-       - Name it using the server name from the table above (e.g. `Kando`, `CRSDK`, or `CameraAssistant`)
+       - Name it using the server name from the table above (e.g. `CameraWebAPI`, `CameraRemoteSDK`, or `CameraHelp`)
        - Paste the corresponding MCP Server URL into the "Remote MCP server URL" field
        - Click **Add**
        - Refresh if needed — you should now see your new connector
@@ -117,25 +117,25 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
       <Tab title="macOS / Linux">
         ```bash
         # Web API Docs
-        claude mcp add Kando --scope user -- npx mcp-remote https://crsdk.app/mcp
+        claude mcp add CameraWebAPI --scope user -- npx mcp-remote https://crsdk.app/mcp
 
         # SDK Docs
-        claude mcp add CRSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        claude mcp add CameraRemoteSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
 
         # Help Guides
-        claude mcp add CameraAssistant --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
+        claude mcp add CameraHelp --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
         ```
       </Tab>
       <Tab title="Windows (PowerShell or CMD)">
         ```bash
         # Web API Docs
-        claude mcp add Kando --scope user -- cmd /c npx mcp-remote https://crsdk.app/mcp
+        claude mcp add CameraWebAPI --scope user -- cmd /c npx mcp-remote https://crsdk.app/mcp
 
         # SDK Docs
-        claude mcp add CRSDK --scope user -- cmd /c npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        claude mcp add CameraRemoteSDK --scope user -- cmd /c npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
 
         # Help Guides
-        claude mcp add CameraAssistant --scope user -- cmd /c npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
+        claude mcp add CameraHelp --scope user -- cmd /c npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
         ```
       </Tab>
     </Tabs>
@@ -165,7 +165,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "Kando": {
+            "CameraWebAPI": {
               "type": "stdio",
               "command": "npx",
               "args": [
@@ -173,7 +173,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
                 "https://crsdk.app/mcp"
               ]
             },
-            "CRSDK": {
+            "CameraRemoteSDK": {
               "type": "stdio",
               "command": "npx",
               "args": [
@@ -181,7 +181,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
               ]
             },
-            "CameraAssistant": {
+            "CameraHelp": {
               "type": "stdio",
               "command": "npx",
               "args": [
@@ -199,7 +199,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "Kando": {
+            "CameraWebAPI": {
               "type": "stdio",
               "command": "cmd",
               "args": [
@@ -207,7 +207,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
                 "https://crsdk.app/mcp"
               ]
             },
-            "CRSDK": {
+            "CameraRemoteSDK": {
               "type": "stdio",
               "command": "cmd",
               "args": [
@@ -215,7 +215,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
               ]
             },
-            "CameraAssistant": {
+            "CameraHelp": {
               "type": "stdio",
               "command": "cmd",
               "args": [
@@ -269,9 +269,9 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     ```json
     {
       "approvedTools": [
-        "mcp__Kando",
-        "mcp__CRSDK",
-        "mcp__CameraAssistant"
+        "mcp__CameraWebAPI",
+        "mcp__CameraRemoteSDK",
+        "mcp__CameraHelp"
       ]
     }
     ```
@@ -281,27 +281,27 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     ```json
     {
       "approvedTools": [
-        "mcp__Kando__search_sdk",
-        "mcp__Kando__search_code_examples",
-        "mcp__Kando__search_documentation",
-        "mcp__Kando__search_api_functions",
-        "mcp__CRSDK__search_sdk",
-        "mcp__CRSDK__search_code_examples",
-        "mcp__CRSDK__search_documentation",
-        "mcp__CRSDK__search_api_functions",
-        "mcp__CRSDK__search_compatibility",
-        "mcp__CRSDK__search_hybrid",
-        "mcp__CRSDK__search_exact_api",
-        "mcp__CRSDK__search_error_codes",
-        "mcp__CRSDK__search_warning_codes",
-        "mcp__CRSDK__search_by_source_file",
-        "mcp__CRSDK__get_sdk_context",
-        "mcp__CRSDK__get_current_sdk_version",
-        "mcp__CRSDK__set_sdk_version",
-        "mcp__CRSDK__set_sdk_language",
-        "mcp__CameraAssistant__search_camera",
-        "mcp__CameraAssistant__search_help_guides",
-        "mcp__CameraAssistant__search_topic"
+        "mcp__CameraWebAPI__search_sdk",
+        "mcp__CameraWebAPI__search_code_examples",
+        "mcp__CameraWebAPI__search_documentation",
+        "mcp__CameraWebAPI__search_api_functions",
+        "mcp__CameraRemoteSDK__search_sdk",
+        "mcp__CameraRemoteSDK__search_code_examples",
+        "mcp__CameraRemoteSDK__search_documentation",
+        "mcp__CameraRemoteSDK__search_api_functions",
+        "mcp__CameraRemoteSDK__search_compatibility",
+        "mcp__CameraRemoteSDK__search_hybrid",
+        "mcp__CameraRemoteSDK__search_exact_api",
+        "mcp__CameraRemoteSDK__search_error_codes",
+        "mcp__CameraRemoteSDK__search_warning_codes",
+        "mcp__CameraRemoteSDK__search_by_source_file",
+        "mcp__CameraRemoteSDK__get_sdk_context",
+        "mcp__CameraRemoteSDK__get_current_sdk_version",
+        "mcp__CameraRemoteSDK__set_sdk_version",
+        "mcp__CameraRemoteSDK__set_sdk_language",
+        "mcp__CameraHelp__search_camera",
+        "mcp__CameraHelp__search_help_guides",
+        "mcp__CameraHelp__search_topic"
       ]
     }
     ```
@@ -316,9 +316,9 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
 
     ```bash
     claude mcp list                                  # List all servers
-    claude mcp remove Kando --scope user             # Remove Web API Docs
-    claude mcp remove CRSDK --scope user             # Remove SDK Docs
-    claude mcp remove CameraAssistant --scope user   # Remove Help Guides
+    claude mcp remove CameraWebAPI --scope user             # Remove Web API Docs
+    claude mcp remove CameraRemoteSDK --scope user             # Remove SDK Docs
+    claude mcp remove CameraHelp --scope user   # Remove Help Guides
     ```
 
     <Note>
@@ -332,7 +332,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`. |
     | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
     | Server not connecting | Ensure you're not behind a proxy/VPN blocking the server URLs. |
-    | `approvedTools` not working | Verify the server name in your MCP config matches the prefix in `approvedTools` (e.g. `CRSDK`, `Kando`, `CameraAssistant`). |
+    | `approvedTools` not working | Verify the server name in your MCP config matches the prefix in `approvedTools` (e.g. `CameraRemoteSDK`, `CameraWebAPI`, `CameraHelp`). |
     | `.mcp.json` not detected | File must be in the **project root** directory. Restart Claude Code after creating it. |
     | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue. |
   </Tab>
@@ -353,9 +353,9 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
 
     | Server | Name | Command |
     |--------|------|---------|
-    | Web API Docs | `Kando` | `npx mcp-remote https://crsdk.app/mcp` |
-    | SDK Docs | `CRSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
-    | Help Guides | `CameraAssistant` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
+    | Web API Docs | `CameraWebAPI` | `npx mcp-remote https://crsdk.app/mcp` |
+    | SDK Docs | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
+    | Help Guides | `CameraHelp` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
 
     5. Set **Transport Type** to `command` (stdio)
     6. Click **Save**
@@ -380,21 +380,21 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "Kando": {
+            "CameraWebAPI": {
               "command": "npx",
               "args": [
                 "mcp-remote",
                 "https://crsdk.app/mcp"
               ]
             },
-            "CRSDK": {
+            "CameraRemoteSDK": {
               "command": "npx",
               "args": [
                 "mcp-remote",
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
               ]
             },
-            "CameraAssistant": {
+            "CameraHelp": {
               "command": "npx",
               "args": [
                 "mcp-remote",
@@ -409,21 +409,21 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "Kando": {
+            "CameraWebAPI": {
               "command": "cmd",
               "args": [
                 "/c", "npx", "mcp-remote",
                 "https://crsdk.app/mcp"
               ]
             },
-            "CRSDK": {
+            "CameraRemoteSDK": {
               "command": "cmd",
               "args": [
                 "/c", "npx", "mcp-remote",
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
               ]
             },
-            "CameraAssistant": {
+            "CameraHelp": {
               "command": "cmd",
               "args": [
                 "/c", "npx", "mcp-remote",

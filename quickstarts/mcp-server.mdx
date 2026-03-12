@@ -7,9 +7,9 @@ Sony provides three MCP servers that give your AI assistant access to different 
 
 | Server | Name | What It Covers |
 |--------|------|---------------|
-| **Web API Docs** | `Kando` | HTTP API endpoints, Client SDK (TypeScript) |
-| **SDK Docs** | `CRSDK` | Camera Remote SDK (C++/C#) — APIs, code examples, compatibility |
-| **Help Guides** | `CameraAssistant` | Camera help guides for 24 Sony models — settings, features, troubleshooting |
+| **Web API Docs** | `CameraWebAPI` | HTTP API endpoints, Client SDK (TypeScript) |
+| **SDK Docs** | `CameraRemoteSDK` | Camera Remote SDK (C++/C#) — APIs, code examples, compatibility |
+| **Help Guides** | `CameraHelp` | Camera help guides for 24 Sony models — settings, features, troubleshooting |
 
 ## Choose Your Tool
 
@@ -23,9 +23,9 @@ Sony provides three MCP servers that give your AI assistant access to different 
 
     | Name | URL |
     |------|-----|
-    | `Kando` | `https://crsdk.app/mcp` |
-    | `CRSDK` | `https://sdk-rag-agent-production.up.railway.app/mcp` |
-    | `CameraAssistant` | `https://camera-rag-agent-production.up.railway.app/mcp` |
+    | `CameraWebAPI` | `https://crsdk.app/mcp` |
+    | `CameraRemoteSDK` | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+    | `CameraHelp` | `https://camera-rag-agent-production.up.railway.app/mcp` |
 
     4. Click **Add**
     5. Open a new chat, click the **search and tools** icon, and toggle the connectors **on**
@@ -33,13 +33,13 @@ Sony provides three MCP servers that give your AI assistant access to different 
   <Tab title="Claude Code">
     ```bash
     # Web API Docs
-    claude mcp add Kando --scope user -- npx mcp-remote https://crsdk.app/mcp
+    claude mcp add CameraWebAPI --scope user -- npx mcp-remote https://crsdk.app/mcp
 
     # SDK Docs
-    claude mcp add CRSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+    claude mcp add CameraRemoteSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
 
     # Help Guides
-    claude mcp add CameraAssistant --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
+    claude mcp add CameraHelp --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
     ```
 
     Verify they're connected:
@@ -58,9 +58,9 @@ Sony provides three MCP servers that give your AI assistant access to different 
 
     | Name | Command |
     |------|---------|
-    | `Kando` | `npx mcp-remote https://crsdk.app/mcp` |
-    | `CRSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
-    | `CameraAssistant` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
+    | `CameraWebAPI` | `npx mcp-remote https://crsdk.app/mcp` |
+    | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
+    | `CameraHelp` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
 
     5. Click **Save**
   </Tab>
