@@ -131,9 +131,7 @@
             "pages": [
               "MCP-Server/overview",
               "MCP-Server/setup",
-              "MCP-Server/system-prompt",
-              "MCP-Server/tools",
-              "MCP-Server/tips"
+              "MCP-Server/system-prompt"
             ]
           },
           {
