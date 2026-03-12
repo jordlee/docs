@@ -10,7 +10,12 @@ Create a new project directory and initialize it:
 ```bash
 mkdir my-camera-app && cd my-camera-app
 npm init -y
+npm pkg set type=module
 ```
+
+<Info>
+`camera-remote-web-api` is an **ESM-only** package. Setting `"type": "module"` in your `package.json` enables ES module syntax (`import`/`export`) which is required to use the SDK.
+</Info>
 
 ## 2. Install the SDK
 
