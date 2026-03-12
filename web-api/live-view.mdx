@@ -44,6 +44,10 @@ Per-camera live view with optional OSD (On-Screen Display) overlay. All endpoint
 
 Sends the SDK `Setting_Key_EnableLiveView` command to the camera.
 
+<Warning>
+Live view is disabled by default in `remote-transfer` mode. You must call this endpoint before requesting frames.
+</Warning>
+
 ---
 
 ## Disable Live View

@@ -1,0 +1,119 @@
+---
+title: "Compatibility"
+description: "OS compatibility, camera connection modes, and per-camera API support"
+---
+
+## OS Compatibility
+
+Supported operating systems for the Camera Remote Web API server binary.
+
+| OS | Version / Detail |
+|----|-----------------|
+| **Windows** | Windows 11 64-bit |
+| **Linux x64** | Ubuntu 22.04 LTS, Ubuntu 24.04 LTS |
+| **Linux ARM64 — Jetson Orin Nano** | Cortex-A78AE, Ubuntu 20.04.6 |
+| **Linux ARM64 — Jetson Nano B01** | Cortex-A57, Ubuntu 18.04.1 |
+| **Linux ARM64 — Raspberry Pi 4 4GB** | Cortex-A72, Debian 12 Bookworm |
+| **macOS** | 14 (Sonoma), 15 (Sequoia), 26+ (Tahoe) |
+
+<Info>
+macOS universal binary is available from server binary v1.08.00, supporting both Intel and Apple Silicon.
+</Info>
+
+---
+
+## Camera Connection Compatibility
+
+Supported camera models and their connection mode support per physical layer. Connection modes: **R** = Remote, **C** = Contents, **T** = Remote Transfer.
+
+| Model | USB (R/C/T) | Wired Ethernet (R/C/T) | Wireless (R/C/T) |
+|-------|-------------|------------------------|-------------------|
+| ILX-LR1 *2 | R / C / T | R / C / T | R / C / T |
+| ILCE-1M2 | R / C / T | R / C / T | R / C / T |
+| ILCE-1 | R / C / T | R / C / T | R / C / T |
+| ILCE-9M3 | R / C / T | R / C / T | R / C / T |
+| ILCE-9M2 | R / — / — | R / — / — | — / — / — |
+| ILCE-7RM5 | R / C / T | — / — / — | R / C / T |
+| ILCE-7RM4A | R / C / — | — / — / — | — / — / — |
+| ILCE-7RM4 | R / — / — | — / — / — | — / — / — |
+| ILCE-7CR | R / C / T | — / — / — | R / C / T |
+| ILCE-7SM3 | R / C / T | — / — / — | R / C / T |
+| ILCE-7M5 *1 | R / C / T | — / — / — | R / C / T |
+| ILCE-7M4 | R / C / T | — / — / — | R / C / T |
+| ILCE-7CM2 | R / C / T | — / — / — | R / C / T |
+| ILCE-7C | R / C / — | — / — / — | — / — / — |
+| ILCE-6700 | R / C / T | — / — / — | R / C / T |
+| ILME-FX3A *2 | R / C / T | R / C / T *2 | R / C / T |
+| ILME-FX3 (Ver.2.00+) *2 | R / C / T | R / C / T *2 | R / C / T |
+| ILME-FX2 | R / C / T | — / — / — | R / C / T |
+| ILME-FX30 *2 | R / C / T | R / C / T *2 | R / C / T |
+| ZV-E1 | R / C / T | — / — / — | R / C / T |
+| ZV-E10M2 | R / C / — | — / — / — | R / C / — |
+| DSC-RX1RM3 | R / C / T | — / — / — | R / C / T |
+| DSC-RX0M2 (Ver.3.00+) | R / C / — | — / — / — | — / — / — |
+
+<sup>*1</sup> SSH authentication required for connection.<br/>
+<sup>*2</sup> Use a USB Type-C wired LAN adaptor for wired Ethernet.
+
+<Info>
+Connection mode details: **R** (Remote) = full camera control with auto-transfer, **C** (Contents) = SD card browsing only, **T** (Remote Transfer) = full control + explicit SD card download. See [Connection Modes](/sdk/camera-manager#connection-modes).
+</Info>
+
+---
+
+## API Compatibility
+
+Not all APIs are available on every camera. The table below shows per-camera support for APIs that vary across models. Universal APIs (connect, disconnect, get/set properties, send commands) are supported on all cameras and are not listed.
+
+Data sourced from Camera Remote SDK V2.01.00 `api_list`.
+
+### Legend
+
+| Symbol | Meaning |
+|--------|---------|
+| ✓ | Supported |
+| — | Not supported |
+
+### Per-Camera API Support
+
+| Model | Live View | OSD | SD Card (C) | SD Card (T) | Transfer Callback | Settings DL | Settings UL |
+|-------|-----------|-----|-------------|-------------|-------------------|-------------|-------------|
+| ILX-LR1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-1M2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-9M3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-9M2 | ✓ | ✓ | — | — | — | — | — |
+| ILCE-7RM5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-7RM4A | ✓ | ✓ | ✓ | — | — | — | — |
+| ILCE-7RM4 | ✓ | ✓ | — | — | — | — | — |
+| ILCE-7CR | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-7SM3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-7M5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-7M4 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-7CM2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILCE-7C | ✓ | ✓ | ✓ | — | — | — | — |
+| ILCE-6700 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILME-FX3A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILME-FX3 (Ver.2.00+) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILME-FX2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ILME-FX30 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ZV-E1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ZV-E10M2 | ✓ | ✓ | ✓ | — | — | ✓ | ✓ |
+| DSC-RX1RM3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| DSC-RX0M2 (Ver.3.00+) | ✓ | ✓ | ✓ | — | — | — | — |
+
+### API Details
+
+| Column | Client SDK Method | HTTP Endpoint | CRSDK API | Mode |
+|--------|------------------|---------------|-----------|------|
+| Live View | `enableLiveView()` / `getLiveViewFrame()` | `POST .../live-view/enable`, `GET .../live-view/frame` | GetLiveViewImage | R / T |
+| OSD | `enableOSD()` / `getOSDFrame()` | `POST .../live-view/osd-enable`, `GET .../live-view/osd-frame` | GetSelectLiveViewProperties | R / T |
+| SD Card (C) | `listSDCardFiles()` / `downloadSDCardFile()` | `GET .../sd-card/slot/{n}/files`, `POST .../download` | PullContentsFile | C |
+| SD Card (T) | `downloadSDCardFile()` | `POST .../sd-card/slot/{n}/files/{cid}/{fid}/download` | GetRemoteTransferContentsDataFile | T |
+| Transfer Callback | EventStream `transferProgress` | SSE `transferProgress` event | OnNotifyRemoteTransferResult | T |
+| Settings DL | `downloadCameraSettings()` | `POST .../settings/download` | DownloadSettingFile | R / T |
+| Settings UL | `uploadCameraSettings()` | `POST .../settings/upload` | UploadSettingFile | R / T |
+
+<Info>
+**SD Card (C)** requires **Contents** mode. **SD Card (T)** and **Transfer Callback** require **Remote Transfer** mode. Cameras that only support **R** (Remote) mode cannot use SD card file operations. See the [Camera Connection Compatibility](#camera-connection-compatibility) table above to check which modes each camera supports.
+</Info>

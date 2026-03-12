@@ -5,85 +5,55 @@ description: "Real-time camera callbacks via Server-Sent Events"
 
 Real-time event stream from the camera SDK. Subscribe to events from all cameras or a specific camera.
 
-## Subscribe to All Events
+## Subscribe to All Camera Events
 
 <ParamField path="method" type="GET">`GET /api/events`</ParamField>
 
 <CodeGroup>
-```javascript Browser (EventSource)
-const events = new EventSource("http://localhost:8080/api/events");
-
-events.addEventListener("downloadComplete", (e) => {
-  console.log("File saved:", JSON.parse(e.data).filename);
-});
-
-events.addEventListener("afStatus", (e) => {
-  console.log("AF:", JSON.parse(e.data).state);
-});
+```bash curl
+curl -N http://localhost:8080/api/events
 ```
 
-```typescript TypeScript (EventStream)
-import { EventStream } from 'camera-remote-web-api';
-
+```typescript TypeScript
 const events = new EventStream('http://localhost:8080');
 
 events.on('downloadComplete', (data) => {
   console.log('File saved:', data.filename);
 });
-
-events.on('afStatus', (data) => {
-  console.log('AF:', data.state);
-});
-```
-
-```typescript TypeScript (CameraManager)
-// CameraManager handles SSE internally — use manager events instead
-manager.on('camera-ready', ({ cameraId, camera }) => {
-  console.log(`${camera.model} connected`);
-});
-
-manager.on('camera-disconnected', ({ cameraId, error }) => {
-  console.log(`Disconnected: ${error ?? 'clean'}`);
-});
 ```
 </CodeGroup>
 
-## Subscribe to Camera Events
+## Subscribe to Select Camera Events
 
 <ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/events`</ParamField>
 
 Same event types, filtered to a single camera.
 
 <CodeGroup>
-```javascript Browser (EventSource)
-const events = new EventSource(
-  "http://localhost:8080/api/cameras/D10F60149B0C/events"
-);
+```bash curl
+curl -N http://localhost:8080/api/cameras/D10F60149B0C/events
 ```
 
-```typescript TypeScript (EventStream)
+```typescript TypeScript
 const events = new EventStream('http://localhost:8080', 'D10F60149B0C');
 ```
 </CodeGroup>
 
 ---
 
-## Event Types
+## Connection & Lifecycle Events
+
+Events related to camera connection state and SDK errors.
+
+<Info>
+When using the Client SDK, connection and lifecycle events can also be accessed via `manager.on()`. See [Client SDK Events](/sdk/events) for details.
+</Info>
 
 | Event | SDK Callback | Description |
 |-------|-------------|-------------|
 | `connected` | `OnConnected` | Camera connection established |
 | `disconnected` | `OnDisconnected` | Camera disconnected |
-| `propertyChanged` | `OnPropertyChangedCodes` | Property values changed |
-| `warning` | `OnWarning` | Camera warning/notification |
-| `afStatus` | `OnWarningExt` | Autofocus state change |
-| `downloadComplete` | `OnCompleteDownload` | Auto-transferred image saved |
-| `transferProgress` | `OnNotifyRemoteTransferResult` | File pull completed |
 | `error` | `OnError` | SDK error occurred |
-
----
-
-## Event Data
 
 ### connected
 ```json
@@ -94,6 +64,25 @@ const events = new EventStream('http://localhost:8080', 'D10F60149B0C');
 ```json
 {"error": "0x00000000"}
 ```
+
+### error
+```json
+{"code": "0x00008001", "message": "Generic error"}
+```
+
+---
+
+## Property & Action Events
+
+Real-time notifications from camera activity — settings changes, shutter events, autofocus, and file transfers.
+
+| Event | SDK Callback | Description |
+|-------|-------------|-------------|
+| `propertyChanged` | `OnPropertyChangedCodes` | Property values changed |
+| `warning` | `OnWarning` | Camera warning/notification |
+| `afStatus` | `OnWarningExt` | Autofocus state change |
+| `downloadComplete` | `OnCompleteDownload` | Auto-transferred image saved |
+| `transferProgress` | `OnNotifyRemoteTransferResult` | File pull completed |
 
 ### propertyChanged
 ```json
@@ -123,11 +112,6 @@ Only fires in `remote` connection mode with `still-image-store-destination` set 
 {"percent": 100, "notify": "0x20093", "filename": "/path/to/DSC09598.JPG"}
 ```
 Only fires in `remote-transfer` mode after explicit file pull.
-
-### error
-```json
-{"code": "0x00008001", "message": "Generic error"}
-```
 
 ---
 

@@ -1,0 +1,31 @@
+---
+title: "ServerManager"
+description: "Low-level binary process manager for the CameraWebApp native binary"
+---
+
+Low-level binary process manager. Spawns the native CameraWebApp binary and monitors its health.
+
+```typescript
+import { ServerManager } from 'camera-remote-web-api/server';
+
+const server = new ServerManager({
+  port: 8080,
+  autoPort: true,
+  binaryPath: '/path/to/CameraWebApp',
+});
+
+await server.start();
+await server.isRunning();  // true
+server.getPort();          // 8080 (or next available if autoPort)
+server.getPid();           // process ID
+server.getStdout();        // string[] — stdout lines
+server.getStderr();        // string[] — stderr lines
+
+await server.stop();
+```
+
+## When to use ServerManager directly
+
+- You need to manage the binary independently of camera connections
+- You're building a custom connection manager
+- You need access to binary stdout/stderr for debugging

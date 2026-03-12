@@ -1,50 +1,100 @@
 ---
 title: "Overview"
-description: "TypeScript client for controlling Sony cameras — choose your approach and explore the API"
+description: "TypeScript client for controlling Sony cameras — managed state, typed methods, and automatic reconnection"
 ---
 
 <Note>
   The Client SDK is a community-built developer tool and is **not officially supported by Sony**. Only the [Camera Remote SDK](/sdk/camera-remote-sdk) (C++/C#) is an official Sony product.
 </Note>
 
-The Client SDK (`camera-remote-web-api`) is a TypeScript package that wraps the [Camera Remote Web API](/web-api/overview) HTTP server. It manages the native server binary, discovers cameras, handles connections and reconnection, and provides typed APIs for camera control — from both Node.js and the browser.
+The Client SDK (`camera-remote-web-api`) is a TypeScript package that wraps the [Camera Remote Web API](/web-api/overview). It offers two ways to interact with cameras:
 
-<Card title="Quick Start" icon="rocket" href="/quickstarts/client-sdk">
-  Install, capture a photo, and run it — in under 5 minutes
-</Card>
+- **Stateless** — `CameraManager` handles discovery, connection, reconnection, and state tracking automatically. Most users should start here.
+- **Stateful** — Import `CameraClient`, `EventStream`, `LiveViewStream`, and `ServerManager` individually for full manual control over the connection lifecycle.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstarts/client-sdk">
+    Install, capture a photo, and run it — in under 5 minutes
+  </Card>
+  <Card title="Compatibility" icon="table" href="/web-api/compatibility">
+    Per-camera API support, connection modes, and OS compatibility
+  </Card>
+</CardGroup>
 
 ---
 
-## Which approach should I use?
+## Stateless vs Stateful
 
-<AccordionGroup>
-  <Accordion title="I want to control cameras from a Node.js server" icon="server" defaultOpen>
-    Use **CameraManager** from `camera-remote-web-api/server`. It starts the native binary, discovers cameras, auto-connects, and handles reconnection — all in one `start()` call.
+| | CameraManager (Stateless) | Individual Classes (Stateful) |
+|---|---|---|
+| **State** | Managed for you | You own and manage all state |
+| **Connection lifecycle** | Automatic — discovery, connect, reconnect | Manual — call `connectCamera()` and wait for SSE callback |
+| **Server binary** | Managed internally | You spawn and stop `ServerManager` yourself |
+| **Event subscriptions** | `manager.on()` for lifecycle events | Wire up `EventStream` per camera |
+| **Camera selection** | All cameras auto-connected | You choose which cameras to connect |
+| **Best for** | Most applications | Custom connection managers, selective camera control, browser-only clients |
 
-    ```typescript
-    import { CameraManager } from 'camera-remote-web-api/server';
-    ```
+---
 
-    [CameraManager docs](/sdk/camera-manager)
-  </Accordion>
+## Stateless: CameraManager
 
-  <Accordion title="I want to control cameras from the browser" icon="browser">
-    Use **CameraManager** from `camera-remote-web-api`. It connects to an already-running server, discovers cameras, and manages connection lifecycle.
+`CameraManager` is the only class most users need. It abstracts three concerns:
 
-    ```typescript
-    import { CameraManager } from 'camera-remote-web-api';
-    ```
+1. **Camera state management** — discovery, connection, reconnection, and state tracking happen automatically
+2. **Server binary management** — spawns and monitors the native binary (server variant only)
+3. **Typed camera control** — property read/write, shutter/focus/zoom actions, live view, and SD card access via `manager.client`
 
-    [CameraManager (Browser)](/sdk/camera-manager#browser)
-  </Accordion>
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
 
-  <Accordion title="I want direct HTTP control without managed state" icon="code">
-    Use **CameraClient** for typed REST calls and **EventStream** for SSE — no auto-connect or reconnection logic.
+const manager = new CameraManager({ port: 8080 });
 
-    ```typescript
-    import { CameraClient, EventStream } from 'camera-remote-web-api';
-    ```
+manager.on('camera-ready', async ({ cameraId }) => {
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  await manager.client.triggerShutter(cameraId);
+});
 
-    [Direct API Access](/sdk/direct-api)
-  </Accordion>
-</AccordionGroup>
+await manager.start();
+```
+
+<CardGroup cols={2}>
+  <Card title="CameraManager" icon="video" href="/sdk/camera-manager">
+    Options, connection modes, and the full CameraManager API
+  </Card>
+  <Card title="System Design" icon="sitemap" href="/sdk/architecture">
+    Browser vs server variants and framework patterns
+  </Card>
+</CardGroup>
+
+---
+
+## Stateful: Individual Classes
+
+For advanced use cases, import the individual classes that CameraManager uses internally. This gives you full control over the connection lifecycle, event subscriptions, and binary management.
+
+<CardGroup cols={2}>
+  <Card title="CameraClient" icon="code" href="/sdk/stateful/camera-client">
+    Typed HTTP client for all endpoints
+  </Card>
+  <Card title="EventStream" icon="bolt" href="/sdk/stateful/event-stream">
+    SSE client for real-time camera notifications
+  </Card>
+  <Card title="LiveViewStream" icon="video" href="/sdk/stateful/live-view-stream">
+    WebSocket client for continuous JPEG streaming
+  </Card>
+  <Card title="ServerManager" icon="server" href="/sdk/stateful/server-manager">
+    Low-level binary process manager
+  </Card>
+</CardGroup>
+
+---
+
+## Client SDK vs HTTP API
+
+| | Client SDK | HTTP API |
+|---|---|---|
+| **Type safety** | Full TypeScript types for all operations | Raw JSON request/response |
+| **SSE events** | Built-in subscription via `manager.on()` and `EventStream` | Manual SSE client setup |
+| **Language** | TypeScript/JavaScript only | Any language with HTTP support |
+
+**Use the Client SDK** unless you need language-agnostic HTTP access or want full manual control over the request lifecycle. For raw HTTP endpoints, see the [API Reference](/web-api/overview).

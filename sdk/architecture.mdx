@@ -1,0 +1,161 @@
+---
+title: "System Design"
+description: "Browser vs server implementations and how they map to real frameworks"
+---
+
+The Client SDK ships two CameraManager implementations. Both share the same camera control API (`manager.client`), but differ in how they connect to the native server binary.
+
+## Server Implementation
+
+**Import:** `camera-remote-web-api/server`
+
+Manages the native binary process and camera lifecycle. `start()` is async — it boots the binary, waits for HTTP readiness, then begins polling and SSE.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+await manager.start();  // Async — spawns binary, waits for ready
+```
+
+**Server-only methods:** `getPort()`, `isRunning()`, `getPid()`, `getStdout()`, `getStderr()`
+
+**Use case:** Node.js backends, API routes, CLI tools, Electron main process.
+
+---
+
+## Browser Implementation
+
+**Import:** `camera-remote-web-api`
+
+Connects to an already-running server via `baseUrl`. `start()` is synchronous — it immediately begins polling and SSE against the given URL. No binary management.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api';
+
+const manager = new CameraManager({
+  baseUrl: 'http://localhost:8080',
+});
+manager.start();  // Synchronous — begins polling + SSE
+```
+
+**Use case:** React components, vanilla JS, Electron renderer, any browser context.
+
+---
+
+## Framework Patterns
+
+### Next.js / Electron (bundled apps)
+
+Use **both** variants: server in the backend, browser in the frontend.
+
+<CodeGroup>
+```typescript Next.js — API Route (server variant)
+import { CameraManager } from 'camera-remote-web-api/server';
+
+let manager: CameraManager | null = null;
+
+export async function POST() {
+  if (!manager) {
+    manager = new CameraManager({
+      port: 8080,
+      autoPort: true,
+      binaryPath: '/path/to/CameraWebApp',
+    });
+    await manager.start();
+  }
+  return Response.json({ port: manager.getPort() });
+}
+```
+
+```typescript Next.js — Client Component (browser variant)
+'use client';
+import { CameraManager } from 'camera-remote-web-api';
+import { useEffect, useState } from 'react';
+
+export default function CameraPage() {
+  const [cameras, setCameras] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/server', { method: 'POST' })
+      .then(r => r.json())
+      .then(({ port }) => {
+        const manager = new CameraManager({
+          baseUrl: `http://localhost:${port}`,
+        });
+        manager.on('camera-ready', () => {
+          setCameras(manager.getCameras());
+        });
+        manager.start();
+        return () => manager.close();
+      });
+  }, []);
+
+  return <pre>{JSON.stringify(cameras, null, 2)}</pre>;
+}
+```
+</CodeGroup>
+
+<Warning>
+Next.js bundler strips native `createRequire` — always pass an explicit `binaryPath` in API routes.
+</Warning>
+
+<CodeGroup>
+```typescript Electron — Main Process (server variant)
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+await manager.start();
+
+// Expose port to renderer via IPC
+ipcMain.handle('get-port', () => manager.getPort());
+```
+
+```typescript Electron — Renderer (browser variant)
+import { CameraManager } from 'camera-remote-web-api';
+
+const port = await window.electronAPI.getPort();
+const manager = new CameraManager({
+  baseUrl: `http://localhost:${port}`,
+});
+manager.start();
+```
+</CodeGroup>
+
+### Plain React / Vanilla JS (browser only)
+
+Browser variant connects to a server already running elsewhere (started manually, by another process, or on a remote machine).
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api';
+
+const manager = new CameraManager({
+  baseUrl: 'http://192.168.1.100:8080',  // Server running elsewhere
+});
+
+manager.on('camera-ready', ({ cameraId, camera }) => {
+  console.log(`${camera.model} ready`);
+});
+
+manager.start();
+```
+
+### Node.js (server only)
+
+Server variant handles everything — binary, discovery, connection, and control.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({
+  port: 8080,
+  connectionMode: 'remote-transfer',
+});
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  await manager.client.triggerShutter(cameraId);
+});
+
+await manager.start();
+```

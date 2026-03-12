@@ -11,28 +11,19 @@
     "decoration": "grid"
   },
   "favicon": "/favicon.png",
+  "css": "/global.css",
   "navigation": {
     "global": {
       "anchors": [
         {
-          "anchor": "C++ SDK Download",
+          "anchor": "Camera Remote SDK",
           "icon": "download",
           "href": "https://support.d-imaging.sony.co.jp/app/sdk/en/index.html"
         },
         {
-          "anchor": "C# SDK Download",
-          "icon": "download",
-          "href": "https://sonyipsamarketing.cimediacloud.com/r/YvFlmszMaZMr"
-        },
-        {
-          "anchor": "Solutions",
-          "icon": "lightbulb",
-          "href": "https://pro.sony/ue_US/digital-imaging/camera-remote-toolkit"
-        },
-        {
-          "anchor": "Case Studies",
-          "icon": "book-open",
-          "href": "https://pro.sony/ue_US/digital-imaging/digital-imaging-insights"
+          "anchor": "Camera Remote Web API",
+          "icon": "npm",
+          "href": "https://www.npmjs.com/package/camera-remote-web-api"
         },
         {
           "anchor": "Products",
@@ -78,11 +69,27 @@
             "group": "Client SDKs",
             "pages": [
               "sdk/overview",
-              "sdk/camera-manager",
-              "sdk/events",
-              "sdk/examples",
-              "sdk/direct-api",
-              "sdk/reference"
+              "sdk/reference",
+              {
+                "group": "Stateless API Access",
+                "pages": [
+                  "sdk/camera-manager",
+                  "sdk/architecture",
+                  "sdk/state",
+                  "sdk/events",
+                  "sdk/properties-actions",
+                  "sdk/examples"
+                ]
+              },
+              {
+                "group": "Stateful API Access",
+                "pages": [
+                  "sdk/stateful/camera-client",
+                  "sdk/stateful/event-stream",
+                  "sdk/stateful/live-view-stream",
+                  "sdk/stateful/server-manager"
+                ]
+              }
             ]
           },
           {
@@ -105,7 +112,8 @@
           {
             "group": "Getting Started",
             "pages": [
-              "web-api/overview"
+              "web-api/overview",
+              "web-api/compatibility"
             ]
           },
           {
@@ -165,21 +173,16 @@
     ]
   },
   "logo": {
-    "light": "/logo/light.png",
-    "dark": "/logo/dark.png"
+    "light": "/logo/sony-logo-resized-light.png",
+    "dark": "/logo/sony-logo-resized-dark.png"
   },
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:jordan.lee@sony.com"
+        "label": "Report Bug",
+        "href": "https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
+    ]
   },
   "footer": {
     "socials": {

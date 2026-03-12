@@ -1,11 +1,22 @@
 ---
-title: "Events & State"
-description: "CameraManager events, state machine, and reconnection behavior"
+title: "Events"
+description: "Two SSE event categories — connection state management and property/action notifications"
 ---
 
-## Events
+The Client SDK has two separate event categories that serve different purposes and are subscribed to differently.
 
-All CameraManager variants (server and browser) emit the same events.
+| Category | Source | Purpose |
+|----------|--------|---------|
+| **Connection events** | `manager.on()` | Camera discovery and connection state |
+| **Property & action events** | `EventStream` | Camera settings changes, warnings, transfers |
+
+---
+
+## Connection Events
+
+Emitted by CameraManager (both server and browser variants). Use these to monitor camera discovery, connection state, and errors.
+
+### Events table
 
 | Event | Payload | When |
 |-------|---------|------|
@@ -17,9 +28,7 @@ All CameraManager variants (server and browser) emit the same events.
 | `connection-failed` | `{ cameraId, error, attempt }` | Connection attempt failed |
 | `error` | `{ message }` | Manager-level error (poll failure, SSE error) |
 
----
-
-## Subscribing
+### Subscribing
 
 ```typescript
 manager.on('camera-found', ({ camera }) => {
@@ -47,9 +56,7 @@ manager.on('error', ({ message }) => {
 });
 ```
 
----
-
-## Unsubscribing
+### Unsubscribing
 
 ```typescript
 // Remove a specific listener
@@ -63,91 +70,108 @@ manager.off('camera-ready');
 
 ---
 
-## State Machine
+## Property & Action Events
 
-Each camera tracked by CameraManager has one of four states:
+Real-time notifications from the camera via SSE. Use `EventStream` to subscribe to property changes, warnings, autofocus status, file transfers, and errors.
 
+### Events table
+
+| Event | Payload | When |
+|-------|---------|------|
+| `connected` | `{ cameraId }` | Camera connection established (SSE callback from server) |
+| `disconnected` | `{ error }` | Camera disconnected (SSE callback from server) |
+| `propertyChanged` | `{ codes }` | Camera settings changed (ISO, aperture, etc.) |
+| `warning` | `{ code }` | Camera warning (code `0x20011` = photo captured) |
+| `afStatus` | `{ state }` | Autofocus state changed (`'focused'` \| `'unlocked'` \| `'tracking'`) |
+| `downloadComplete` | `{ filename }` | File saved to host PC |
+| `transferProgress` | `{ percent, filename }` | File transfer progress |
+| `error` | `{ code }` | SSE connection error |
+
+### Subscribe to all camera events
+
+```typescript
+import { EventStream } from 'camera-remote-web-api';
+
+const events = new EventStream('http://localhost:8080');
+
+events.on('propertyChanged', (data) => {
+  console.log('Properties changed:', data.codes);
+});
+
+events.on('warning', (data) => {
+  if (data.code === '0x20011') {
+    console.log('Photo captured!');
+  }
+});
+
+events.on('downloadComplete', (data) => {
+  console.log('File saved:', data.filename);
+});
+
+events.on('afStatus', (data) => {
+  console.log('AF state:', data.state);
+});
+
+events.on('transferProgress', (data) => {
+  console.log(`Transfer: ${data.percent}%`, data.filename);
+});
+
+events.on('error', (data) => {
+  console.error('SSE error:', data.code);
+});
 ```
-detected ──→ connecting ──→ connected
-   ↑              │              │
-   │              ↓              ↓ (unexpected disconnect)
-   └── detected ← connection-failed    disconnected
-                                          │
-                                          ↓ (autoReconnect)
-                                     scheduleReconnect
-                                          │
-                                          ↓ (backoff: 2s, 4s, 6s... max 30s)
-                                       detected
+
+### Subscribe to select camera events
+
+Filter events to a single camera by passing a camera ID:
+
+```typescript
+const camEvents = new EventStream('http://localhost:8080', 'D10F60149B0C');
+
+camEvents.on('propertyChanged', (data) => {
+  console.log('Camera D10F60149B0C properties changed:', data.codes);
+});
 ```
 
-| State | Description |
-|-------|-------------|
-| `detected` | Camera found by polling, not yet connected |
-| `connecting` | Connection attempt in progress |
-| `connected` | Ready for commands |
-| `disconnected` | Was connected, now disconnected |
+### Cleanup
+
+```typescript
+// Remove specific callback
+const handler = (data) => console.log(data);
+events.on('downloadComplete', handler);
+events.off('downloadComplete', handler);
+
+// Close SSE connection
+events.close();
+```
 
 ---
 
-## Reconnection
+## Using Both Together
 
-When `autoReconnect` is enabled (default), CameraManager automatically retries after unexpected disconnections.
-
-**Backoff strategy:** Linear — 2s, 4s, 6s, 8s, 10s... capped at 30s max delay. Resets to 0 on successful connection.
-
-**Max attempts:** Controlled by `maxReconnectAttempts` (default: 5). After exhausting all attempts, no further retries are scheduled.
+Connection events tell you *when* a camera is ready. Property & action events tell you *what's happening* on the camera.
 
 ```typescript
-const manager = new CameraManager({
-  autoReconnect: true,         // default
-  maxReconnectAttempts: 10,    // retry up to 10 times
+import { CameraManager } from 'camera-remote-web-api/server';
+import { EventStream } from 'camera-remote-web-api';
+
+const manager = new CameraManager({ port: 8080, connectionMode: 'remote-transfer' });
+
+// Connection events — monitor lifecycle
+manager.on('camera-ready', async ({ cameraId, camera }) => {
+  console.log(`${camera.model} connected`);
+
+  // Property events — monitor camera activity
+  const events = new EventStream(`http://localhost:${manager.getPort()}`, cameraId);
+
+  events.on('downloadComplete', (data) => {
+    console.log(`${camera.model}: file saved — ${data.filename}`);
+  });
+
+  events.on('propertyChanged', (data) => {
+    console.log(`${camera.model}: settings changed — ${data.codes}`);
+  });
 });
 
-manager.on('connection-failed', ({ cameraId, attempt }) => {
-  console.log(`Reconnect attempt ${attempt}...`);
-});
-
-manager.on('camera-ready', ({ cameraId }) => {
-  console.log('Reconnected!');
-  // reconnectAttempts resets to 0 on success
-});
-```
-
-**Inspecting reconnection state:**
-
-```typescript
-const cam = manager.getCamera('D10F60149B0C');
-console.log(cam.state);              // 'disconnected'
-console.log(cam.reconnectAttempts);  // 3
-```
-
----
-
-## Event Flow Examples
-
-### Normal connection
-
-```
-poll() → camera-found → auto-connect → camera-connecting → camera-ready
-```
-
-### Unexpected disconnect + reconnect
-
-```
-SSE 'disconnected' → camera-disconnected → scheduleReconnect (2s)
-  → camera-connecting → camera-ready (reconnectAttempts resets)
-```
-
-### Camera unplugged
-
-```
-poll() → camera not in results → camera-lost (removed from tracking)
-```
-
-### Connection failure with retry
-
-```
-camera-connecting → connection-failed (attempt 1)
-  → scheduleReconnect (2s) → camera-connecting → connection-failed (attempt 2)
-  → scheduleReconnect (4s) → camera-connecting → camera-ready
+await manager.start();
 ```

@@ -1,32 +1,126 @@
 ---
 title: "Examples"
-description: "Full working examples — multi-camera, Next.js, photo capture workflows"
+description: "Multi-camera control, file transfers, live view, camera settings backup, and continuous shooting"
 ---
 
-## Quick Photo Capture
+## Multi-Camera Control & Selective Operations
 
-Connect, configure, and shoot in one flow:
+Discover cameras, get the full list, and trigger operations on selected cameras.
 
 ```typescript
 import { CameraManager } from 'camera-remote-web-api/server';
 
-const manager = new CameraManager({ port: 8080 });
+const manager = new CameraManager({
+  autoConnect: false,
+  connectionMode: 'remote-transfer',
+});
+
+await manager.start();
+
+// Wait for cameras to be discovered
+await new Promise(resolve => setTimeout(resolve, 3000));
+
+// Get full list of discovered cameras
+const cameras = manager.getCameras();
+console.log(`Found ${cameras.length} camera(s):`);
+cameras.forEach(c => console.log(`  ${c.info.model} (${c.info.id}) via ${c.info.connectionType}`));
+
+// Connect to a specific camera by ID
+const target = cameras[0];
+if (target) {
+  await manager.connect(target.info.id, { mode: 'remote-transfer' });
+}
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+});
+
+// Trigger all connected cameras simultaneously
+async function triggerAll() {
+  const connected = manager.getCameras().filter(c => c.state === 'connected');
+  console.log(`Triggering ${connected.length} cameras...`);
+
+  await Promise.all(
+    connected.map(c => manager.client.triggerShutter(c.info.id))
+  );
+}
+```
+
+---
+
+## File Transfer Operations
+
+### SD card download
+
+<Warning>
+An SD card must be inserted in the camera for file transfer and contents operations.
+</Warning>
+
+List and download files from the camera's SD card:
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+import { EventStream } from 'camera-remote-web-api';
+
+const manager = new CameraManager({
+  connectionMode: 'remote-transfer',
+});
 
 manager.on('camera-ready', async ({ cameraId }) => {
   const client = manager.client;
 
-  // Required: set priority to PC Remote
+  // Listen for completed downloads
+  const events = new EventStream(`http://localhost:${manager.getPort()}`, cameraId);
+  events.on('downloadComplete', (data) => {
+    console.log(`Saved: ${data.filename}`);
+  });
+  events.on('transferProgress', (data) => {
+    console.log(`Transfer: ${data.percent}%`);
+  });
+
+  // List and download files from slot 1
+  const { files } = await client.listSDCardFiles(cameraId, 1);
+  console.log(`Found ${files.length} files`);
+
+  for (const file of files) {
+    await client.downloadSDCardFile(cameraId, 1, file.content_id, file.file_id);
+  }
+});
+
+await manager.start();
+```
+
+### Auto-save to host PC
+
+<Warning>
+`still-image-store-destination` and auto-save only work in `remote` connection mode. They are not available in `remote-transfer` or `contents` modes.
+</Warning>
+
+In `remote` mode, configure the camera to automatically save photos to the host:
+
+```typescript
+const manager = new CameraManager({
+  connectionMode: 'remote',
+});
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  const client = manager.client;
   await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
 
-  // Configure settings
-  await client.setProperty(cameraId, 'iso', { value: '400' });
-  await client.setProperty(cameraId, 'aperture', { value: 'f/2.8' });
-  await client.setProperty(cameraId, 'shutter-speed', { value: '1/250' });
+  // Set save destination to both camera + host PC
+  await client.setProperty(cameraId, 'still-image-store-destination', { value: '0x3' });
 
-  // Take a photo with autofocus
+  // Configure where the server saves files
+  await client.setSaveInfo(cameraId, { path: '/tmp/photos', prefix: 'IMG_', startNo: 1 });
+
+  // Listen for auto-transferred files
+  const events = new EventStream(`http://localhost:${manager.getPort()}`, cameraId);
+  events.on('downloadComplete', (data) => {
+    console.log(`Auto-saved: ${data.filename}`);
+  });
+
+  // Shoot — file auto-transfers to /tmp/photos
   await client.afShutter(cameraId);
-
-  console.log('Photo captured!');
 });
 
 await manager.start();
@@ -34,9 +128,57 @@ await manager.start();
 
 ---
 
-## Multi-Camera
+## Live View Display & OSD
 
-CameraManager tracks each camera independently — separate state, separate reconnection timers.
+Stream live view frames and control on-screen display overlay.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+import { LiveViewStream } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({
+  connectionMode: 'remote-transfer',
+});
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  const client = manager.client;
+  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+
+  // Enable live view with OSD overlay (exposure info, focus area)
+  await client.enableLiveView(cameraId, { osd: true });
+  await client.startLiveViewStream(cameraId);
+
+  // HTTP polling (~15fps)
+  const poll = setInterval(async () => {
+    const frame = await client.getLiveViewFrame(cameraId);
+    process.stdout.write(`Frame: ${frame.byteLength} bytes\r`);
+  }, 66);
+
+  // OR: WebSocket streaming (~15fps)
+  const liveView = new LiveViewStream(`ws://localhost:${manager.getPort()}`, cameraId);
+  liveView.onFrame((jpeg: ArrayBuffer) => {
+    // Each message is a complete JPEG frame
+    process.stdout.write(`WS Frame: ${jpeg.byteLength} bytes\r`);
+  });
+
+  // Clean up
+  // clearInterval(poll);
+  // liveView.close();
+  // await client.stopLiveViewStream(cameraId);
+});
+
+await manager.start();
+```
+
+---
+
+## Camera Settings Backup & Restore
+
+Save and restore complete camera configurations using `.DAT` settings files.
+
+<Warning>
+Settings file operations are not supported on all cameras. The following models do **not** support settings download/upload: ILCE-9M2, ILCE-7RM4, ILCE-7RM4A, ILCE-7C, DSC-RX0M2. See [Compatibility](/web-api/compatibility#api-compatibility) for details.
+</Warning>
 
 ```typescript
 import { CameraManager } from 'camera-remote-web-api/server';
@@ -45,198 +187,60 @@ const manager = new CameraManager({
   connectionMode: 'remote',
 });
 
-manager.on('camera-ready', async ({ cameraId, camera }) => {
-  console.log(`${camera.model} (${cameraId}) ready`);
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+manager.on('camera-ready', async ({ cameraId }) => {
+  const client = manager.client;
+
+  // List available settings files on camera
+  const { files } = await client.listSettingsFiles(cameraId);
+  console.log('Settings files:', files);
+
+  // Download a settings .DAT file to host PC
+  await client.downloadCameraSettings(cameraId, { filename: 'CUMSET.DAT' });
+  console.log('Settings downloaded to host PC');
+
+  // Upload a settings .DAT file back to camera
+  await client.uploadCameraSettings(cameraId, { filename: 'CUMSET.DAT' });
+  console.log('Settings uploaded to camera');
 });
 
 await manager.start();
-
-// Wait for cameras to connect, then trigger all at once
-setTimeout(async () => {
-  const connected = manager.getCameras().filter(c => c.state === 'connected');
-  console.log(`Triggering ${connected.length} cameras...`);
-
-  await Promise.all(
-    connected.map(c => manager.client.triggerShutter(c.info.id))
-  );
-}, 5000);
 ```
+
+See [Camera Settings HTTP API](/web-api/settings) for full endpoint documentation.
 
 ---
 
-## Selective Connection
+## Continuous Shooting Burst
 
-Connect only specific camera models or connection types:
+Configure drive mode for continuous shooting and trigger a burst.
 
 ```typescript
 import { CameraManager } from 'camera-remote-web-api/server';
 
 const manager = new CameraManager({
-  autoConnect: false,  // Don't auto-connect everything
+  connectionMode: 'remote-transfer',
 });
 
-manager.on('camera-found', async ({ camera }) => {
-  // Only connect A9 III cameras via USB
-  if (camera.model === 'ILCE-9M3' && camera.connectionType === 'USB') {
-    await manager.connect(camera.id, { mode: 'remote' });
-  }
-});
-
-manager.on('camera-ready', async ({ cameraId }) => {
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-});
-
-await manager.start();
-```
-
----
-
-## Next.js
-
-Server boots the binary in an API route; browser uses CameraManager to connect.
-
-<CodeGroup>
-```typescript app/api/server/route.ts
-import { CameraManager } from 'camera-remote-web-api/server';
-
-let manager: CameraManager | null = null;
-
-export async function POST() {
-  if (!manager) {
-    manager = new CameraManager({
-      port: 8080,
-      autoPort: true,
-      binaryPath: '/path/to/CameraWebApp', // explicit path for Next.js bundler
-    });
-    await manager.start();
-  }
-  return Response.json({ port: manager.getPort() });
-}
-```
-
-```typescript app/page.tsx
-'use client';
-import { CameraManager } from 'camera-remote-web-api';
-import { useEffect, useState } from 'react';
-
-export default function CameraPage() {
-  const [cameras, setCameras] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/server', { method: 'POST' })
-      .then(r => r.json())
-      .then(({ port }) => {
-        const manager = new CameraManager({
-          baseUrl: `http://localhost:${port}`,
-        });
-
-        manager.on('camera-ready', () => {
-          setCameras(manager.getCameras());
-        });
-
-        manager.start();
-        return () => manager.close();
-      });
-  }, []);
-
-  return <pre>{JSON.stringify(cameras, null, 2)}</pre>;
-}
-```
-</CodeGroup>
-
-<Warning>
-Next.js bundler strips native `createRequire` — always pass an explicit `binaryPath` in API routes.
-</Warning>
-
----
-
-## Continuous Shooting
-
-Start and stop continuous capture with drive mode control:
-
-```typescript
 manager.on('camera-ready', async ({ cameraId }) => {
   const client = manager.client;
-
   await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+
+  // Configure shooting settings
+  await client.setProperty(cameraId, 'iso', { value: '400' });
+  await client.setProperty(cameraId, 'aperture', { value: 'f/2.8' });
+  await client.setProperty(cameraId, 'shutter-speed', { value: '1/250' });
   await client.setProperty(cameraId, 'drive-mode', { value: 'continuous-hi' });
 
-  // Start continuous shooting
-  await client.triggerShutter(cameraId, { action: 'down' });
+  // Verify settings were applied
+  const iso = await client.getProperty(cameraId, 'iso');
+  console.log('ISO set to:', iso.data.formatted);
 
-  // Shoot for 3 seconds
+  // Start continuous shooting burst (hold shutter for 3 seconds)
+  await client.triggerShutter(cameraId, { action: 'down' });
   setTimeout(async () => {
     await client.triggerShutter(cameraId, { action: 'up' });
     console.log('Burst complete');
   }, 3000);
-});
-```
-
----
-
-## Live View
-
-Stream live view frames from a connected camera:
-
-```typescript
-manager.on('camera-ready', async ({ cameraId }) => {
-  const client = manager.client;
-
-  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-
-  // Start live view
-  await client.startLiveViewStream(cameraId);
-
-  // Poll frames
-  setInterval(async () => {
-    const frame = await client.getLiveViewFrame(cameraId);
-    // frame is an ArrayBuffer containing JPEG data
-    process.stdout.write(`Frame: ${frame.byteLength} bytes\r`);
-  }, 66); // ~15fps
-});
-```
-
-For continuous WebSocket streaming, use `LiveViewStream`:
-
-```typescript
-import { LiveViewStream } from 'camera-remote-web-api/server';
-
-const liveView = new LiveViewStream(`ws://localhost:${manager.getPort()}`, cameraId);
-liveView.onFrame((jpeg: ArrayBuffer) => {
-  // Process each JPEG frame (~15fps)
-});
-
-// Clean up
-liveView.close();
-```
-
----
-
-## SD Card Download
-
-Browse and download files from the camera's SD card:
-
-```typescript
-import { CameraManager } from 'camera-remote-web-api/server';
-
-const manager = new CameraManager({
-  connectionMode: 'remote-transfer',  // Required for SD card access
-});
-
-manager.on('camera-ready', async ({ cameraId }) => {
-  const client = manager.client;
-
-  // List files on slot 1
-  const { files } = await client.listSDCardFiles(cameraId, 1);
-  console.log(`Found ${files.length} files`);
-
-  // Download first file
-  if (files.length > 0) {
-    const file = files[0];
-    await client.downloadSDCardFile(cameraId, 1, file.content_id, file.file_id);
-    console.log(`Downloaded: ${file.file_path}`);
-  }
 });
 
 await manager.start();

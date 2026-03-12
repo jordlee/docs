@@ -1,41 +1,6 @@
 ---
-title: "Settings"
-description: "Save path configuration and camera settings file management"
----
-
-## Save Info
-
-Configure where auto-transferred images are saved on the host PC.
-
-### Get Save Info
-
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/settings/save-info`</ParamField>
-
-```json
-{
-  "success": true,
-  "data": {
-    "path": "/Users/me/Photos",
-    "prefix": "DSC",
-    "startNo": "1"
-  }
-}
-```
-
-### Set Save Info
-
-<ParamField path="method" type="PUT">`PUT /api/cameras/{cameraId}/settings/save-info`</ParamField>
-
-<ParamField body="path" type="string">Directory path on host PC</ParamField>
-<ParamField body="prefix" type="string">Filename prefix</ParamField>
-<ParamField body="startNo" type="integer">Starting file number</ParamField>
-
-```bash
-curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/settings/save-info \
-  -H "Content-Type: application/json" \
-  -d '{"path": "/Users/me/Photos", "prefix": "SHOOT", "startNo": 1}'
-```
-
+title: "Save & Recall Settings"
+description: "Camera settings file management — backup and restore camera configurations"
 ---
 
 ## Camera Settings Files
