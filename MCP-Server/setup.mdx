@@ -4,17 +4,17 @@ icon: "book"
 title: "Setup"
 ---
 
-<Card title="Quick Setup" icon="rocket" href="/quickstarts/mcp-server">
+<Card icon="rocket" href="/quickstarts/mcp-server" title="Quick Setup">
   Want the short version? Get running in under 5 minutes
 </Card>
 
 Sony provides three MCP servers for AI-assisted development:
 
-| Server | Name | Description | URL |
-|--------|------|-------------|-----|
-| **[Web API Docs](/MCP-Server/web-api-docs)** | `CameraWebAPI` | Camera Remote Web API endpoints, Client SDK (TypeScript) | `https://crsdk.app/mcp` |
-| **[SDK Docs](/MCP-Server/sdk-docs)** | `CameraRemoteSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#) | `https://sdk-rag-agent-production.up.railway.app/mcp` |
-| **[Help Guides](/MCP-Server/help-guides)** | `CameraHelp` | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
+| Server                                       | Name              | Description                                                                       | URL                                                      |
+| -------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [**Web API Docs**](/MCP-Server/web-api-docs) | `CameraWebAPI`    | Camera Remote Web API endpoints, Client SDK (TypeScript)                          | `https://crsdk.app/mcp`                                  |
+| [**SDK Docs**](/MCP-Server/sdk-docs)         | `CameraRemoteSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#)       | `https://sdk-rag-agent-production.up.railway.app/mcp`    |
+| [**Help Guides**](/MCP-Server/help-guides)   | `CameraHelp`      | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
 
 All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor. You can install one, two, or all three.
 
@@ -35,7 +35,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Info>
       If you intend to use both [claude.ai](http://claude.ai) and Claude Code, you must set up each application separately. MCP servers are not shared between them.
     </Info>
-
     ### Configuration Steps
 
     Repeat these steps for each MCP server you want to install:
@@ -47,7 +46,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
        - Paste the corresponding MCP Server URL into the "Remote MCP server URL" field
        - Click **Add**
        - Refresh if needed — you should now see your new connector
-
     2. **Configure Tools**
 
        Each server provides specialized search tools. Your AI automatically selects the best tool for your question.
@@ -55,7 +53,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
        <Tip>
          Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
        </Tip>
-
        To configure a server's tools:
        - Navigate to **Settings → Connectors**
        - Next to the connector, click the **Configure** button
@@ -66,7 +63,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
        <Warning>
          Disable the **search** and **fetch** tools before prompting. These tools are intended for use only with ChatGPT.
        </Warning>
-
     3. **Set Tool Permissions**
 
        The default tool permission setting is **always ask for permission**.
@@ -76,7 +72,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
        <Tip>
          We recommend setting all tool permissions to **allow unsupervised** when first using the servers. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
        </Tip>
-
     4. **Configure System Prompt (Optional but Recommended)**
 
        A system prompt significantly improves performance. See the [System Prompt](/MCP-Server/system-prompt) page for setup instructions.
@@ -104,11 +99,9 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Info>
       If you intend to use both [claude.ai](http://claude.ai) and Claude Code, you must set up each application separately. MCP servers are not shared between them.
     </Info>
-
     <Warning>
       Server names **must not contain spaces**. Use the exact names shown below.
     </Warning>
-
     ### Quick Setup (CLI)
 
     Run these commands to add each server you want:
@@ -118,10 +111,8 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```bash
         # Web API Docs
         claude mcp add CameraWebAPI --scope user -- npx mcp-remote https://crsdk.app/mcp
-
         # SDK Docs
         claude mcp add CameraRemoteSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
-
         # Help Guides
         claude mcp add CameraHelp --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
         ```
@@ -130,16 +121,13 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```bash
         # Web API Docs
         claude mcp add CameraWebAPI --scope user -- cmd /c npx mcp-remote https://crsdk.app/mcp
-
         # SDK Docs
         claude mcp add CameraRemoteSDK --scope user -- cmd /c npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
-
         # Help Guides
         claude mcp add CameraHelp --scope user -- cmd /c npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
         ```
       </Tab>
     </Tabs>
-
     Verify they're connected:
 
     ```bash
@@ -149,7 +137,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Tip>
       For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
     </Tip>
-
     ---
 
     ### Manual Setup (JSON Config)
@@ -228,22 +215,21 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```
       </Tab>
     </Tabs>
-
     <Tip>
       Commit `.mcp.json` to version control to share MCP server configuration with your team.
     </Tip>
-
     #### User Scope — `~/.claude.json` (Global)
 
     Available across all projects on your machine. Merge into your existing `~/.claude.json` (create it if it doesn't exist).
 
-    | OS | Path |
-    |----|------|
-    | **macOS** | `/Users/<your-username>/.claude.json` |
-    | **Linux** | `/home/<your-username>/.claude.json` |
+    | OS          | Path                                    |
+    | ----------- | --------------------------------------- |
+    | **macOS**   | `/Users/<your-username>/.claude.json`   |
+    | **Linux**   | `/home/<your-username>/.claude.json`    |
     | **Windows** | `C:\Users\<your-username>\.claude.json` |
 
     This is a **hidden file** (starts with `.`). To see it:
+
     - **macOS Finder:** Press `Cmd + Shift + .` to toggle hidden files
     - **Windows Explorer:** View → Show → Hidden items
     - **Terminal:** `code ~/.claude.json` (VS Code) or `notepad %USERPROFILE%\.claude.json` (Windows)
@@ -256,7 +242,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
 
     #### Scope Priority
 
-    When the same server is defined in multiple scopes: **Local > Project > User**
+    When the same server is defined in multiple scopes: **Local \> Project \> User**
 
     ---
 
@@ -309,7 +295,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Note>
       Wildcards (`*`) are not supported — you must explicitly list each tool or approve the entire server.
     </Note>
-
     ---
 
     ### Managing & Removing Servers
@@ -324,17 +309,16 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
-
     ### Troubleshooting
 
-    | Issue | Solution |
-    |-------|---------|
-    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`. |
-    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
-    | Server not connecting | Ensure you're not behind a proxy/VPN blocking the server URLs. |
-    | `approvedTools` not working | Verify the server name in your MCP config matches the prefix in `approvedTools` (e.g. `CameraRemoteSDK`, `CameraWebAPI`, `CameraHelp`). |
-    | `.mcp.json` not detected | File must be in the **project root** directory. Restart Claude Code after creating it. |
-    | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue. |
+    | Issue                                 | Solution                                                                                                                               |
+    | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+    | `npx` not found                       | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`.                                             |
+    | Windows: `npx` not recognized         | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
+    | Server not connecting                 | Ensure you're not behind a proxy/VPN blocking the server URLs.                                                                         |
+    | `approvedTools` not working           | Verify the server name in your MCP config matches the prefix in `approvedTools` (e.g. `CRSDK`, `Kando`, `CameraAssistant`).            |
+    | `.mcp.json` not detected              | File must be in the **project root** directory. Restart Claude Code after creating it.                                                 |
+    | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue.                                 |
   </Tab>
   <Tab title="Cursor">
     ### Requirements
@@ -347,15 +331,15 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     Repeat these steps for each server you want to add:
 
     1. Open Cursor Settings (`Cmd + ,` on macOS / `Ctrl + ,` on Windows/Linux)
-    2. Navigate to **Features > MCP**
-    3. Click **+ Add New MCP Server**
+    2. Navigate to **Features \> MCP**
+    3. Click **\+ Add New MCP Server**
     4. Enter the server details:
 
-    | Server | Name | Command |
-    |--------|------|---------|
-    | Web API Docs | `CameraWebAPI` | `npx mcp-remote https://crsdk.app/mcp` |
-    | SDK Docs | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
-    | Help Guides | `CameraHelp` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
+    | Server       | Name              | Command                                                                 |
+    | ------------ | ----------------- | ----------------------------------------------------------------------- |
+    | Web API Docs | `CameraWebAPI`    | `npx mcp-remote https://crsdk.app/mcp`                                  |
+    | SDK Docs     | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp`    |
+    | Help Guides  | `CameraHelp`      | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
 
     5. Set **Transport Type** to `command` (stdio)
     6. Click **Save**
@@ -364,7 +348,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Tip>
       For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
     </Tip>
-
     ---
 
     ### Manual Setup (JSON Config)
@@ -435,15 +418,14 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```
       </Tab>
     </Tabs>
-
     #### Global Scope
 
     For access across all projects, create or edit `~/.cursor/mcp.json` with the same JSON format above.
 
-    | OS | Path |
-    |----|------|
-    | **macOS** | `~/.cursor/mcp.json` |
-    | **Linux** | `~/.cursor/mcp.json` |
+    | OS          | Path                                        |
+    | ----------- | ------------------------------------------- |
+    | **macOS**   | `~/.cursor/mcp.json`                        |
+    | **Linux**   | `~/.cursor/mcp.json`                        |
     | **Windows** | `C:\Users\<your-username>\.cursor\mcp.json` |
 
     ---
@@ -457,14 +439,13 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Note>
       Cursor supports MCP servers using `stdio`, `sse`, and `streamable-http` transport types. The `stdio` transport (via `npx`) is the recommended approach.
     </Note>
-
     ### Troubleshooting
 
-    | Issue | Solution |
-    |-------|---------|
-    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. |
-    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows config above. |
-    | Server not appearing | Restart Cursor after saving the config file. |
-    | Tools not available in chat | Verify the server is connected in **Settings > Features > MCP**. |
+    | Issue                         | Solution                                                           |
+    | ----------------------------- | ------------------------------------------------------------------ |
+    | `npx` not found               | Ensure Node.js (v18+) is installed and `npx` is on your PATH.      |
+    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows config above.     |
+    | Server not appearing          | Restart Cursor after saving the config file.                       |
+    | Tools not available in chat   | Verify the server is connected in **Settings \> Features \> MCP**. |
   </Tab>
 </Tabs>
