@@ -1,0 +1,46 @@
+---
+title: "Overview"
+description: "TypeScript client for controlling Sony cameras — choose your approach and explore the API"
+---
+
+The Client SDK (`camera-remote-web-api`) is a TypeScript package that wraps the [Camera Remote Web API](/web-api/overview) HTTP server. It manages the native server binary, discovers cameras, handles connections and reconnection, and provides typed APIs for camera control — from both Node.js and the browser.
+
+<Card title="Quick Start" icon="rocket" href="/quickstarts/client-sdk">
+  Install, capture a photo, and run it — in under 5 minutes
+</Card>
+
+---
+
+## Which approach should I use?
+
+<AccordionGroup>
+  <Accordion title="I want to control cameras from a Node.js server" icon="server" defaultOpen>
+    Use **CameraManager** from `camera-remote-web-api/server`. It starts the native binary, discovers cameras, auto-connects, and handles reconnection — all in one `start()` call.
+
+    ```typescript
+    import { CameraManager } from 'camera-remote-web-api/server';
+    ```
+
+    [CameraManager docs](/sdk/camera-manager)
+  </Accordion>
+
+  <Accordion title="I want to control cameras from the browser" icon="browser">
+    Use **CameraManager** from `camera-remote-web-api`. It connects to an already-running server, discovers cameras, and manages connection lifecycle.
+
+    ```typescript
+    import { CameraManager } from 'camera-remote-web-api';
+    ```
+
+    [CameraManager (Browser)](/sdk/camera-manager#browser)
+  </Accordion>
+
+  <Accordion title="I want direct HTTP control without managed state" icon="code">
+    Use **CameraClient** for typed REST calls and **EventStream** for SSE — no auto-connect or reconnection logic.
+
+    ```typescript
+    import { CameraClient, EventStream } from 'camera-remote-web-api';
+    ```
+
+    [Direct API Access](/sdk/direct-api)
+  </Accordion>
+</AccordionGroup>

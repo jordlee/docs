@@ -7,23 +7,34 @@ Per-camera live view with optional OSD (On-Screen Display) overlay. All endpoint
 
 ## Workflow
 
-<Steps>
-  <Step title="Start streaming">
-    `POST /api/cameras/{id}/live-view/start` — auto-enables live view if disabled
-  </Step>
-  <Step title="Get frames">
-    `GET /api/cameras/{id}/live-view/frame` — single JPEG frame
-  </Step>
-  <Step title="Optional: Enable OSD">
-    `POST /api/cameras/{id}/live-view/osd-enable` — overlay camera UI
-  </Step>
-  <Step title="Get OSD frames">
-    `GET /api/cameras/{id}/live-view/osd-frame` — composited JPEG (~189KB vs ~119KB raw)
-  </Step>
-  <Step title="Stop">
-    `POST /api/cameras/{id}/live-view/stop`
-  </Step>
-</Steps>
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript
+    await client.startLiveViewStream(id);  // auto-enables live view
+    const frame = await client.getLiveViewFrame(id);  // single JPEG
+    await client.stopLiveViewStream(id);
+    ```
+  </Tab>
+  <Tab title="REST">
+    <Steps>
+      <Step title="Start streaming">
+        `POST /api/cameras/{id}/live-view/start` — auto-enables live view if disabled
+      </Step>
+      <Step title="Get frames">
+        `GET /api/cameras/{id}/live-view/frame` — single JPEG frame
+      </Step>
+      <Step title="Optional: Enable OSD">
+        `POST /api/cameras/{id}/live-view/osd-enable` — overlay camera UI
+      </Step>
+      <Step title="Get OSD frames">
+        `GET /api/cameras/{id}/live-view/osd-frame` — composited JPEG (~189KB vs ~119KB raw)
+      </Step>
+      <Step title="Stop">
+        `POST /api/cameras/{id}/live-view/stop`
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
 
 ---
 
@@ -77,9 +88,15 @@ Starts the frame capture worker thread. Auto-enables live view if disabled.
 
 Returns the latest live view frame as a JPEG image (`Content-Type: image/jpeg`). Streaming must be started first.
 
-```bash
+<CodeGroup>
+```bash curl
 curl -o frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/frame
 ```
+
+```typescript TypeScript
+const frame = await client.getLiveViewFrame('D10F60149B0C'); // ArrayBuffer (JPEG)
+```
+</CodeGroup>
 
 ---
 
@@ -145,7 +162,8 @@ Connect with `binaryType: 'arraybuffer'`. Each binary message is a complete JPEG
 
 ### Client Example
 
-```javascript
+<CodeGroup>
+```javascript Browser (WebSocket)
 const ws = new WebSocket('ws://localhost:8080/ws');
 ws.binaryType = 'arraybuffer';
 
@@ -161,3 +179,14 @@ ws.onmessage = (event) => {
   document.getElementById('liveView').src = URL.createObjectURL(blob);
 };
 ```
+
+```typescript TypeScript (LiveViewStream)
+import { LiveViewStream } from 'camera-remote-web-api/server';
+
+const liveView = new LiveViewStream('ws://localhost:8080', 'D10F60149B0C');
+liveView.onFrame((jpeg: ArrayBuffer) => {
+  // Process JPEG frame (~15fps)
+});
+liveView.close();
+```
+</CodeGroup>

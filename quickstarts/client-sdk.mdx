@@ -1,0 +1,79 @@
+---
+title: "Client SDK Quickstart"
+description: "Control a Sony camera from TypeScript in under 5 minutes"
+---
+
+## 1. Initialize Your Project
+
+If you don't already have a `package.json`, create one:
+
+```bash
+npm init -y
+```
+
+## 2. Install the Client SDK
+
+```bash
+npm install camera-remote-web-api
+```
+
+The correct native binary for your current OS is installed automatically (macOS ARM64, Linux x64/ARM64, Windows x64).
+
+After installation, the CLI will walk you through installing any additional platform binaries you need. Follow the prompts to complete setup.
+
+## 3. Install MCP Servers (Optional)
+
+The CLI also lets you install the AI SDK Assistant and AI Camera Assistant MCP servers during setup. These connect your AI tools (Claude, Claude Code, Cursor) to Sony's SDK documentation for intelligent search.
+
+You can always install them later — see the [MCP Server quickstart](/quickstarts/mcp-server) for details.
+
+## 4. Capture a Photo
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+
+manager.on('camera-ready', async ({ cameraId, camera }) => {
+  console.log(`${camera.model} connected`);
+
+  // Take control of the camera
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+
+  // Shoot
+  await manager.client.triggerShutter(cameraId);
+  console.log('Photo captured!');
+});
+
+await manager.start();
+// Binary boots → cameras discovered → auto-connected → 'camera-ready' fires
+```
+
+## 5. Run It
+
+Connect your Sony camera via USB, then:
+
+```bash
+npx tsx your-script.ts
+```
+
+You should see the camera model name printed, followed by "Photo captured!".
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="CameraManager" icon="server" href="/sdk/camera-manager">
+    Full lifecycle management, events, and multi-camera support
+  </Card>
+  <Card title="Events" icon="bolt" href="/sdk/events">
+    React to property changes, downloads, and camera state
+  </Card>
+  <Card title="Examples" icon="code" href="/sdk/examples">
+    Interval shooting, live view, browser control, and more
+  </Card>
+  <Card title="Direct API Access" icon="terminal" href="/sdk/direct-api">
+    Low-level CameraClient and EventStream without managed state
+  </Card>
+</CardGroup>

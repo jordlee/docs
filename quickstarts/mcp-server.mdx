@@ -1,0 +1,95 @@
+---
+title: "MCP Server Quickstart"
+description: "Connect Sony's AI documentation servers to your AI tool in under 5 minutes"
+---
+
+Sony provides three MCP servers that give your AI assistant access to different parts of the camera development ecosystem. Install any combination you need.
+
+| Server | Name | What It Covers |
+|--------|------|---------------|
+| **Web API Docs** | `CameraWebAPI` | HTTP API endpoints, Client SDK (TypeScript) |
+| **SDK Docs** | `CameraRemoteSDK` | Camera Remote SDK (C++/C#) — APIs, code examples, compatibility |
+| **Help Guides** | `CameraHelp` | Camera help guides for 24 Sony models — settings, features, troubleshooting |
+
+## Choose Your Tool
+
+<Tabs>
+  <Tab title="Claude">
+    For each server you want to install:
+
+    1. Go to **Settings > Connectors**
+    2. Click **Add custom connector**
+    3. Enter the name and URL:
+
+    | Name | URL |
+    |------|-----|
+    | `CameraWebAPI` | `https://crsdk.app/mcp` |
+    | `CameraRemoteSDK` | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+    | `CameraHelp` | `https://camera-rag-agent-production.up.railway.app/mcp` |
+
+    4. Click **Add**
+    5. Open a new chat, click the **search and tools** icon, and toggle the connectors **on**
+  </Tab>
+  <Tab title="Claude Code">
+    ```bash
+    # Web API Docs
+    claude mcp add CameraWebAPI --scope user -- npx mcp-remote https://crsdk.app/mcp
+
+    # SDK Docs
+    claude mcp add CameraRemoteSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+
+    # Help Guides
+    claude mcp add CameraHelp --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
+    ```
+
+    Verify they're connected:
+
+    ```bash
+    claude mcp list
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    For each server you want to install:
+
+    1. Open Settings (`Cmd + ,` / `Ctrl + ,`)
+    2. Navigate to **Features > MCP**
+    3. Click **+ Add New MCP Server**
+    4. Set **Transport Type** to `command` (stdio) and enter:
+
+    | Name | Command |
+    |------|---------|
+    | `CameraWebAPI` | `npx mcp-remote https://crsdk.app/mcp` |
+    | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
+    | `CameraHelp` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
+
+    5. Click **Save**
+  </Tab>
+</Tabs>
+
+## Try Your First Query
+
+Ask your AI assistant:
+
+> "How do I connect to a Sony camera and capture a photo using the Camera Remote SDK in C++?"
+
+The AI assistant will automatically search through the relevant MCP server to give you an accurate answer with code examples.
+
+## Example Questions
+
+- "How do I set ISO using the HTTP API?" (Web API Docs)
+- "Show me C# code for setting shutter speed" (SDK Docs)
+- "What cameras support remote shooting via USB?" (SDK Docs)
+- "How do I enable real-time tracking on the A7R V?" (Help Guides)
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Full Setup Guide" icon="gear" href="/MCP-Server/setup">
+    Detailed configuration, tool permissions, and troubleshooting
+  </Card>
+  <Card title="System Prompt" icon="message" href="/MCP-Server/system-prompt">
+    Optimize AI responses with a recommended system prompt
+  </Card>
+</CardGroup>

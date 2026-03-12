@@ -1,0 +1,49 @@
+---
+title: "Quickstarts"
+description: "Choose the right integration path for your project"
+---
+
+## Available APIs & SDKs
+
+Sony offers several ways to control cameras programmatically. Each targets a different use case and language — pick the one that fits your project.
+
+| Product | Language | What It Does |
+|---------|----------|-------------|
+| [Client SDK](/sdk/overview) | TypeScript | High-level npm package — managed camera lifecycle, auto-discovery, typed APIs, reconnection |
+| [HTTP API](/web-api/overview) | Any | RESTful endpoints on localhost — call from curl, Python, Go, or any HTTP client |
+| [Camera Remote SDK](/sdk/camera-remote-sdk) | C++, C# | Sony's official native SDK — direct camera control without an HTTP layer |
+| [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) | C++ | PTP-based protocol for low-level direct camera commands |
+| [AI SDK Assistant](/MCP-Server/overview) | -- | MCP server that connects AI assistants to 13,000+ pieces of SDK documentation |
+
+## How They Relate
+
+```
+Your Application
+    |
+    ├── Client SDK (TypeScript)     ── npm package, manages cameras automatically
+    ├── HTTP API (curl / any lang)  ── RESTful endpoints on localhost
+    |       |
+    |   Camera Remote Web API Server (native binary, bundled with Client SDK)
+    |       |
+    └── Camera Remote SDK (C++ / C#) ── Sony's official native SDK
+            |
+        Sony Camera (USB / Network)
+```
+
+The **Client SDK** and **HTTP API** both use the Camera Remote Web API Server under the hood — a local HTTP server built on Sony's native **Camera Remote SDK**. The Client SDK manages the server binary for you; the HTTP API lets you call it directly from any language. The native SDKs (Camera Remote SDK, Camera Remote Command SDK) are for developers who want to bypass the HTTP layer entirely.
+
+---
+
+## Get Started
+
+<CardGroup cols={3}>
+  <Card title="Client SDK" icon="js" href="/quickstarts/client-sdk">
+    Set up a TypeScript project with managed camera control
+  </Card>
+  <Card title="HTTP API" icon="globe" href="/quickstarts/http-api">
+    Control cameras with curl or any HTTP client
+  </Card>
+  <Card title="MCP Server" icon="robot" href="/quickstarts/mcp-server">
+    Connect AI SDK Assistant to Claude or Cursor
+  </Card>
+</CardGroup>

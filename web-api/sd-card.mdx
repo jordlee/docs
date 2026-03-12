@@ -3,7 +3,7 @@ title: "SD Card"
 description: "Browse and download files from the camera's SD card"
 ---
 
-<Warning>Requires `remote-transfer` or `contents-transfer` connection mode.</Warning>
+<Warning>Requires `remote-transfer` or `contents` connection mode.</Warning>
 
 ## List Files
 
@@ -12,8 +12,13 @@ description: "Browse and download files from the camera's SD card"
 <ParamField path="slotNumber" type="integer" required>SD card slot: `1` or `2`</ParamField>
 
 <CodeGroup>
-```bash Request
+```bash curl
 curl http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
+```
+
+```typescript TypeScript
+const files = await client.listSDCardFiles('D10F60149B0C', 1);
+console.log(files.files);
 ```
 
 ```json Response
@@ -52,10 +57,14 @@ Download a specific file from the SD card to the host PC.
 <ParamField body="save_path" type="string">Directory on host PC to save the file</ParamField>
 
 <CodeGroup>
-```bash Request
+```bash curl
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files/12345/67890/download \
   -H "Content-Type: application/json" \
   -d '{"save_path": "/Users/me/Photos"}'
+```
+
+```typescript TypeScript
+await client.downloadSDCardFile('D10F60149B0C', 1, 12345, 67890);
 ```
 
 ```json Response

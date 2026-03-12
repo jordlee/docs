@@ -16,11 +16,14 @@ Returns the current value, human-readable format, writability flag, and all valu
 </ParamField>
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-speed
 ```
 
+```typescript TypeScript
+const result = await client.getProperty('D10F60149B0C', 'shutter-speed');
+console.log(result.data.formatted); // "1/125"
+```
 
 ```json Response
 {
@@ -42,7 +45,6 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-speed
   }
 }
 ```
-
 </CodeGroup>
 
 <ResponseField name="data.value" type="string">
@@ -88,20 +90,21 @@ Set a camera property. Accepts hex values from `available_values` or human-reada
 </Tip>
 
 <CodeGroup>
-
-```bash Hex Value
+```bash curl (Hex)
 curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-speed \
   -H "Content-Type: application/json" \
   -d '{"value": "0x100fa"}'
 ```
 
-
-```bash Human-Readable
+```bash curl (Human-Readable)
 curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-speed \
   -H "Content-Type: application/json" \
   -d '{"value": "1/250"}'
 ```
 
+```typescript TypeScript
+await client.setProperty('D10F60149B0C', 'shutter-speed', { value: '1/250' });
+```
 
 ```json Response
 {
@@ -114,7 +117,6 @@ curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-sp
   }
 }
 ```
-
 </CodeGroup>
 
 <Warning>
@@ -132,11 +134,14 @@ curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/properties/shutter-sp
 Returns all mapped properties with their current formatted values.
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl http://localhost:8080/api/cameras/D10F60149B0C/properties/all
 ```
 
+```typescript TypeScript
+const all = await client.getAllProperties('D10F60149B0C');
+console.log(all.properties);
+```
 
 ```json Response
 {
@@ -152,7 +157,6 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/properties/all
   }
 }
 ```
-
 </CodeGroup>
 
 ---
@@ -170,11 +174,14 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/properties/all
 </ParamField>
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl http://localhost:8080/api/cameras/D10F60149B0C/priority-key
 ```
 
+```typescript TypeScript
+const pk = await client.getPriorityKey('D10F60149B0C');
+console.log(pk.data.setting); // "pc-remote"
+```
 
 ```json Response
 {
@@ -185,7 +192,6 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/priority-key
   }
 }
 ```
-
 </CodeGroup>
 
 ### Set Priority Key
@@ -199,13 +205,15 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/priority-key
 </ParamField>
 
 <CodeGroup>
-
-```bash Request
+```bash curl
 curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/priority-key \
   -H "Content-Type: application/json" \
   -d '{"setting": "pc-remote"}'
 ```
 
+```typescript TypeScript
+await client.setPriorityKey('D10F60149B0C', { setting: 'pc-remote' });
+```
 
 ```json Response
 {
@@ -213,7 +221,6 @@ curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/priority-key \
   "message": "Priority key set to pc-remote"
 }
 ```
-
 </CodeGroup>
 
 ---

@@ -58,19 +58,43 @@
     },
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Quickstarts",
         "groups": [
           {
-            "group": "MCP Server",
+            "group": "Get Started",
             "pages": [
-              "MCP-Server/overview",
-              "MCP-Server/setup",
-              "MCP-Server/system-prompt",
-              "MCP-Server/troubleshooting",
-              "MCP-Server/compatibility",
-              "MCP-Server/tools",
-              "MCP-Server/tips",
-              "MCP-Server/privacy"
+              "quickstarts/overview",
+              "quickstarts/client-sdk",
+              "quickstarts/http-api",
+              "quickstarts/mcp-server"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SDKs",
+        "groups": [
+          {
+            "group": "Client SDKs",
+            "pages": [
+              "sdk/overview",
+              "sdk/camera-manager",
+              "sdk/events",
+              "sdk/examples",
+              "sdk/direct-api",
+              "sdk/reference"
+            ]
+          },
+          {
+            "group": "Camera Remote SDK",
+            "pages": [
+              "sdk/camera-remote-sdk"
+            ]
+          },
+          {
+            "group": "Camera Remote Command SDK",
+            "pages": [
+              "sdk/camera-remote-command-sdk"
             ]
           }
         ]
@@ -95,6 +119,45 @@
               "web-api/sd-card",
               "web-api/settings",
               "web-api/server"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "MCP Server",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "MCP-Server/overview",
+              "MCP-Server/setup",
+              "MCP-Server/system-prompt"
+            ]
+          },
+          {
+            "group": "Camera Remote Web API Docs",
+            "pages": [
+              "MCP-Server/web-api-docs"
+            ]
+          },
+          {
+            "group": "Camera Remote SDK Docs",
+            "pages": [
+              "MCP-Server/sdk-docs"
+            ]
+          },
+          {
+            "group": "Camera Help Guides",
+            "pages": [
+              "MCP-Server/help-guides"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "MCP-Server/compatibility",
+              "MCP-Server/troubleshooting",
+              "MCP-Server/privacy"
             ]
           }
         ]

@@ -1,61 +1,67 @@
 ---
-description: "Connecting your LLM to the MCP Server"
+description: "Connecting your LLM to the MCP Servers"
 icon: "book"
 title: "Setup"
 ---
 
-Sony provides two MCP servers for AI-assisted development:
+<Card icon="rocket" href="/quickstarts/mcp-server" title="Quick Setup">
+  Want the short version? Get running in under 5 minutes
+</Card>
 
-| Server | Description | URL |
-|--------|-------------|-----|
-| **AI SDK Assistant** | Camera Remote SDK documentation, API references, and code examples | `https://sdk-rag-agent-production.up.railway.app/mcp` |
-| **AI Camera Assistant** | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
+Sony provides three MCP servers for AI-assisted development:
 
-Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor.
+| Server                                       | Name              | Description                                                                       | URL                                                      |
+| -------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [**Web API Docs**](/MCP-Server/web-api-docs) | `CameraWebAPI`    | Camera Remote Web API endpoints, Client SDK (TypeScript)                          | `https://crsdk.app/mcp`                                  |
+| [**SDK Docs**](/MCP-Server/sdk-docs)         | `CameraRemoteSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#)       | `https://sdk-rag-agent-production.up.railway.app/mcp`    |
+| [**Help Guides**](/MCP-Server/help-guides)   | `CameraHelp`      | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
+
+All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor. You can install one, two, or all three.
 
 <Note>
   These tools are still in Private Beta. Please do not share the MCP server URLs with others.
 </Note>
+
+---
+
+## Setup Instructions
 
 <Tabs>
   <Tab title="Claude">
     ### Requirements
 
     - Claude Pro, Max, or Enterprise account (starting at \$20/month)
-    - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
     <Info>
       If you intend to use both [claude.ai](http://claude.ai) and Claude Code, you must set up each application separately. MCP servers are not shared between them.
     </Info>
-
     ### Configuration Steps
+
+    Repeat these steps for each MCP server you want to install:
 
     1. **Add the Connector**
        - Go to **Settings → Connectors**
        - Click **Add custom connector**
-       - Name it (e.g. `AI SDK Assistant`)
-       - Paste the MCP Server URL into the "Remote MCP server URL" field
+       - Name it using the server name from the table above (e.g. `CameraWebAPI`, `CameraRemoteSDK`, or `CameraHelp`)
+       - Paste the corresponding MCP Server URL into the "Remote MCP server URL" field
        - Click **Add**
        - Refresh if needed — you should now see your new connector
     2. **Configure Tools**
 
-       The AI SDK Assistant enables Claude to access SDK information through "Tools." These are specialized search methods and filters that influence what type of content is retrieved when you ask a question.
-
-       There are currently 14 tools supported for Claude; you can view more details about each tool in the [Tools](/MCP-Server/tools) page.
+       Each server provides specialized search tools. Your AI automatically selects the best tool for your question.
 
        <Tip>
          Claude will automatically determine the best tool to answer the query, though you can always specify a tool if you already know what type of content you are looking for.
        </Tip>
-
-       To configure AI SDK Assistant's tools:
+       To configure a server's tools:
        - Navigate to **Settings → Connectors**
-       - Next to the AI SDK Assistant connector, click the **Configure** button
-       - You'll now be able to see all available tools AI SDK Assistant offers
+       - Next to the connector, click the **Configure** button
+       - You'll now be able to see all available tools the server offers
 
        By default, all tools will be **enabled**.
 
        <Warning>
-         Disable the **search** and **fetch** tools before prompting with AI SDK Assistant. These tools are intended for use only with ChatGPT.
+         Disable the **search** and **fetch** tools before prompting. These tools are intended for use only with ChatGPT.
        </Warning>
     3. **Set Tool Permissions**
 
@@ -64,79 +70,73 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
        In this configuration, Claude will ask for permission every time it wants to use a tool. To allow automatic tool usage, set the permission to **allow unsupervised**.
 
        <Tip>
-         When using AI SDK Assistant for the first time, we recommend you set all tool permissions to **allow unsupervised**. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
+         We recommend setting all tool permissions to **allow unsupervised** when first using the servers. Based on your observations, you can disable tools and change permissions to help Claude's searches align better with your preferences.
        </Tip>
     4. **Configure System Prompt (Optional but Recommended)**
 
-       A system prompt significantly improves Claude's SDK Assistant performance. See the [System Prompt](/MCP-Server/system-prompt) page for setup instructions.
+       A system prompt significantly improves performance. See the [System Prompt](/MCP-Server/system-prompt) page for setup instructions.
 
-    ### Using the AI SDK Assistant
-
-    To start using the AI SDK Assistant's tools:
+    ### Using the MCP Servers
 
     1. Open a **new chat window**
     2. Click the **search and tools** icon button in the chat box
-    3. You should see the AI SDK Assistant connector at the top of the list
-    4. Toggle the connector **on** to enable it
+    3. You should see your connectors at the top of the list
+    4. Toggle the connectors **on** to enable them
     5. You can also toggle individual tools directly in the chat window
 
-    ### Removing the AI SDK Assistant
-
-    If you decide you no longer want to keep AI SDK Assistant as a connector:
+    ### Removing a Connector
 
     - Go to **Settings → Connectors**
-    - Click the **More** icon button next to the AI SDK Assistant connector
-    - Click **Remove** to permanently remove the connector (you'll need to repeat the setup process to add AI SDK Assistant again)
-    - Click **Disconnect** to temporarily disable the connector
+    - Click the **More** icon button next to the connector
+    - Click **Remove** to permanently remove it, or **Disconnect** to temporarily disable it
   </Tab>
   <Tab title="Claude Code">
     ### Requirements
 
     - Claude Code CLI installed
     - Node.js v18+ with `npx` available on your PATH
-    - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
     <Info>
       If you intend to use both [claude.ai](http://claude.ai) and Claude Code, you must set up each application separately. MCP servers are not shared between them.
     </Info>
-
     <Warning>
-      The server name **must not contain spaces**. Use `CRSDK` consistently across all configuration files.
+      Server names **must not contain spaces**. Use the exact names shown below.
     </Warning>
-
     ### Quick Setup (CLI)
 
-    Run a single command to add the server:
+    Run these commands to add each server you want:
 
     <Tabs>
       <Tab title="macOS / Linux">
         ```bash
-        claude mcp add CRSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        # Web API Docs
+        claude mcp add CameraWebAPI --scope user -- npx mcp-remote https://crsdk.app/mcp
+        # SDK Docs
+        claude mcp add CameraRemoteSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        # Help Guides
+        claude mcp add CameraHelp --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
         ```
       </Tab>
       <Tab title="Windows (PowerShell or CMD)">
         ```bash
-        claude mcp add CRSDK --scope user -- cmd /c npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        # Web API Docs
+        claude mcp add CameraWebAPI --scope user -- cmd /c npx mcp-remote https://crsdk.app/mcp
+        # SDK Docs
+        claude mcp add CameraRemoteSDK --scope user -- cmd /c npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+        # Help Guides
+        claude mcp add CameraHelp --scope user -- cmd /c npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
         ```
       </Tab>
     </Tabs>
-
-    Then verify it's connected:
+    Verify they're connected:
 
     ```bash
     claude mcp list
     ```
 
-    You should see:
-
-    ```
-    CRSDK: npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp - ✓ Connected
-    ```
-
     <Tip>
       For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
     </Tip>
-
     ---
 
     ### Manual Setup (JSON Config)
@@ -152,12 +152,28 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
         ```json
         {
           "mcpServers": {
-            "CRSDK": {
+            "CameraWebAPI": {
+              "type": "stdio",
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://crsdk.app/mcp"
+              ]
+            },
+            "CameraRemoteSDK": {
               "type": "stdio",
               "command": "npx",
               "args": [
                 "mcp-remote",
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            },
+            "CameraHelp": {
+              "type": "stdio",
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://camera-rag-agent-production.up.railway.app/mcp"
               ]
             }
           }
@@ -170,14 +186,28 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
         ```json
         {
           "mcpServers": {
-            "CRSDK": {
+            "CameraWebAPI": {
               "type": "stdio",
               "command": "cmd",
               "args": [
-                "/c",
-                "npx",
-                "mcp-remote",
+                "/c", "npx", "mcp-remote",
+                "https://crsdk.app/mcp"
+              ]
+            },
+            "CameraRemoteSDK": {
+              "type": "stdio",
+              "command": "cmd",
+              "args": [
+                "/c", "npx", "mcp-remote",
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            },
+            "CameraHelp": {
+              "type": "stdio",
+              "command": "cmd",
+              "args": [
+                "/c", "npx", "mcp-remote",
+                "https://camera-rag-agent-production.up.railway.app/mcp"
               ]
             }
           }
@@ -185,22 +215,21 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
         ```
       </Tab>
     </Tabs>
-
     <Tip>
       Commit `.mcp.json` to version control to share MCP server configuration with your team.
     </Tip>
-
     #### User Scope — `~/.claude.json` (Global)
 
     Available across all projects on your machine. Merge into your existing `~/.claude.json` (create it if it doesn't exist).
 
-    | OS | Path |
-    |----|------|
-    | **macOS** | `/Users/<your-username>/.claude.json` |
-    | **Linux** | `/home/<your-username>/.claude.json` |
+    | OS          | Path                                    |
+    | ----------- | --------------------------------------- |
+    | **macOS**   | `/Users/<your-username>/.claude.json`   |
+    | **Linux**   | `/home/<your-username>/.claude.json`    |
     | **Windows** | `C:\Users\<your-username>\.claude.json` |
 
     This is a **hidden file** (starts with `.`). To see it:
+
     - **macOS Finder:** Press `Cmd + Shift + .` to toggle hidden files
     - **Windows Explorer:** View → Show → Hidden items
     - **Terminal:** `code ~/.claude.json` (VS Code) or `notepad %USERPROFILE%\.claude.json` (Windows)
@@ -213,7 +242,7 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
 
     #### Scope Priority
 
-    When the same server is defined in multiple scopes: **Local > Project > User**
+    When the same server is defined in multiple scopes: **Local \> Project \> User**
 
     ---
 
@@ -221,11 +250,15 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
 
     Auto-approve tools by adding to your settings config (`~/.claude.json`, `.claude/settings.json`, or `.claude/settings.local.json`):
 
-    **Approve all AI SDK Assistant tools:**
+    **Approve all servers:**
 
     ```json
     {
-      "approvedTools": ["mcp__CRSDK"]
+      "approvedTools": [
+        "mcp__CameraWebAPI",
+        "mcp__CameraRemoteSDK",
+        "mcp__CameraHelp"
+      ]
     }
     ```
 
@@ -234,20 +267,27 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
     ```json
     {
       "approvedTools": [
-        "mcp__CRSDK__search_sdk",
-        "mcp__CRSDK__search_code_examples",
-        "mcp__CRSDK__search_documentation",
-        "mcp__CRSDK__search_api_functions",
-        "mcp__CRSDK__search_compatibility",
-        "mcp__CRSDK__search_hybrid",
-        "mcp__CRSDK__search_exact_api",
-        "mcp__CRSDK__search_error_codes",
-        "mcp__CRSDK__search_warning_codes",
-        "mcp__CRSDK__search_by_source_file",
-        "mcp__CRSDK__get_sdk_context",
-        "mcp__CRSDK__get_current_sdk_version",
-        "mcp__CRSDK__set_sdk_version",
-        "mcp__CRSDK__set_sdk_language"
+        "mcp__CameraWebAPI__search_sdk",
+        "mcp__CameraWebAPI__search_code_examples",
+        "mcp__CameraWebAPI__search_documentation",
+        "mcp__CameraWebAPI__search_api_functions",
+        "mcp__CameraRemoteSDK__search_sdk",
+        "mcp__CameraRemoteSDK__search_code_examples",
+        "mcp__CameraRemoteSDK__search_documentation",
+        "mcp__CameraRemoteSDK__search_api_functions",
+        "mcp__CameraRemoteSDK__search_compatibility",
+        "mcp__CameraRemoteSDK__search_hybrid",
+        "mcp__CameraRemoteSDK__search_exact_api",
+        "mcp__CameraRemoteSDK__search_error_codes",
+        "mcp__CameraRemoteSDK__search_warning_codes",
+        "mcp__CameraRemoteSDK__search_by_source_file",
+        "mcp__CameraRemoteSDK__get_sdk_context",
+        "mcp__CameraRemoteSDK__get_current_sdk_version",
+        "mcp__CameraRemoteSDK__set_sdk_version",
+        "mcp__CameraRemoteSDK__set_sdk_language",
+        "mcp__CameraHelp__search_camera",
+        "mcp__CameraHelp__search_help_guides",
+        "mcp__CameraHelp__search_topic"
       ]
     }
     ```
@@ -255,61 +295,64 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
     <Note>
       Wildcards (`*`) are not supported — you must explicitly list each tool or approve the entire server.
     </Note>
-
     ---
 
     ### Managing & Removing Servers
 
     ```bash
     claude mcp list                                  # List all servers
-    claude mcp remove CRSDK --scope user             # Remove from user scope
-    claude mcp remove CRSDK --scope project          # Remove from project scope
-    claude mcp remove CRSDK                          # Remove from local scope
+    claude mcp remove CameraWebAPI --scope user             # Remove Web API Docs
+    claude mcp remove CameraRemoteSDK --scope user             # Remove SDK Docs
+    claude mcp remove CameraHelp --scope user   # Remove Help Guides
     ```
 
     <Note>
       Restart Claude Code or start a new session after modifying MCP server configurations.
     </Note>
-
     ### Troubleshooting
 
-    | Issue | Solution |
-    |-------|---------|
-    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`. |
-    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
-    | Server not connecting | Ensure you're not behind a proxy/VPN blocking `railway.app`. |
-    | `approvedTools` not working | Verify the server name in your MCP config matches the prefix in `approvedTools` (both should use `CRSDK`). |
-    | `.mcp.json` not detected | File must be in the **project root** directory. Restart Claude Code after creating it. |
-    | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue. |
+    | Issue                                 | Solution                                                                                                                               |
+    | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+    | `npx` not found                       | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`.                                             |
+    | Windows: `npx` not recognized         | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
+    | Server not connecting                 | Ensure you're not behind a proxy/VPN blocking the server URLs.                                                                         |
+    | `approvedTools` not working           | Verify the server name in your MCP config matches the prefix in `approvedTools` (e.g. `CRSDK`, `Kando`, `CameraAssistant`).            |
+    | `.mcp.json` not detected              | File must be in the **project root** directory. Restart Claude Code after creating it.                                                 |
+    | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue.                                 |
   </Tab>
   <Tab title="Cursor">
     ### Requirements
 
     - [Cursor](https://cursor.com) IDE installed
     - Node.js v18+ with `npx` available on your PATH
-    - MCP Server URL: `https://sdk-rag-agent-production.up.railway.app/mcp`
 
     ### Quick Setup (Settings UI)
 
+    Repeat these steps for each server you want to add:
+
     1. Open Cursor Settings (`Cmd + ,` on macOS / `Ctrl + ,` on Windows/Linux)
-    2. Navigate to **Features > MCP**
-    3. Click **+ Add New MCP Server**
-    4. Enter the following:
-       - **Name:** `CRSDK`
-       - **Transport Type:** `command` (stdio)
-       - **Command:** `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp`
-    5. Click **Save**
-    6. Verify the server shows as connected in the MCP settings panel
+    2. Navigate to **Features \> MCP**
+    3. Click **\+ Add New MCP Server**
+    4. Enter the server details:
+
+    | Server       | Name              | Command                                                                 |
+    | ------------ | ----------------- | ----------------------------------------------------------------------- |
+    | Web API Docs | `CameraWebAPI`    | `npx mcp-remote https://crsdk.app/mcp`                                  |
+    | SDK Docs     | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp`    |
+    | Help Guides  | `CameraHelp`      | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
+
+    5. Set **Transport Type** to `command` (stdio)
+    6. Click **Save**
+    7. Verify the server shows as connected in the MCP settings panel
 
     <Tip>
       For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
     </Tip>
-
     ---
 
     ### Manual Setup (JSON Config)
 
-    You can also add the MCP server by editing the config file directly.
+    You can also add the MCP servers by editing the config file directly.
 
     #### Project Scope
 
@@ -320,11 +363,25 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
         ```json
         {
           "mcpServers": {
-            "CRSDK": {
+            "CameraWebAPI": {
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://crsdk.app/mcp"
+              ]
+            },
+            "CameraRemoteSDK": {
               "command": "npx",
               "args": [
                 "mcp-remote",
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            },
+            "CameraHelp": {
+              "command": "npx",
+              "args": [
+                "mcp-remote",
+                "https://camera-rag-agent-production.up.railway.app/mcp"
               ]
             }
           }
@@ -335,13 +392,25 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
         ```json
         {
           "mcpServers": {
-            "CRSDK": {
+            "CameraWebAPI": {
               "command": "cmd",
               "args": [
-                "/c",
-                "npx",
-                "mcp-remote",
+                "/c", "npx", "mcp-remote",
+                "https://crsdk.app/mcp"
+              ]
+            },
+            "CameraRemoteSDK": {
+              "command": "cmd",
+              "args": [
+                "/c", "npx", "mcp-remote",
                 "https://sdk-rag-agent-production.up.railway.app/mcp"
+              ]
+            },
+            "CameraHelp": {
+              "command": "cmd",
+              "args": [
+                "/c", "npx", "mcp-remote",
+                "https://camera-rag-agent-production.up.railway.app/mcp"
               ]
             }
           }
@@ -349,185 +418,34 @@ Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Cla
         ```
       </Tab>
     </Tabs>
-
     #### Global Scope
 
     For access across all projects, create or edit `~/.cursor/mcp.json` with the same JSON format above.
 
-    | OS | Path |
-    |----|------|
-    | **macOS** | `~/.cursor/mcp.json` |
-    | **Linux** | `~/.cursor/mcp.json` |
+    | OS          | Path                                        |
+    | ----------- | ------------------------------------------- |
+    | **macOS**   | `~/.cursor/mcp.json`                        |
+    | **Linux**   | `~/.cursor/mcp.json`                        |
     | **Windows** | `C:\Users\<your-username>\.cursor\mcp.json` |
 
     ---
 
-    ### Using AI SDK Assistant in Cursor
+    ### Using MCP Servers in Cursor
 
     1. Open a new chat in Cursor (`Cmd + L` / `Ctrl + L`)
-    2. The AI SDK Assistant tools will be available automatically
-    3. Ask SDK-related questions and Cursor will use the MCP tools to retrieve accurate information
+    2. The MCP server tools will be available automatically
+    3. Ask questions and Cursor will use the appropriate server tools to retrieve accurate information
 
     <Note>
-      Cursor supports MCP servers using `stdio`, `sse`, and `streamable-http` transport types. The `stdio` transport (via `npx`) is the recommended approach for the AI SDK Assistant.
+      Cursor supports MCP servers using `stdio`, `sse`, and `streamable-http` transport types. The `stdio` transport (via `npx`) is the recommended approach.
     </Note>
-
     ### Troubleshooting
 
-    | Issue | Solution |
-    |-------|---------|
-    | `npx` not found | Ensure Node.js (v18+) is installed and `npx` is on your PATH. |
-    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows config above. |
-    | Server not appearing | Restart Cursor after saving the config file. |
-    | Tools not available in chat | Verify the server is connected in **Settings > Features > MCP**. |
+    | Issue                         | Solution                                                           |
+    | ----------------------------- | ------------------------------------------------------------------ |
+    | `npx` not found               | Ensure Node.js (v18+) is installed and `npx` is on your PATH.      |
+    | Windows: `npx` not recognized | Use the `cmd /c` wrapper as shown in the Windows config above.     |
+    | Server not appearing          | Restart Cursor after saving the config file.                       |
+    | Tools not available in chat   | Verify the server is connected in **Settings \> Features \> MCP**. |
   </Tab>
 </Tabs>
-
----
-
-## AI Camera Assistant Setup
-
-The AI Camera Assistant is a separate MCP server that provides help guide documentation for **24 Sony camera models** with **55,000+** indexed help guide entries. It covers camera settings, features, shooting modes, and troubleshooting across Alpha, FX, ZV, and other Sony camera lines.
-
-<Info>
-  The Camera Assistant uses the same setup process as the SDK Assistant above — just with a different server URL and name. You can run both servers simultaneously.
-</Info>
-
-<Tabs>
-  <Tab title="Claude">
-    Follow the same steps as the [SDK Assistant setup above](#configuration-steps), but use:
-
-    - **Name:** `AI Camera Assistant`
-    - **URL:** `https://camera-rag-agent-production.up.railway.app/mcp`
-  </Tab>
-  <Tab title="Claude Code">
-    ### Quick Setup (CLI)
-
-    <Tabs>
-      <Tab title="macOS / Linux">
-        ```bash
-        claude mcp add CameraAssistant --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
-        ```
-      </Tab>
-      <Tab title="Windows (PowerShell or CMD)">
-        ```bash
-        claude mcp add CameraAssistant --scope user -- cmd /c npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
-        ```
-      </Tab>
-    </Tabs>
-
-    Verify it's connected:
-
-    ```bash
-    claude mcp list
-    ```
-
-    ### Manual Setup (JSON Config)
-
-    Add alongside your existing `CRSDK` server in your MCP config file:
-
-    <Tabs>
-      <Tab title="macOS / Linux">
-        ```json
-        {
-          "mcpServers": {
-            "CRSDK": {
-              "type": "stdio",
-              "command": "npx",
-              "args": [
-                "mcp-remote",
-                "https://sdk-rag-agent-production.up.railway.app/mcp"
-              ]
-            },
-            "CameraAssistant": {
-              "type": "stdio",
-              "command": "npx",
-              "args": [
-                "mcp-remote",
-                "https://camera-rag-agent-production.up.railway.app/mcp"
-              ]
-            }
-          }
-        }
-        ```
-      </Tab>
-      <Tab title="Windows">
-        ```json
-        {
-          "mcpServers": {
-            "CRSDK": {
-              "type": "stdio",
-              "command": "cmd",
-              "args": [
-                "/c", "npx", "mcp-remote",
-                "https://sdk-rag-agent-production.up.railway.app/mcp"
-              ]
-            },
-            "CameraAssistant": {
-              "type": "stdio",
-              "command": "cmd",
-              "args": [
-                "/c", "npx", "mcp-remote",
-                "https://camera-rag-agent-production.up.railway.app/mcp"
-              ]
-            }
-          }
-        }
-        ```
-      </Tab>
-    </Tabs>
-
-    ### Tool Permissions
-
-    Auto-approve Camera Assistant tools:
-
-    ```json
-    {
-      "approvedTools": ["mcp__CameraAssistant"]
-    }
-    ```
-  </Tab>
-  <Tab title="Cursor">
-    Follow the same steps as the [SDK Assistant setup above](#quick-setup-settings-ui), but use:
-
-    - **Name:** `CameraAssistant`
-    - **Command:** `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp`
-
-    Or add to your `.cursor/mcp.json` alongside the SDK server:
-
-    ```json
-    {
-      "mcpServers": {
-        "CRSDK": {
-          "command": "npx",
-          "args": [
-            "mcp-remote",
-            "https://sdk-rag-agent-production.up.railway.app/mcp"
-          ]
-        },
-        "CameraAssistant": {
-          "command": "npx",
-          "args": [
-            "mcp-remote",
-            "https://camera-rag-agent-production.up.railway.app/mcp"
-          ]
-        }
-      }
-    }
-    ```
-  </Tab>
-</Tabs>
-
-### Available Camera Models
-
-The AI Camera Assistant has help guides indexed for the following cameras:
-
-| Category | Models |
-|----------|--------|
-| **Alpha (Full Frame)** | ILCE-1, ILCE-1M2, ILCE-7C, ILCE-7CM2, ILCE-7CR, ILCE-7M4, ILCE-7RM4, ILCE-7RM4A, ILCE-7RM5, ILCE-7SM3, ILCE-9M2, ILCE-9M3 |
-| **Alpha (APS-C)** | ILCE-6700 |
-| **Cinema Line** | ILME-FR7, ILME-FX2, ILME-FX3, ILME-FX3A, ILME-FX30 |
-| **ZV Series** | ZV-E1, ZV-E10M2 |
-| **Professional** | PXW-Z200 / HXR-NX800, BRC-AM7 |
-| **Compact** | DSC-RX0M2 |
-| **Industrial** | ILX-LR1 |

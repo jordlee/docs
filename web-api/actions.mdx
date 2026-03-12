@@ -14,20 +14,29 @@ Take a single photo, or control continuous shooting with `down`/`up`.
 </ParamField>
 
 <CodeGroup>
-```bash Single Shot
+```bash curl (Single Shot)
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter
 ```
 
-```bash Continuous Start
+```bash curl (Continuous Start)
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter \
   -H "Content-Type: application/json" \
   -d '{"action": "down"}'
 ```
 
-```bash Continuous Stop
+```bash curl (Continuous Stop)
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter \
   -H "Content-Type: application/json" \
   -d '{"action": "up"}'
+```
+
+```typescript TypeScript
+// Single shot
+await client.triggerShutter('D10F60149B0C');
+
+// Continuous start/stop
+await client.triggerShutter('D10F60149B0C', { action: 'down' });
+await client.triggerShutter('D10F60149B0C', { action: 'up' });
 ```
 </CodeGroup>
 
@@ -41,9 +50,15 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter \
 
 Half-press the shutter button to lock autofocus (S1 press). No body required.
 
-```bash
+<CodeGroup>
+```bash curl
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/half-press
 ```
+
+```typescript TypeScript
+await client.halfPress('D10F60149B0C');
+```
+</CodeGroup>
 
 ---
 
@@ -53,9 +68,15 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/half-press
 
 Autofocus then immediately capture in one operation. No body required.
 
-```bash
+<CodeGroup>
+```bash curl
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/af-shutter
 ```
+
+```typescript TypeScript
+await client.afShutter('D10F60149B0C');
+```
+</CodeGroup>
 
 ---
 
@@ -68,11 +89,20 @@ Control power zoom lenses. Requires a power zoom lens to be attached.
 <ParamField body="direction" type="string" required>`in` or `out`</ParamField>
 <ParamField body="speed" type="string" required>`normal` or `fast`</ParamField>
 
-```bash
+<CodeGroup>
+```bash curl
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/zoom \
   -H "Content-Type: application/json" \
   -d '{"direction": "in", "speed": "normal"}'
 ```
+
+```typescript TypeScript
+await client.controlZoom('D10F60149B0C', { direction: 'in', speed: 'normal' });
+
+// Stop zoom
+await client.stopZoom('D10F60149B0C');
+```
+</CodeGroup>
 
 ---
 
@@ -87,16 +117,21 @@ Move focus in discrete steps. Range: `-7` (near, max speed) to `+7` (far, max sp
 </ParamField>
 
 <CodeGroup>
-```bash Focus Near (fine)
+```bash curl (Focus Near)
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/focus-near-far \
   -H "Content-Type: application/json" \
   -d '{"step": -1}'
 ```
 
-```bash Focus Far (fast)
+```bash curl (Focus Far)
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/focus-near-far \
   -H "Content-Type: application/json" \
   -d '{"step": 7}'
+```
+
+```typescript TypeScript
+await client.focusNearFar('D10F60149B0C', { step: -1 }); // near, fine
+await client.focusNearFar('D10F60149B0C', { step: 7 });  // far, fast
 ```
 </CodeGroup>
 

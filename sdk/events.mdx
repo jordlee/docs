@@ -1,0 +1,153 @@
+---
+title: "Events & State"
+description: "CameraManager events, state machine, and reconnection behavior"
+---
+
+## Events
+
+All CameraManager variants (server and browser) emit the same events.
+
+| Event | Payload | When |
+|-------|---------|------|
+| `camera-found` | `{ camera }` | New camera detected by polling |
+| `camera-lost` | `{ camera }` | Camera no longer detected (unplugged/offline) |
+| `camera-connecting` | `{ cameraId }` | Connection attempt started |
+| `camera-ready` | `{ cameraId, camera }` | Connected and ready for commands |
+| `camera-disconnected` | `{ cameraId, error? }` | Disconnected (explicit or unexpected) |
+| `connection-failed` | `{ cameraId, error, attempt }` | Connection attempt failed |
+| `error` | `{ message }` | Manager-level error (poll failure, SSE error) |
+
+---
+
+## Subscribing
+
+```typescript
+manager.on('camera-found', ({ camera }) => {
+  console.log(`Discovered ${camera.model} (${camera.id})`);
+});
+
+manager.on('camera-ready', ({ cameraId, camera }) => {
+  console.log(`${camera.model} ready for commands`);
+});
+
+manager.on('camera-disconnected', ({ cameraId, error }) => {
+  if (error) {
+    console.log(`Unexpected disconnect: ${error}`);
+  } else {
+    console.log('Clean disconnect');
+  }
+});
+
+manager.on('connection-failed', ({ cameraId, error, attempt }) => {
+  console.log(`Attempt ${attempt} failed: ${error}`);
+});
+
+manager.on('error', ({ message }) => {
+  console.error('Manager error:', message);
+});
+```
+
+---
+
+## Unsubscribing
+
+```typescript
+// Remove a specific listener
+const handler = ({ cameraId }) => console.log('ready', cameraId);
+manager.on('camera-ready', handler);
+manager.off('camera-ready', handler);
+
+// Remove all listeners for an event
+manager.off('camera-ready');
+```
+
+---
+
+## State Machine
+
+Each camera tracked by CameraManager has one of four states:
+
+```
+detected ──→ connecting ──→ connected
+   ↑              │              │
+   │              ↓              ↓ (unexpected disconnect)
+   └── detected ← connection-failed    disconnected
+                                          │
+                                          ↓ (autoReconnect)
+                                     scheduleReconnect
+                                          │
+                                          ↓ (backoff: 2s, 4s, 6s... max 30s)
+                                       detected
+```
+
+| State | Description |
+|-------|-------------|
+| `detected` | Camera found by polling, not yet connected |
+| `connecting` | Connection attempt in progress |
+| `connected` | Ready for commands |
+| `disconnected` | Was connected, now disconnected |
+
+---
+
+## Reconnection
+
+When `autoReconnect` is enabled (default), CameraManager automatically retries after unexpected disconnections.
+
+**Backoff strategy:** Linear — 2s, 4s, 6s, 8s, 10s... capped at 30s max delay. Resets to 0 on successful connection.
+
+**Max attempts:** Controlled by `maxReconnectAttempts` (default: 5). After exhausting all attempts, no further retries are scheduled.
+
+```typescript
+const manager = new CameraManager({
+  autoReconnect: true,         // default
+  maxReconnectAttempts: 10,    // retry up to 10 times
+});
+
+manager.on('connection-failed', ({ cameraId, attempt }) => {
+  console.log(`Reconnect attempt ${attempt}...`);
+});
+
+manager.on('camera-ready', ({ cameraId }) => {
+  console.log('Reconnected!');
+  // reconnectAttempts resets to 0 on success
+});
+```
+
+**Inspecting reconnection state:**
+
+```typescript
+const cam = manager.getCamera('D10F60149B0C');
+console.log(cam.state);              // 'disconnected'
+console.log(cam.reconnectAttempts);  // 3
+```
+
+---
+
+## Event Flow Examples
+
+### Normal connection
+
+```
+poll() → camera-found → auto-connect → camera-connecting → camera-ready
+```
+
+### Unexpected disconnect + reconnect
+
+```
+SSE 'disconnected' → camera-disconnected → scheduleReconnect (2s)
+  → camera-connecting → camera-ready (reconnectAttempts resets)
+```
+
+### Camera unplugged
+
+```
+poll() → camera not in results → camera-lost (removed from tracking)
+```
+
+### Connection failure with retry
+
+```
+camera-connecting → connection-failed (attempt 1)
+  → scheduleReconnect (2s) → camera-connecting → connection-failed (attempt 2)
+  → scheduleReconnect (4s) → camera-connecting → camera-ready
+```

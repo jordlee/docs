@@ -1,0 +1,243 @@
+---
+title: "Examples"
+description: "Full working examples — multi-camera, Next.js, photo capture workflows"
+---
+
+## Quick Photo Capture
+
+Connect, configure, and shoot in one flow:
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  const client = manager.client;
+
+  // Required: set priority to PC Remote
+  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+
+  // Configure settings
+  await client.setProperty(cameraId, 'iso', { value: '400' });
+  await client.setProperty(cameraId, 'aperture', { value: 'f/2.8' });
+  await client.setProperty(cameraId, 'shutter-speed', { value: '1/250' });
+
+  // Take a photo with autofocus
+  await client.afShutter(cameraId);
+
+  console.log('Photo captured!');
+});
+
+await manager.start();
+```
+
+---
+
+## Multi-Camera
+
+CameraManager tracks each camera independently — separate state, separate reconnection timers.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({
+  connectionMode: 'remote',
+});
+
+manager.on('camera-ready', async ({ cameraId, camera }) => {
+  console.log(`${camera.model} (${cameraId}) ready`);
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+});
+
+await manager.start();
+
+// Wait for cameras to connect, then trigger all at once
+setTimeout(async () => {
+  const connected = manager.getCameras().filter(c => c.state === 'connected');
+  console.log(`Triggering ${connected.length} cameras...`);
+
+  await Promise.all(
+    connected.map(c => manager.client.triggerShutter(c.info.id))
+  );
+}, 5000);
+```
+
+---
+
+## Selective Connection
+
+Connect only specific camera models or connection types:
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({
+  autoConnect: false,  // Don't auto-connect everything
+});
+
+manager.on('camera-found', async ({ camera }) => {
+  // Only connect A9 III cameras via USB
+  if (camera.model === 'ILCE-9M3' && camera.connectionType === 'USB') {
+    await manager.connect(camera.id, { mode: 'remote' });
+  }
+});
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+});
+
+await manager.start();
+```
+
+---
+
+## Next.js
+
+Server boots the binary in an API route; browser uses CameraManager to connect.
+
+<CodeGroup>
+```typescript app/api/server/route.ts
+import { CameraManager } from 'camera-remote-web-api/server';
+
+let manager: CameraManager | null = null;
+
+export async function POST() {
+  if (!manager) {
+    manager = new CameraManager({
+      port: 8080,
+      autoPort: true,
+      binaryPath: '/path/to/CameraWebApp', // explicit path for Next.js bundler
+    });
+    await manager.start();
+  }
+  return Response.json({ port: manager.getPort() });
+}
+```
+
+```typescript app/page.tsx
+'use client';
+import { CameraManager } from 'camera-remote-web-api';
+import { useEffect, useState } from 'react';
+
+export default function CameraPage() {
+  const [cameras, setCameras] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/server', { method: 'POST' })
+      .then(r => r.json())
+      .then(({ port }) => {
+        const manager = new CameraManager({
+          baseUrl: `http://localhost:${port}`,
+        });
+
+        manager.on('camera-ready', () => {
+          setCameras(manager.getCameras());
+        });
+
+        manager.start();
+        return () => manager.close();
+      });
+  }, []);
+
+  return <pre>{JSON.stringify(cameras, null, 2)}</pre>;
+}
+```
+</CodeGroup>
+
+<Warning>
+Next.js bundler strips native `createRequire` — always pass an explicit `binaryPath` in API routes.
+</Warning>
+
+---
+
+## Continuous Shooting
+
+Start and stop continuous capture with drive mode control:
+
+```typescript
+manager.on('camera-ready', async ({ cameraId }) => {
+  const client = manager.client;
+
+  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  await client.setProperty(cameraId, 'drive-mode', { value: 'continuous-hi' });
+
+  // Start continuous shooting
+  await client.triggerShutter(cameraId, { action: 'down' });
+
+  // Shoot for 3 seconds
+  setTimeout(async () => {
+    await client.triggerShutter(cameraId, { action: 'up' });
+    console.log('Burst complete');
+  }, 3000);
+});
+```
+
+---
+
+## Live View
+
+Stream live view frames from a connected camera:
+
+```typescript
+manager.on('camera-ready', async ({ cameraId }) => {
+  const client = manager.client;
+
+  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+
+  // Start live view
+  await client.startLiveViewStream(cameraId);
+
+  // Poll frames
+  setInterval(async () => {
+    const frame = await client.getLiveViewFrame(cameraId);
+    // frame is an ArrayBuffer containing JPEG data
+    process.stdout.write(`Frame: ${frame.byteLength} bytes\r`);
+  }, 66); // ~15fps
+});
+```
+
+For continuous WebSocket streaming, use `LiveViewStream`:
+
+```typescript
+import { LiveViewStream } from 'camera-remote-web-api/server';
+
+const liveView = new LiveViewStream(`ws://localhost:${manager.getPort()}`, cameraId);
+liveView.onFrame((jpeg: ArrayBuffer) => {
+  // Process each JPEG frame (~15fps)
+});
+
+// Clean up
+liveView.close();
+```
+
+---
+
+## SD Card Download
+
+Browse and download files from the camera's SD card:
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({
+  connectionMode: 'remote-transfer',  // Required for SD card access
+});
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  const client = manager.client;
+
+  // List files on slot 1
+  const { files } = await client.listSDCardFiles(cameraId, 1);
+  console.log(`Found ${files.length} files`);
+
+  // Download first file
+  if (files.length > 0) {
+    const file = files[0];
+    await client.downloadSDCardFile(cameraId, 1, file.content_id, file.file_id);
+    console.log(`Downloaded: ${file.file_path}`);
+  }
+});
+
+await manager.start();
+```

@@ -1,0 +1,154 @@
+---
+title: "CameraManager"
+description: "Start the binary, discover cameras, auto-connect, and reconnect — all in one class"
+---
+
+CameraManager replaces the manual `ServerManager` + `CameraClient` + `EventStream` workflow. One class handles the full lifecycle: binary management, camera discovery, connection, SSE events, and reconnection.
+
+## Server (Node.js)
+
+Import from `camera-remote-web-api/server`. This variant spawns and manages the native binary.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+
+manager.on('camera-ready', async ({ cameraId, camera }) => {
+  console.log(`${camera.model} connected`);
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  await manager.client.triggerShutter(cameraId);
+});
+
+await manager.start();
+```
+
+<Info>
+`manager.client` is a full `CameraClient` instance — use it for all REST calls (properties, actions, live view, SD card).
+</Info>
+
+---
+
+## Options
+
+```typescript
+const manager = new CameraManager({
+  // Server options (server variant only)
+  port: 8080,              // Default: 8080
+  autoPort: true,          // Find next available port if busy
+  binaryPath: '/path/to', // Explicit path to CameraWebApp binary
+
+  // Connection options (all variants)
+  autoConnect: true,       // Auto-connect discovered cameras (default: true)
+  connectionMode: 'remote', // Default mode: 'remote' | 'remote-transfer' | 'contents'
+  autoReconnect: true,     // Reconnect on unexpected disconnect (default: true)
+  maxReconnectAttempts: 5, // Give up after N attempts (default: 5)
+  pollInterval: 5000,      // Camera discovery interval in ms (default: 5000)
+});
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `port` | `8080` | Server port (server variant only) |
+| `autoPort` | `false` | Find next available port if busy |
+| `binaryPath` | auto-detected | Explicit binary path (required in Next.js) |
+| `baseUrl` | `http://localhost:8080` | Server URL (browser variant only) |
+| `autoConnect` | `true` | Connect cameras automatically on discovery |
+| `connectionMode` | `'remote'` | Default connection mode for auto-connect |
+| `autoReconnect` | `true` | Reconnect on unexpected disconnect |
+| `maxReconnectAttempts` | `5` | Max reconnect attempts before giving up |
+| `pollInterval` | `5000` | Camera discovery polling interval (ms) |
+
+---
+
+## Lifecycle
+
+```typescript
+// Start — boots binary, begins polling, subscribes to SSE
+await manager.start();
+
+// Access the underlying client for REST calls
+await manager.client.setProperty(cameraId, 'iso', { value: '400' });
+
+// Check binary status
+await manager.isRunning();  // true
+manager.getPort();          // 8080
+
+// Stop — closes SSE, stops polling, kills binary
+await manager.close();
+```
+
+### Server-Only Methods
+
+```typescript
+manager.getPort();           // Current port (may differ from requested if autoPort)
+await manager.isRunning();   // Binary health check
+manager.getStdout();         // Binary stdout lines
+manager.getStderr();         // Binary stderr lines
+manager.getPid();            // Binary process ID
+```
+
+---
+
+## Camera Access
+
+```typescript
+// All cameras with state
+const cameras = manager.getCameras();
+// → [{ info: { id, model, connectionType, connected }, state: 'connected', reconnectAttempts: 0 }]
+
+// Single camera by ID
+const cam = manager.getCamera('D10F60149B0C');
+// → { info: {...}, state: 'connected', reconnectAttempts: 0 }
+```
+
+---
+
+## Manual Connection Control
+
+Disable auto-connect to manage connections yourself:
+
+```typescript
+const manager = new CameraManager({
+  autoConnect: false,
+  autoReconnect: false,
+});
+
+manager.on('camera-found', async ({ camera }) => {
+  // Connect only specific models
+  if (camera.model === 'ILCE-9M3') {
+    await manager.connect(camera.id, { mode: 'remote' });
+  }
+});
+
+// Explicit disconnect
+await manager.disconnect('D10F60149B0C');
+```
+
+---
+
+## Browser
+
+Same core API, but connects to an **already-running** server instead of spawning a binary. Use in React, Next.js client components, Electron renderers, or any browser context.
+
+Import from `camera-remote-web-api` (the default export).
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api';
+
+const manager = new CameraManager({
+  baseUrl: 'http://localhost:8080',
+  autoConnect: true,
+  connectionMode: 'remote',
+});
+
+manager.on('camera-ready', ({ cameraId, camera }) => {
+  console.log(`${camera.model} ready`);
+});
+
+manager.start();  // Synchronous — just starts polling + SSE
+```
+
+<Warning>
+The browser variant does **not** have `getPort()`, `isRunning()`, `getStdout()`, `getStderr()`, or `getPid()` — those are server-only methods that manage the native binary.
+</Warning>

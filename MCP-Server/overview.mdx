@@ -1,65 +1,49 @@
 ---
 title: "Overview"
-description: "AI-powered SDK documentation and API integration."
+description: "AI-powered documentation search for Sony's camera development tools"
 layout: "full"
 icon: "code"
 ---
 
+<Card title="Quick Setup" icon="rocket" href="/quickstarts/mcp-server">
+  Get MCP servers running in under 5 minutes
+</Card>
+
 <iframe src="https://www.loom.com/embed/b8b5243664214257b6fdbd60e627d20a" title="Loom video player" frameborder="0" className="w-full aspect-video rounded-xl" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen />
 
-## What is Sony's AI SDK Assistant?
+## What Are MCP Servers?
 
-The AI SDK Assistant is an intelligent search assistant that helps developers learn and use Sony's Camera Remote SDK faster. Instead of manually searching through hundreds of pages of documentation, you can ask questions in plain English to AI assistants like Claude, and get instant answers with code examples.
+MCP (Model Context Protocol) servers connect AI assistants like Claude and Cursor to specialized knowledge bases. Instead of manually searching through hundreds of pages of documentation, you ask questions in plain English and get instant answers with code examples.
 
-We built this tool to solve a common problem:
+Sony provides **three MCP servers**, each covering a different part of the camera development ecosystem:
 
-> "**Learning a new SDK is hard.** It takes hours to find the right API, understand how it works, and figure out how to use it in your project."
+<CardGroup cols={3}>
+  <Card title="Camera Remote Web API Docs" icon="globe" href="/MCP-Server/web-api-docs">
+    HTTP API endpoints, Client SDK (TypeScript), request/response formats, and architecture guides
+  </Card>
+  <Card title="Camera Remote SDK Docs" icon="code" href="/MCP-Server/sdk-docs">
+    Official C++ and C# SDK documentation, API functions, code examples, compatibility tables, and error codes
+  </Card>
+  <Card title="Camera Help Guides" icon="camera" href="/MCP-Server/help-guides">
+    Official help guide documentation for 24 Sony camera models — settings, features, shooting modes, and troubleshooting
+  </Card>
+</CardGroup>
 
-<Card title="Our Goal" icon="message">
-  Turn your favorite AI assistant into an SDK expert that can answer questions, explain APIs, provide code examples, and help you build faster.
-</Card>
+## Server Summary
+
+| Server | Name | Content | URL |
+|--------|------|---------|-----|
+| [Web API Docs](/MCP-Server/web-api-docs) | `CameraWebAPI` | HTTP endpoints, TypeScript Client SDK | `https://crsdk.app/mcp` |
+| [SDK Docs](/MCP-Server/sdk-docs) | `CameraRemoteSDK` | C++/C# SDK docs, 13,000+ indexed pieces | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+| [Help Guides](/MCP-Server/help-guides) | `CameraHelp` | 24 camera models, 55,000+ help entries | `https://camera-rag-agent-production.up.railway.app/mcp` |
+
+You can install one, two, or all three servers — they run independently and can be used simultaneously.
 
 ## How It Works
 
-Our AI SDK Assistant works in three simple steps:
-
-**1. You Ask a Question**
-
-- Ask your AI assistant (Claude recommended) about the Camera Remote SDK
-- Examples: "How do I connect to a camera?" or "Show me how to capture an image in C#"
-
-**2. AI SDK Assistant Searches for Answers**
-
-- The AI assistant automatically uses AI SDK Assistant to search through SDK documentation
-- Searches across 13,333+ pieces of content including guides, API references, and code examples
-- Works with SDK V2.01.00 (latest) and V2.00.00
-
-**3. You Get Instant Results**
-
-- Receive relevant documentation, function details, and working code examples
-- All formatted and explained by your AI assistant
-- No need to leave your conversation
-
-## What Makes This Tool Different?
-
-### Smart Search
-
-The AI SDK Assistant understands what you're asking for, even if you don't know the exact API name. It uses AI to interpret your question and find the most relevant answers.
-
-### Multiple Content Types
-
-- 📖 **Documentation**: Tutorials, guides, and explanations
-- 🔧 **API References**: Function definitions and parameters
-- 💻 **Code Examples**: Working C++ and C# code
-- 📊 **Compatibility Tables**: Which cameras support which features
-
-### Version Support
-
-Switch between SDK versions (V2.01.00 and V2.00.00) to find information for the version you're using.
-
-### Use With Your Preferred AI Tool
-
-Works with Claude (web, mobile, desktop, CLI), Cursor, and other AI assistants that support MCP (Model Context Protocol).
+1. **You Ask a Question** — Ask your AI assistant about any Sony camera development topic
+2. **The MCP Server Searches** — Your AI automatically selects the right server and searches through indexed documentation
+3. **You Get Instant Results** — Receive relevant documentation, code examples, and explanations without leaving your conversation
 
 <Warning>
   **ChatGPT Not Recommended**: Due to OpenAI's unofficial support for MCP servers, ChatGPT has significant limitations with code generation and tool functionality. We strongly recommend using Claude for SDK development. Only use ChatGPT if you already have an active subscription and cannot access Claude.
@@ -67,11 +51,9 @@ Works with Claude (web, mobile, desktop, CLI), Cursor, and other AI assistants t
 
 ## The Technology (Simplified)
 
-**For those curious about what's under the hood:**
-
 - **RAG (Retrieval-Augmented Generation)**: Combines AI understanding with database search to find accurate answers
 - **Vector Embeddings**: Converts documentation into a format AI can search semantically
-- **MCP (Model Context Protocol)**: The standard that lets AI assistants connect to AI SDK Assistant
-- **Cloud Hosted**: Runs on Railway for reliable 24/7 availability
+- **MCP (Model Context Protocol)**: The standard that lets AI assistants connect to these servers
+- **Cloud Hosted**: Runs on Railway and Cloudflare for reliable 24/7 availability
 
-You don't need to understand these technologies to use the AI SDK Assistant—just connect it to your AI assistant and start asking questions!
+You don't need to understand these technologies — just connect the servers to your AI assistant and start asking questions.

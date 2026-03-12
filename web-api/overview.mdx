@@ -14,46 +14,57 @@ The Camera Remote Web API provides HTTP endpoints to control Sony cameras connec
   <Card title="remote-transfer" icon="camera-retro">
     Camera control + explicit SD card file access. Most capable mode.
   </Card>
-  <Card title="contents-transfer" icon="sd-card">
+  <Card title="contents" icon="sd-card">
     SD card file access only. No shooting or settings control.
   </Card>
 </CardGroup>
 
+## Architecture
+
+The Camera Remote Web API is an HTTP server built on Sony's native [Camera Remote SDK](/sdk/camera-remote-sdk). It translates RESTful requests into native SDK calls, enabling camera control from any language or tool that can make HTTP requests. For TypeScript projects, the [Client SDK](/sdk/overview) wraps this API with managed lifecycle and typed methods.
+
 ## Quick Start
+
+<Card title="HTTP API Quickstart" icon="rocket" href="/quickstarts/http-api">
+  Discover, connect, and shoot with curl in under 5 minutes
+</Card>
 
 <Steps>
   <Step title="Discover cameras">
     ```bash
-    GET /api/cameras
+    curl http://localhost:8080/api/cameras
     ```
   </Step>
   <Step title="Connect">
     ```bash
-    POST /api/cameras/{id}/connection
-    {"mode": "remote"}
+    curl -X POST http://localhost:8080/api/cameras/{id}/connection \
+      -H "Content-Type: application/json" \
+      -d '{"mode": "remote"}'
     ```
   </Step>
   <Step title="Set Priority Key">
     ```bash
-    PUT /api/cameras/{id}/priority-key
-    {"setting": "pc-remote"}
+    curl -X PUT http://localhost:8080/api/cameras/{id}/priority-key \
+      -H "Content-Type: application/json" \
+      -d '{"setting": "pc-remote"}'
     ```
     <Warning>Priority key **must** be set to `pc-remote` before the camera accepts remote commands.</Warning>
   </Step>
   <Step title="Configure settings">
     ```bash
-    PUT /api/cameras/{id}/properties/iso
-    {"value": "400"}
+    curl -X PUT http://localhost:8080/api/cameras/{id}/properties/iso \
+      -H "Content-Type: application/json" \
+      -d '{"value": "400"}'
     ```
   </Step>
   <Step title="Shoot">
     ```bash
-    POST /api/cameras/{id}/actions/af-shutter
+    curl -X POST http://localhost:8080/api/cameras/{id}/actions/af-shutter
     ```
   </Step>
   <Step title="Disconnect">
     ```bash
-    DELETE /api/cameras/{id}/connection
+    curl -X DELETE http://localhost:8080/api/cameras/{id}/connection
     ```
   </Step>
 </Steps>

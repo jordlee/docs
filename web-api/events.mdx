@@ -9,7 +9,8 @@ Real-time event stream from the camera SDK. Subscribe to events from all cameras
 
 <ParamField path="method" type="GET">`GET /api/events`</ParamField>
 
-```javascript
+<CodeGroup>
+```javascript Browser (EventSource)
 const events = new EventSource("http://localhost:8080/api/events");
 
 events.addEventListener("downloadComplete", (e) => {
@@ -21,17 +22,49 @@ events.addEventListener("afStatus", (e) => {
 });
 ```
 
+```typescript TypeScript (EventStream)
+import { EventStream } from 'camera-remote-web-api';
+
+const events = new EventStream('http://localhost:8080');
+
+events.on('downloadComplete', (data) => {
+  console.log('File saved:', data.filename);
+});
+
+events.on('afStatus', (data) => {
+  console.log('AF:', data.state);
+});
+```
+
+```typescript TypeScript (CameraManager)
+// CameraManager handles SSE internally — use manager events instead
+manager.on('camera-ready', ({ cameraId, camera }) => {
+  console.log(`${camera.model} connected`);
+});
+
+manager.on('camera-disconnected', ({ cameraId, error }) => {
+  console.log(`Disconnected: ${error ?? 'clean'}`);
+});
+```
+</CodeGroup>
+
 ## Subscribe to Camera Events
 
 <ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/events`</ParamField>
 
 Same event types, filtered to a single camera.
 
-```javascript
+<CodeGroup>
+```javascript Browser (EventSource)
 const events = new EventSource(
   "http://localhost:8080/api/cameras/D10F60149B0C/events"
 );
 ```
+
+```typescript TypeScript (EventStream)
+const events = new EventStream('http://localhost:8080', 'D10F60149B0C');
+```
+</CodeGroup>
 
 ---
 
@@ -131,7 +164,7 @@ data: {"percent":100,"notify":"0x20093","filename":"/path/to/DSC09598.JPG"}
 |------|---------------|-----------|-----------|
 | `remote` | Yes (if StoreDestination = HostPC/Both) | `downloadComplete` | SDK pushes via `OnCompleteDownload` |
 | `remote-transfer` | No — explicit pull | `transferProgress` | Pull via `POST .../download` |
-| `contents-transfer` | No — pull only | `contentsTransfer` | Pull-only, no shooting |
+| `contents` | No — pull only | `contentsTransfer` | Pull-only, no shooting |
 
 ## Keepalive
 
