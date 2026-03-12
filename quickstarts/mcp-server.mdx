@@ -1,43 +1,67 @@
 ---
 title: "MCP Server Quickstart"
-description: "Connect AI SDK Assistant to your AI tool in under 5 minutes"
+description: "Connect Sony's AI documentation servers to your AI tool in under 5 minutes"
 ---
 
-AI SDK Assistant lets you ask questions about Sony's Camera Remote SDK in plain English and get instant answers with code examples.
+Sony provides three MCP servers that give your AI assistant access to different parts of the camera development ecosystem. Install any combination you need.
+
+| Server | Name | What It Covers |
+|--------|------|---------------|
+| **Web API Docs** | `Kando` | HTTP API endpoints, Client SDK (TypeScript) |
+| **SDK Docs** | `CRSDK` | Camera Remote SDK (C++/C#) — APIs, code examples, compatibility |
+| **Help Guides** | `CameraAssistant` | Camera help guides for 24 Sony models — settings, features, troubleshooting |
 
 ## Choose Your Tool
 
 <Tabs>
   <Tab title="Claude">
+    For each server you want to install:
+
     1. Go to **Settings > Connectors**
     2. Click **Add custom connector**
-    3. Name it `AI SDK Assistant`
-    4. Paste the URL:
-    ```
-    https://sdk-rag-agent-production.up.railway.app/mcp
-    ```
-    5. Click **Add**
-    6. Open a new chat, click the **search and tools** icon, and toggle the connector **on**
+    3. Enter the name and URL:
+
+    | Name | URL |
+    |------|-----|
+    | `Kando` | `https://crsdk.app/mcp` |
+    | `CRSDK` | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+    | `CameraAssistant` | `https://camera-rag-agent-production.up.railway.app/mcp` |
+
+    4. Click **Add**
+    5. Open a new chat, click the **search and tools** icon, and toggle the connectors **on**
   </Tab>
   <Tab title="Claude Code">
     ```bash
+    # Web API Docs
+    claude mcp add Kando --scope user -- npx mcp-remote https://crsdk.app/mcp
+
+    # SDK Docs
     claude mcp add CRSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
+
+    # Help Guides
+    claude mcp add CameraAssistant --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
     ```
 
-    Verify it's connected:
+    Verify they're connected:
 
     ```bash
     claude mcp list
     ```
   </Tab>
   <Tab title="Cursor">
+    For each server you want to install:
+
     1. Open Settings (`Cmd + ,` / `Ctrl + ,`)
     2. Navigate to **Features > MCP**
     3. Click **+ Add New MCP Server**
-    4. Enter:
-       - **Name:** `CRSDK`
-       - **Transport Type:** `command` (stdio)
-       - **Command:** `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp`
+    4. Set **Transport Type** to `command` (stdio) and enter:
+
+    | Name | Command |
+    |------|---------|
+    | `Kando` | `npx mcp-remote https://crsdk.app/mcp` |
+    | `CRSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
+    | `CameraAssistant` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
+
     5. Click **Save**
   </Tab>
 </Tabs>
@@ -48,14 +72,14 @@ Ask your AI assistant:
 
 > "How do I connect to a Sony camera and capture a photo using the Camera Remote SDK in C++?"
 
-The AI assistant will automatically search through 13,000+ pieces of SDK documentation, API references, and code examples to give you an accurate answer.
+The AI assistant will automatically search through the relevant MCP server to give you an accurate answer with code examples.
 
 ## Example Questions
 
-- "What cameras support remote shooting via USB?"
-- "Show me C# code for setting ISO and shutter speed"
-- "What does error code CrError_Connect_TimeOut mean?"
-- "How do I start live view streaming?"
+- "How do I set ISO using the HTTP API?" (Web API Docs)
+- "Show me C# code for setting shutter speed" (SDK Docs)
+- "What cameras support remote shooting via USB?" (SDK Docs)
+- "How do I enable real-time tracking on the A7R V?" (Help Guides)
 
 ---
 
@@ -72,6 +96,6 @@ The AI assistant will automatically search through 13,000+ pieces of SDK documen
     Best practices and starter prompts for SDK questions
   </Card>
   <Card title="Available Tools" icon="wrench" href="/MCP-Server/tools">
-    See all 14 search tools AI SDK Assistant provides
+    See all search tools the MCP servers provide
   </Card>
 </CardGroup>
