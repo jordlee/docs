@@ -1,0 +1,20 @@
+---
+title: "LiveViewStream"
+description: "WebSocket client for continuous JPEG frame streaming"
+---
+
+WebSocket client for continuous JPEG frame streaming at ~15fps. Node.js only.
+
+```typescript
+import { LiveViewStream } from 'camera-remote-web-api/server';
+
+const liveView = new LiveViewStream('ws://localhost:8080', 'D10F60149B0C');
+
+liveView.onFrame((jpeg: ArrayBuffer) => {
+  console.log(`Frame: ${jpeg.byteLength} bytes`);
+});
+
+liveView.close();
+```
+
+For browser WebSocket usage, see the [Live View endpoint docs](/web-api/live-view#websocket-streaming).

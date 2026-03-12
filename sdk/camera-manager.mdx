@@ -1,9 +1,9 @@
 ---
 title: "CameraManager"
-description: "Start the binary, discover cameras, auto-connect, and reconnect — all in one class"
+description: "The single entry point for camera discovery, connection, and control"
 ---
 
-CameraManager replaces the manual `ServerManager` + `CameraClient` + `EventStream` workflow. One class handles the full lifecycle: binary management, camera discovery, connection, SSE events, and reconnection.
+CameraManager is the entry point for the Client SDK. It replaces the manual `ServerManager` + `CameraClient` + `EventStream` workflow — one class handles binary management, camera discovery, connection lifecycle, SSE events, and reconnection.
 
 ## Server (Node.js)
 
@@ -23,8 +23,26 @@ manager.on('camera-ready', async ({ cameraId, camera }) => {
 await manager.start();
 ```
 
+## Browser
+
+Import from `camera-remote-web-api` (the default export). Connects to an **already-running** server — no binary management.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api';
+
+const manager = new CameraManager({
+  baseUrl: 'http://localhost:8080',
+});
+
+manager.on('camera-ready', ({ cameraId, camera }) => {
+  console.log(`${camera.model} ready`);
+});
+
+manager.start();  // Synchronous — just starts polling + SSE
+```
+
 <Info>
-`manager.client` is a full `CameraClient` instance — use it for all REST calls (properties, actions, live view, SD card).
+`manager.client` is a full `CameraClient` instance — use it for all REST calls (properties, actions, live view, SD card). See [Properties & Actions](/sdk/properties-actions).
 </Info>
 
 ---
@@ -39,8 +57,9 @@ const manager = new CameraManager({
   binaryPath: '/path/to', // Explicit path to CameraWebApp binary
 
   // Connection options (all variants)
+  baseUrl: 'http://localhost:8080', // Server URL (browser variant only)
   autoConnect: true,       // Auto-connect discovered cameras (default: true)
-  connectionMode: 'remote', // Default mode: 'remote' | 'remote-transfer' | 'contents'
+  connectionMode: 'remote-transfer', // Default: 'remote'
   autoReconnect: true,     // Reconnect on unexpected disconnect (default: true)
   maxReconnectAttempts: 5, // Give up after N attempts (default: 5)
   pollInterval: 5000,      // Camera discovery interval in ms (default: 5000)
@@ -49,10 +68,10 @@ const manager = new CameraManager({
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `port` | `8080` | Server port (server variant only) |
-| `autoPort` | `false` | Find next available port if busy |
-| `binaryPath` | auto-detected | Explicit binary path (required in Next.js) |
-| `baseUrl` | `http://localhost:8080` | Server URL (browser variant only) |
+| `port` | `8080` | Server port *(server only)* |
+| `autoPort` | `false` | Find next available port if busy *(server only)* |
+| `binaryPath` | auto-detected | Explicit binary path *(server only, required in Next.js)* |
+| `baseUrl` | `http://localhost:8080` | Server URL *(browser only)* |
 | `autoConnect` | `true` | Connect cameras automatically on discovery |
 | `connectionMode` | `'remote'` | Default connection mode for auto-connect |
 | `autoReconnect` | `true` | Reconnect on unexpected disconnect |
@@ -61,31 +80,67 @@ const manager = new CameraManager({
 
 ---
 
+## Connection Modes
+
+The connection mode determines what operations are available on a connected camera.
+
+| Mode | Description |
+|------|-------------|
+| `remote` | Full camera control. Photos auto-transfer to host PC. |
+| `remote-transfer` | Full camera control + explicit SD card file download. |
+| `contents` | SD card browsing and file download only — no shooting or settings. |
+
+Not all cameras support all modes or APIs. See [Compatibility](/web-api/compatibility) for per-camera details.
+
+### Choosing a mode
+
+<AccordionGroup>
+  <Accordion title="I want to shoot and auto-save photos to my computer" icon="camera" defaultOpen>
+    Use `remote`. Set `still-image-store-destination` to `0x1` (Host PC) or `0x3` (Both) for auto-transfer. Listen for `downloadComplete` events to know when files are saved.
+  </Accordion>
+
+  <Accordion title="I want to shoot AND browse the SD card" icon="camera-retro">
+    Use `remote-transfer`. You get full shooting control plus explicit file listing and download from the SD card. This is the most flexible mode.
+  </Accordion>
+
+  <Accordion title="I only need to download files from the SD card" icon="sd-card">
+    Use `contents`. No shooting or settings control — just file browsing and download.
+  </Accordion>
+</AccordionGroup>
+
+```typescript
+// Set mode globally
+const manager = new CameraManager({ connectionMode: 'remote-transfer' });
+
+// Or per-camera when using manual connection
+await manager.connect(camera.id, { mode: 'remote-transfer' });
+```
+
+---
+
 ## Lifecycle
 
 ```typescript
-// Start — boots binary, begins polling, subscribes to SSE
+// Start — boots binary (server), begins polling, subscribes to SSE
 await manager.start();
 
 // Access the underlying client for REST calls
 await manager.client.setProperty(cameraId, 'iso', { value: '400' });
 
-// Check binary status
-await manager.isRunning();  // true
-manager.getPort();          // 8080
-
-// Stop — closes SSE, stops polling, kills binary
+// Stop — closes SSE, stops polling, kills binary (server)
 await manager.close();
 ```
 
-### Server-Only Methods
+### Server-only methods
+
+These are only available on the server variant (`camera-remote-web-api/server`):
 
 ```typescript
-manager.getPort();           // Current port (may differ from requested if autoPort)
+manager.getPort();           // Current port (may differ if autoPort)
 await manager.isRunning();   // Binary health check
+manager.getPid();            // Binary process ID
 manager.getStdout();         // Binary stdout lines
 manager.getStderr();         // Binary stderr lines
-manager.getPid();            // Binary process ID
 ```
 
 ---
@@ -106,49 +161,8 @@ const cam = manager.getCamera('D10F60149B0C');
 
 ## Manual Connection Control
 
-Disable auto-connect to manage connections yourself:
+For full manual control over connection lifecycle — connecting specific cameras, managing state transitions, and handling reconnection yourself — use the stateful API classes directly instead of CameraManager.
 
-```typescript
-const manager = new CameraManager({
-  autoConnect: false,
-  autoReconnect: false,
-});
-
-manager.on('camera-found', async ({ camera }) => {
-  // Connect only specific models
-  if (camera.model === 'ILCE-9M3') {
-    await manager.connect(camera.id, { mode: 'remote' });
-  }
-});
-
-// Explicit disconnect
-await manager.disconnect('D10F60149B0C');
-```
-
----
-
-## Browser
-
-Same core API, but connects to an **already-running** server instead of spawning a binary. Use in React, Next.js client components, Electron renderers, or any browser context.
-
-Import from `camera-remote-web-api` (the default export).
-
-```typescript
-import { CameraManager } from 'camera-remote-web-api';
-
-const manager = new CameraManager({
-  baseUrl: 'http://localhost:8080',
-  autoConnect: true,
-  connectionMode: 'remote',
-});
-
-manager.on('camera-ready', ({ cameraId, camera }) => {
-  console.log(`${camera.model} ready`);
-});
-
-manager.start();  // Synchronous — just starts polling + SSE
-```
-
-<Warning>
-The browser variant does **not** have `getPort()`, `isRunning()`, `getStdout()`, `getStderr()`, or `getPid()` — those are server-only methods that manage the native binary.
-</Warning>
+<Card title="Stateful API Access" icon="terminal" href="/sdk/stateful/camera-client">
+  Direct access to CameraClient, EventStream, and ServerManager without CameraManager automation
+</Card>

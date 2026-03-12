@@ -1,0 +1,114 @@
+---
+title: "State Management"
+description: "Automatic connection lifecycle — discovery, state tracking, and reconnection"
+---
+
+CameraManager handles camera discovery, connection, and reconnection automatically. You monitor state via [connection events](/sdk/events#connection-events) and inspect cameras via `getCameras()` — you don't drive state transitions manually.
+
+## Connection State Machine
+
+Each camera tracked by CameraManager has one of four states:
+
+```
+detected ──→ connecting ──→ connected
+   ↑              │              │
+   │              ↓              ↓ (unexpected disconnect)
+   └── detected ← connection-failed    disconnected
+                                          │
+                                          ↓ (autoReconnect)
+                                     scheduleReconnect
+                                          │
+                                          ↓ (backoff: 2s, 4s, 6s... max 30s)
+                                       detected
+```
+
+| State | Description |
+|-------|-------------|
+| `detected` | Camera found by polling, not yet connected |
+| `connecting` | Connection attempt in progress |
+| `connected` | Ready for commands |
+| `disconnected` | Was connected, now disconnected |
+
+---
+
+## Camera Discovery & Selection
+
+`getCameras()` returns all tracked cameras with their current state. `getCamera(id)` returns a specific camera.
+
+```typescript
+// All cameras with state
+const cameras = manager.getCameras();
+// → [{ info: { id, model, connectionType, connected }, state: 'connected', reconnectAttempts: 0 }]
+
+// Single camera by ID
+const cam = manager.getCamera('D10F60149B0C');
+console.log(cam.state);              // 'connected'
+console.log(cam.reconnectAttempts);  // 0
+```
+
+---
+
+## Reconnection Behavior
+
+When `autoReconnect` is enabled (default), CameraManager automatically retries after unexpected disconnections.
+
+**Backoff strategy:** Linear — 2s, 4s, 6s, 8s, 10s... capped at 30s max delay. Resets to 0 on successful connection.
+
+**Max attempts:** Controlled by `maxReconnectAttempts` (default: 5). After exhausting all attempts, no further retries are scheduled.
+
+```typescript
+const manager = new CameraManager({
+  autoReconnect: true,         // default
+  maxReconnectAttempts: 10,    // retry up to 10 times
+});
+
+manager.on('connection-failed', ({ cameraId, attempt }) => {
+  console.log(`Reconnect attempt ${attempt}...`);
+});
+
+manager.on('camera-ready', ({ cameraId }) => {
+  console.log('Reconnected!');
+  // reconnectAttempts resets to 0 on success
+});
+```
+
+---
+
+## Event Flow Examples
+
+### Normal connection
+
+```
+poll() → camera-found → auto-connect → camera-connecting → camera-ready
+```
+
+### Unexpected disconnect + reconnect
+
+```
+SSE 'disconnected' → camera-disconnected → scheduleReconnect (2s)
+  → camera-connecting → camera-ready (reconnectAttempts resets)
+```
+
+### Camera unplugged
+
+```
+poll() → camera not in results → camera-lost (removed from tracking)
+```
+
+### Connection failure with retry
+
+```
+camera-connecting → connection-failed (attempt 1)
+  → scheduleReconnect (2s) → camera-connecting → connection-failed (attempt 2)
+  → scheduleReconnect (4s) → camera-connecting → camera-ready
+```
+
+---
+
+## Manual Connection Control
+
+For full manual control over connection lifecycle — connecting specific cameras, managing state transitions, and handling reconnection yourself — use the stateful API classes directly instead of CameraManager.
+
+<Card title="Stateful API Access" icon="terminal" href="/sdk/stateful/camera-client">
+  Direct access to CameraClient, EventStream, and ServerManager without CameraManager automation
+</Card>

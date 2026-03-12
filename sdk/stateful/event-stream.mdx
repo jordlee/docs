@@ -1,0 +1,41 @@
+---
+title: "EventStream"
+description: "Server-Sent Events client for real-time camera notifications"
+---
+
+Server-Sent Events client for real-time camera notifications. Works in both Node.js and browsers.
+
+```typescript
+import { EventStream } from 'camera-remote-web-api';
+
+// All cameras
+const events = new EventStream('http://localhost:8080');
+
+// Or filter to a single camera
+const camEvents = new EventStream('http://localhost:8080', 'D10F60149B0C');
+
+events.on('propertyChanged', (data) => {
+  console.log('Properties changed:', data.codes);
+});
+
+events.on('downloadComplete', (data) => {
+  console.log('File saved:', data.filename);
+});
+
+events.on('warning', (data) => {
+  if (data.code === '0x20011') console.log('Photo captured!');
+});
+
+events.on('afStatus', (data) => {
+  console.log('AF state:', data.state);
+});
+
+events.on('transferProgress', (data) => {
+  console.log(`Transfer: ${data.percent}%`);
+});
+
+// Cleanup
+events.close();
+```
+
+See [Events](/sdk/events#property--action-events) for the full event reference.

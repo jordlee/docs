@@ -1,0 +1,11 @@
+/* Constrain navbar logo size */
+nav img,
+nav svg,
+[class*="logo"] img,
+[class*="logo"] svg,
+a[href="/"] img,
+a[href="/"] svg {
+  max-height: 16px !important;
+  width: auto !important;
+  object-fit: contain !important;
+}

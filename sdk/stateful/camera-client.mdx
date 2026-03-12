@@ -1,0 +1,121 @@
+---
+title: "CameraClient"
+description: "Typed HTTP client for all Camera Remote Web API endpoints"
+---
+
+Typed HTTP client for all Camera Remote Web API endpoints. Works in both Node.js and browsers.
+
+```typescript
+import { CameraClient } from 'camera-remote-web-api';
+
+const client = new CameraClient('http://localhost:8080');
+```
+
+## Connection
+
+<Warning>
+Connection is not complete until the corresponding SSE callback is received. Calling commands after `connectCamera()` before the callback confirms connection may cause unpredictable behavior including camera disconnection or hanging.
+</Warning>
+
+```typescript
+import { CameraClient, EventStream } from 'camera-remote-web-api';
+
+const client = new CameraClient('http://localhost:8080');
+const events = new EventStream('http://localhost:8080');
+
+// Discover cameras
+const { cameras } = await client.listCameras();
+const id = cameras[0].id;
+
+// Wait for SSE 'connected' callback before issuing commands
+const waitForConnection = new Promise<void>((resolve) => {
+  events.on('connected', (data) => {
+    if (data.cameraId === id) resolve();
+  });
+});
+
+await client.connectCamera(id, { mode: 'remote-transfer' });
+await waitForConnection;  // Don't proceed until SSE confirms
+
+// Now safe to issue commands
+await client.setPriorityKey(id, { setting: 'pc-remote' });
+
+// Check status
+const status = await client.getConnectionStatus(id);
+
+// Disconnect — wait for SSE confirmation
+const waitForDisconnect = new Promise<void>((resolve) => {
+  events.on('disconnected', (data) => {
+    resolve();
+  });
+});
+
+await client.disconnectCamera(id);
+await waitForDisconnect;
+
+events.close();
+```
+
+## Properties & actions
+
+```typescript
+// Priority key (required for remote control)
+await client.setPriorityKey(id, { setting: 'pc-remote' });
+
+// Read/write properties
+const iso = await client.getProperty(id, 'iso');
+await client.setProperty(id, 'iso', { value: '800' });
+
+// Shutter
+await client.triggerShutter(id);
+await client.afShutter(id);
+
+// Focus & zoom
+await client.halfPress(id);
+await client.focusNearFar(id, { step: -3 });
+await client.controlZoom(id, { direction: 'in', speed: 'normal' });
+```
+
+## Live view
+
+`getLiveViewFrame()` returns a single JPEG frame — you must poll it continuously to simulate a video stream. For continuous streaming, use [LiveViewStream](/sdk/stateful/live-view-stream).
+
+```typescript
+await client.enableLiveView(id);
+const frame = await client.getLiveViewFrame(id);  // ArrayBuffer (JPEG)
+```
+
+## File transfer
+
+```typescript
+// SD card files
+const files = await client.listSDCardFiles(id, 1);
+await client.downloadSDCardFile(id, 1, contentId, fileId);
+
+// Auto-save destination (remote mode only)
+await client.getSaveInfo(id);
+await client.setSaveInfo(id, { path: '/tmp/photos', prefix: 'IMG_', startNo: 1 });
+```
+
+## Save & recall settings
+
+```typescript
+// List settings files (.DAT)
+const { files } = await client.listSettingsFiles(id);
+
+// Download camera settings to host PC
+await client.downloadCameraSettings(id, { filename: 'CUMSET.DAT' });
+
+// Upload settings to camera
+await client.uploadCameraSettings(id, { filename: 'CUMSET.DAT' });
+```
+
+## Error handling
+
+```typescript
+try {
+  await client.setProperty(id, 'iso', { value: '999999' });
+} catch (err) {
+  console.error(err.message);  // "Invalid value for property iso"
+}
+```
