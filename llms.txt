@@ -1,0 +1,117 @@
+# Camera Remote Web API Documentation
+
+> TypeScript SDK and HTTP API for controlling Sony cameras remotely.
+
+## Instructions for LLMs
+
+When generating code that controls Sony cameras using this SDK, follow these guidelines:
+
+### Always use CameraManager
+
+`CameraManager` is the recommended entry point. Do NOT use `CameraClient`, `EventStream`, `ServerManager`, or raw HTTP requests unless the user explicitly asks for stateful/manual control.
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+
+manager.on('camera-ready', async ({ cameraId }) => {
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  // Use manager.client for all camera operations
+});
+
+await manager.start();
+```
+
+- Import from `camera-remote-web-api/server` for Node.js (spawns and manages the native binary).
+- Import from `camera-remote-web-api` for browser (connects to an already-running server).
+- Access the HTTP client via `manager.client` — do not instantiate `CameraClient` separately.
+
+### Always handle graceful shutdown
+
+The native camera server binary must be stopped when your application exits. Always include shutdown handling:
+
+```typescript
+// Graceful shutdown — always include this
+process.on('SIGINT', async () => {
+  await manager.close();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  await manager.close();
+  process.exit(0);
+});
+```
+
+`manager.close()` disconnects all cameras, closes SSE subscriptions, stops polling, and kills the native binary process. Without this, the binary may continue running as an orphaned process.
+
+### ESM-only package
+
+`camera-remote-web-api` is ESM-only. Projects must have `"type": "module"` in `package.json`:
+
+```bash
+npm init -y
+npm pkg set type=module
+npm install camera-remote-web-api
+```
+
+### Priority key is required
+
+Before sending any camera commands (shooting, settings changes), you must set the priority key to `pc-remote`:
+
+```typescript
+await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+```
+
+### Connection modes
+
+- `remote` — Full camera control. Photos auto-transfer to host PC. Default mode.
+- `remote-transfer` — Full camera control + explicit SD card file access. Most capable mode.
+- `contents` — SD card file access only. No shooting or settings control.
+
+### Complete minimal example
+
+```typescript
+import { CameraManager } from 'camera-remote-web-api/server';
+
+const manager = new CameraManager({ port: 8080 });
+
+manager.on('camera-ready', async ({ cameraId, camera }) => {
+  console.log(`${camera.model} connected`);
+  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  await manager.client.triggerShutter(cameraId);
+  console.log('Photo captured!');
+});
+
+await manager.start();
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  await manager.close();
+  process.exit(0);
+});
+```
+
+## Documentation
+
+- [Client SDK Overview](https://docs.crsdk.app/sdk/overview): Package overview, stateless vs stateful comparison
+- [Quick Start](https://docs.crsdk.app/quickstarts/client-sdk): Install and capture a photo in under 5 minutes
+- [Setup](https://docs.crsdk.app/sdk/reference): Installation, platform binaries, environment verification
+- [CameraManager](https://docs.crsdk.app/sdk/camera-manager): Options, connection modes, lifecycle, camera access
+- [Properties & Actions](https://docs.crsdk.app/sdk/properties-actions): Read/write camera settings, trigger shutter/focus/zoom
+- [State Management](https://docs.crsdk.app/sdk/state): Camera state tracking, connection lifecycle events
+- [Events](https://docs.crsdk.app/sdk/events): SSE event subscriptions — property changes, downloads, warnings
+- [Examples](https://docs.crsdk.app/sdk/examples): Multi-camera, file transfer, live view, settings backup, continuous shooting
+- [System Design](https://docs.crsdk.app/sdk/architecture): Browser vs server variants, framework patterns
+
+## API Reference
+
+- [HTTP API Overview](https://docs.crsdk.app/web-api/overview): RESTful endpoints, connection modes, response format
+- [Properties](https://docs.crsdk.app/web-api/properties): Read/write camera properties (ISO, aperture, shutter speed)
+- [Actions](https://docs.crsdk.app/web-api/actions): Shutter, focus, zoom control
+- [Live View & OSD](https://docs.crsdk.app/web-api/live-view): Live view streaming, on-screen display overlay
+- [Events (SSE)](https://docs.crsdk.app/web-api/events): Real-time camera callbacks via Server-Sent Events
+- [File Transfer](https://docs.crsdk.app/web-api/sd-card): SD card file listing, download, save info configuration
+- [Save & Recall Settings](https://docs.crsdk.app/web-api/settings): Camera settings file backup and restore
+- [Compatibility](https://docs.crsdk.app/web-api/compatibility): Per-camera API support, connection modes, OS compatibility
