@@ -8,7 +8,7 @@ The Client SDK has two separate event categories that serve different purposes a
 | Category | Source | Purpose |
 |----------|--------|---------|
 | **Connection events** | `manager.on()` | Camera discovery and connection state |
-| **Property & action events** | `EventStream` | Camera settings changes, warnings, transfers |
+| **Property & action events** | `manager.camera(id).events` | Camera settings changes, warnings, transfers |
 
 ---
 
@@ -81,7 +81,7 @@ manager.on('camera-ready', async ({ cameraId }) => {
 
 ## Property & Action Events
 
-Real-time notifications from the camera via SSE. Use `EventStream` to subscribe to property changes, warnings, autofocus status, file transfers, and errors.
+Real-time notifications from the camera via SSE. Use `manager.camera(id).events` to subscribe to property changes, warnings, autofocus status, file transfers, and errors.
 
 ### Events table
 
