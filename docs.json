@@ -12,6 +12,9 @@
   },
   "favicon": "/favicon.png",
   "css": "/global.css",
+  "seo": {
+    "indexing": "all"
+  },
   "navigation": {
     "global": {
       "anchors": [
