@@ -8,15 +8,16 @@ title: "Setup"
   Want the short version? Get running in under 5 minutes
 </Card>
 
-Sony provides three MCP servers for AI-assisted development:
+Sony provides three public MCP servers and one authenticated server for AI-assisted development:
 
 | Server                                       | Name              | Description                                                                       | URL                                                      |
 | -------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------- |
 | [**Web API Docs**](/MCP-Server/web-api-docs) | `CameraWebAPI`    | Camera Remote Web API endpoints, Client SDK (TypeScript)                          | `https://crsdk.app/mcp`                                  |
 | [**SDK Docs**](/MCP-Server/sdk-docs)         | `CameraRemoteSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#)       | `https://sdk-rag-agent-production.up.railway.app/mcp`    |
 | [**Help Guides**](/MCP-Server/help-guides)   | `CameraHelp`      | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
+| **Athena Bridge**                            | `AthenaBridge`    | AI-powered SDK planning and analysis (requires authentication)                    | `https://sdk-bridge-production.up.railway.app/mcp`       |
 
-All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor. You can install one, two, or all three.
+All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor. You can install one, two, or all three public servers. Athena Bridge requires a one-time authentication step.
 
 <Note>
   These tools are still in Private Beta. Please do not share the MCP server URLs with others.
@@ -449,3 +450,41 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     | Tools not available in chat   | Verify the server is connected in **Settings \> Features \> MCP**. |
   </Tab>
 </Tabs>
+
+---
+
+## Athena Bridge (Authenticated)
+
+Athena Bridge is an authenticated MCP server that provides AI-powered SDK planning and analysis. It requires a one-time OAuth login before installation.
+
+### 1. Authenticate
+
+```bash
+npx camera-server auth login
+```
+
+This opens your browser for OAuth authentication. A JWT token is stored locally (`~/.camera-remote-web-api/auth.json`) and is valid for 30 days.
+
+### 2. Install
+
+```bash
+# Install for Claude Code (user scope)
+npx camera-server athena-bridge install claude-code user
+
+# Or for other agents
+npx camera-server athena-bridge install vscode user
+npx camera-server athena-bridge install cursor project
+```
+
+The CLI automatically injects your Bearer token into the MCP server configuration.
+
+### 3. Manage authentication
+
+```bash
+npx camera-server auth status   # Check if authenticated and token expiry
+npx camera-server auth logout   # Sign out and remove stored token
+```
+
+<Note>
+When your token expires after 30 days, run `npx camera-server auth login` again to re-authenticate. The AthenaBridge MCP server will stop working until you re-authenticate.
+</Note>

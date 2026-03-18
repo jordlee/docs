@@ -42,7 +42,7 @@ The Client SDK (`camera-remote-web-api`) is a TypeScript package that wraps the 
 
 1. **Camera state management** — discovery, connection, reconnection, and state tracking happen automatically
 2. **Server binary management** — spawns and monitors the native binary (server variant only)
-3. **Typed camera control** — property read/write, shutter/focus/zoom actions, live view, and SD card access via `manager.client`
+3. **Typed camera control** — property read/write, shutter/focus/zoom actions, live view, and SD card access via `manager.camera(id)`
 
 ```typescript
 import { CameraManager } from 'camera-remote-web-api/server';
@@ -50,8 +50,9 @@ import { CameraManager } from 'camera-remote-web-api/server';
 const manager = new CameraManager({ port: 8080 });
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-  await manager.client.triggerShutter(cameraId);
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
+  await cam.triggerShutter();
 });
 
 await manager.start();

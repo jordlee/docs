@@ -3,28 +3,31 @@ title: "Properties & Actions"
 description: "Typed camera control via manager.client — properties, shutter, focus, zoom, live view, and SD card"
 ---
 
-All camera control goes through `manager.client`, which is a full `CameraClient` instance. It provides typed methods for every Camera Remote Web API endpoint.
+Camera control is available through `manager.camera(cameraId)` (recommended) or `manager.client`. The bound camera accessor pre-binds the camera ID so you don't need to pass it to every call.
 
 ## Properties
 
 ### Read properties
 
 ```typescript
+const cam = manager.camera(cameraId);
+
 // Single property
-const iso = await manager.client.getProperty(cameraId, 'iso');
+const iso = await cam.getProperty('iso');
 console.log(iso.data.formatted);  // "ISO 400"
 
 // All properties
-const all = await manager.client.getAllProperties(cameraId);
+const all = await cam.getAllProperties();
 console.log(all.properties);
 ```
 
 ### Write properties
 
 ```typescript
-await manager.client.setProperty(cameraId, 'iso', { value: '800' });
-await manager.client.setProperty(cameraId, 'aperture', { value: 'f/2.8' });
-await manager.client.setProperty(cameraId, 'shutter-speed', { value: '1/250' });
+const cam = manager.camera(cameraId);
+await cam.setProperty('iso', { value: '800' });
+await cam.setProperty('aperture', { value: 'f/2.8' });
+await cam.setProperty('shutter-speed', { value: '1/250' });
 ```
 
 ### Priority key
@@ -32,22 +35,18 @@ await manager.client.setProperty(cameraId, 'shutter-speed', { value: '1/250' });
 Required before changing settings or triggering actions in remote control mode:
 
 ```typescript
-await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+await cam.setPriorityKey({ setting: 'pc-remote' });
 ```
 
 ### Listening for property changes
 
-Use an [EventStream](/sdk/events#property--action-events) to get notified when properties change on the camera:
+Use the bound camera's [events](/sdk/events#property--action-events) to get notified when properties change on the camera:
 
 ```typescript
-import { EventStream } from 'camera-remote-web-api';
-
-const events = new EventStream('http://localhost:8080', cameraId);
-
-events.on('propertyChanged', async (data) => {
+cam.events.on('propertyChanged', async (data) => {
   console.log('Changed properties:', data.codes);
   // Re-read the updated values
-  const updated = await manager.client.getAllProperties(cameraId);
+  const updated = await cam.getAllProperties();
 });
 ```
 
@@ -59,32 +58,32 @@ events.on('propertyChanged', async (data) => {
 
 ```typescript
 // Single shot
-await manager.client.triggerShutter(cameraId);
+await cam.triggerShutter();
 
 // Continuous start/stop
-await manager.client.triggerShutter(cameraId, { action: 'down' });  // start burst
-await manager.client.triggerShutter(cameraId, { action: 'up' });    // stop burst
+await cam.triggerShutter({ action: 'down' });  // start burst
+await cam.triggerShutter({ action: 'up' });    // stop burst
 ```
 
 ### Focus
 
 ```typescript
 // Autofocus + capture
-await manager.client.afShutter(cameraId);
+await cam.afShutter();
 
 // Focus lock (half-press)
-await manager.client.halfPress(cameraId);
+await cam.halfPress();
 
 // Manual focus — negative = near, positive = far (1–7 speed)
-await manager.client.focusNearFar(cameraId, { step: -3 });  // near, medium
-await manager.client.focusNearFar(cameraId, { step: 7 });   // far, max speed
+await cam.focusNearFar({ step: -3 });  // near, medium
+await cam.focusNearFar({ step: 7 });   // far, max speed
 ```
 
 ### Zoom
 
 ```typescript
-await manager.client.controlZoom(cameraId, { direction: 'in', speed: 'normal' });
-await manager.client.stopZoom(cameraId);
+await cam.controlZoom({ direction: 'in', speed: 'normal' });
+await cam.stopZoom();
 ```
 
 ---
@@ -108,10 +107,10 @@ There are two ways to consume live view frames:
 `getLiveViewFrame()` returns one JPEG frame per call. Poll it in a loop to simulate a video stream:
 
 ```typescript
-await manager.client.enableLiveView(cameraId);
+await cam.enableLiveView();
 
 const poll = setInterval(async () => {
-  const frame = await manager.client.getLiveViewFrame(cameraId);
+  const frame = await cam.getLiveViewFrame();
   // frame is an ArrayBuffer containing JPEG data
 }, 66); // ~15fps
 ```
@@ -136,7 +135,8 @@ liveView.close();
 Enable on-screen display (exposure info, focus area, etc.) on live view frames:
 
 ```typescript
-await manager.client.enableLiveView(cameraId, { osd: true });
+await cam.enableOSD();
+await cam.enableLiveView();
 ```
 
 ---
@@ -147,30 +147,26 @@ List and download files from the camera's SD card. Requires `remote-transfer` or
 
 ```typescript
 // List files on slot 1
-const { files } = await manager.client.listSDCardFiles(cameraId, 1);
+const { files } = await cam.listSDCardFiles(1);
 console.log(`Found ${files.length} files`);
 
 // Download a file
 if (files.length > 0) {
   const file = files[0];
-  await manager.client.downloadSDCardFile(cameraId, 1, file.content_id, file.file_id);
+  await cam.downloadSDCardFile(1, file.content_id, file.file_id);
 }
 ```
 
 ### Download notifications
 
-Listen for completed downloads via [EventStream](/sdk/events#property--action-events):
+Listen for completed downloads via the bound camera's [events](/sdk/events#property--action-events):
 
 ```typescript
-import { EventStream } from 'camera-remote-web-api';
-
-const events = new EventStream('http://localhost:8080', cameraId);
-
-events.on('downloadComplete', (data) => {
+cam.events.on('downloadComplete', (data) => {
   console.log('File saved:', data.filename);
 });
 
-events.on('transferProgress', (data) => {
+cam.events.on('transferProgress', (data) => {
   console.log(`Transfer: ${data.percent}%`, data.filename);
 });
 ```
@@ -183,10 +179,10 @@ Configure where and how the server saves transferred files:
 
 ```typescript
 // Read current settings
-const info = await manager.client.getSaveInfo(cameraId);
+const info = await cam.getSaveInfo();
 
 // Update save settings
-await manager.client.setSaveInfo(cameraId, {
+await cam.setSaveInfo({
   path: '/tmp/photos',
   prefix: 'IMG_',
   startNo: 1,

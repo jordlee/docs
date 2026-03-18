@@ -86,14 +86,28 @@ npx camera-server info
 All available `camera-server` commands:
 
 ```bash
-npx camera-server info                           # Version and binary info
-npx camera-server install [--platform <name>]    # Install platform binary
-npx camera-server uninstall [--platform <name>]  # Remove platform binary
-npx camera-server doctor                         # Check system prerequisites
-npx camera-server platforms                      # List available platforms
-npx camera-server docs                           # Open API docs in browser
-npx camera-server mcp                            # Configure MCP servers
+npx camera-server info                                    # Version and binary info
+npx camera-server install [--platform <name>]             # Install platform binary
+npx camera-server uninstall [--platform <name>]           # Remove platform binary
+npx camera-server doctor                                  # Check system prerequisites
+npx camera-server platforms                               # List available platforms
+npx camera-server docs                                    # Open API docs in browser
+npx camera-server mcp                                     # Interactive MCP setup
+npx camera-server mcp status                              # Show configured MCP servers
+npx camera-server mcp install <agent> <scope> [server]    # Install MCP server config
+npx camera-server auth login                              # Authenticate with Athena
+npx camera-server auth status                             # Check auth status
+npx camera-server auth logout                             # Sign out
+npx camera-server athena-bridge install <agent> <scope>   # Install AthenaBridge MCP
 ```
+
+### MCP install arguments
+
+| Argument | Values |
+|----------|--------|
+| `agent` | `claude-code`, `vscode`, `cursor` |
+| `scope` | `user`, `project` |
+| `server` | `CameraRemoteSDK`, `CameraWebAPI`, `CameraHelp`, or `--all` |
 
 ---
 

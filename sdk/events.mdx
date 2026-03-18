@@ -68,6 +68,15 @@ manager.off('camera-ready', handler);
 manager.off('camera-ready');
 ```
 
+### One-shot listeners
+
+```typescript
+// Auto-removed after the first fire
+manager.on('camera-ready', async ({ cameraId }) => {
+  // runs only once for the first camera that connects
+});
+```
+
 ---
 
 ## Property & Action Events
@@ -86,50 +95,58 @@ Real-time notifications from the camera via SSE. Use `EventStream` to subscribe 
 | `downloadComplete` | `{ filename }` | File saved to host PC |
 | `transferProgress` | `{ percent, filename }` | File transfer progress |
 | `error` | `{ code }` | SSE connection error |
+| `close` | — | SSE stream closed by manager |
 
-### Subscribe to all camera events
+### Via bound camera (recommended)
+
+The simplest way to subscribe to per-camera events is via `manager.camera(id).events`:
+
+```typescript
+manager.on('camera-ready', ({ cameraId }) => {
+  const cam = manager.camera(cameraId);
+
+  cam.events.on('propertyChanged', (data) => {
+    console.log('Properties changed:', data.codes);
+  });
+
+  cam.events.on('warning', (data) => {
+    if (data.code === '0x20011') console.log('Photo captured!');
+  });
+
+  cam.events.on('downloadComplete', (data) => {
+    console.log('File saved:', data.filename);
+  });
+
+  cam.events.on('afStatus', (data) => {
+    console.log('AF state:', data.state);
+  });
+
+  cam.events.on('transferProgress', (data) => {
+    console.log(`Transfer: ${data.percent}%`, data.filename);
+  });
+
+  // One-shot listener — auto-removed after first fire
+  cam.events.once('connected', () => {
+    console.log('First connection established');
+  });
+});
+```
+
+### Via EventStream directly
+
+For manual control, create an `EventStream` directly:
 
 ```typescript
 import { EventStream } from 'camera-remote-web-api';
 
+// All cameras
 const events = new EventStream('http://localhost:8080');
 
-events.on('propertyChanged', (data) => {
-  console.log('Properties changed:', data.codes);
-});
-
-events.on('warning', (data) => {
-  if (data.code === '0x20011') {
-    console.log('Photo captured!');
-  }
-});
-
-events.on('downloadComplete', (data) => {
-  console.log('File saved:', data.filename);
-});
-
-events.on('afStatus', (data) => {
-  console.log('AF state:', data.state);
-});
-
-events.on('transferProgress', (data) => {
-  console.log(`Transfer: ${data.percent}%`, data.filename);
-});
-
-events.on('error', (data) => {
-  console.error('SSE error:', data.code);
-});
-```
-
-### Subscribe to select camera events
-
-Filter events to a single camera by passing a camera ID:
-
-```typescript
+// Or filter to a single camera
 const camEvents = new EventStream('http://localhost:8080', 'D10F60149B0C');
 
 camEvents.on('propertyChanged', (data) => {
-  console.log('Camera D10F60149B0C properties changed:', data.codes);
+  console.log('Properties changed:', data.codes);
 });
 ```
 
@@ -153,22 +170,20 @@ Connection events tell you *when* a camera is ready. Property & action events te
 
 ```typescript
 import { CameraManager } from 'camera-remote-web-api/server';
-import { EventStream } from 'camera-remote-web-api';
 
 const manager = new CameraManager({ port: 8080, connectionMode: 'remote-transfer' });
 
 // Connection events — monitor lifecycle
 manager.on('camera-ready', async ({ cameraId, camera }) => {
   console.log(`${camera.model} connected`);
+  const cam = manager.camera(cameraId);
 
   // Property events — monitor camera activity
-  const events = new EventStream(`http://localhost:${manager.getPort()}`, cameraId);
-
-  events.on('downloadComplete', (data) => {
+  cam.events.on('downloadComplete', (data) => {
     console.log(`${camera.model}: file saved — ${data.filename}`);
   });
 
-  events.on('propertyChanged', (data) => {
+  cam.events.on('propertyChanged', (data) => {
     console.log(`${camera.model}: settings changed — ${data.codes}`);
   });
 });

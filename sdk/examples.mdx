@@ -32,7 +32,8 @@ if (target) {
 }
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
 });
 
 // Trigger all connected cameras simultaneously
@@ -41,9 +42,13 @@ async function triggerAll() {
   console.log(`Triggering ${connected.length} cameras...`);
 
   await Promise.all(
-    connected.map(c => manager.client.triggerShutter(c.info.id))
+    connected.map(c => manager.camera(c.info.id).triggerShutter())
   );
 }
+
+// Or connect all cameras at once
+await manager.connectAll({ mode: 'remote-transfer' });
+
 ```
 
 ---
@@ -60,30 +65,28 @@ List and download files from the camera's SD card:
 
 ```typescript
 import { CameraManager } from 'camera-remote-web-api/server';
-import { EventStream } from 'camera-remote-web-api';
 
 const manager = new CameraManager({
   connectionMode: 'remote-transfer',
 });
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  const client = manager.client;
+  const cam = manager.camera(cameraId);
 
   // Listen for completed downloads
-  const events = new EventStream(`http://localhost:${manager.getPort()}`, cameraId);
-  events.on('downloadComplete', (data) => {
+  cam.events.on('downloadComplete', (data) => {
     console.log(`Saved: ${data.filename}`);
   });
-  events.on('transferProgress', (data) => {
+  cam.events.on('transferProgress', (data) => {
     console.log(`Transfer: ${data.percent}%`);
   });
 
   // List and download files from slot 1
-  const { files } = await client.listSDCardFiles(cameraId, 1);
+  const { files } = await cam.listSDCardFiles(1);
   console.log(`Found ${files.length} files`);
 
   for (const file of files) {
-    await client.downloadSDCardFile(cameraId, 1, file.content_id, file.file_id);
+    await cam.downloadSDCardFile(1, file.content_id, file.file_id);
   }
 });
 
@@ -104,23 +107,22 @@ const manager = new CameraManager({
 });
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  const client = manager.client;
-  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
 
   // Set save destination to both camera + host PC
-  await client.setProperty(cameraId, 'still-image-store-destination', { value: '0x3' });
+  await cam.setProperty('still-image-store-destination', { value: '0x3' });
 
   // Configure where the server saves files
-  await client.setSaveInfo(cameraId, { path: '/tmp/photos', prefix: 'IMG_', startNo: 1 });
+  await cam.setSaveInfo({ path: '/tmp/photos', prefix: 'IMG_', startNo: 1 });
 
   // Listen for auto-transferred files
-  const events = new EventStream(`http://localhost:${manager.getPort()}`, cameraId);
-  events.on('downloadComplete', (data) => {
+  cam.events.on('downloadComplete', (data) => {
     console.log(`Auto-saved: ${data.filename}`);
   });
 
   // Shoot — file auto-transfers to /tmp/photos
-  await client.afShutter(cameraId);
+  await cam.afShutter();
 });
 
 await manager.start();
@@ -141,16 +143,17 @@ const manager = new CameraManager({
 });
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  const client = manager.client;
-  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
 
   // Enable live view with OSD overlay (exposure info, focus area)
-  await client.enableLiveView(cameraId, { osd: true });
-  await client.startLiveViewStream(cameraId);
+  await cam.enableOSD();
+  await cam.enableLiveView();
+  await cam.startLiveViewStream();
 
   // HTTP polling (~15fps)
   const poll = setInterval(async () => {
-    const frame = await client.getLiveViewFrame(cameraId);
+    const frame = await cam.getLiveViewFrame();
     process.stdout.write(`Frame: ${frame.byteLength} bytes\r`);
   }, 66);
 
@@ -164,7 +167,7 @@ manager.on('camera-ready', async ({ cameraId }) => {
   // Clean up
   // clearInterval(poll);
   // liveView.close();
-  // await client.stopLiveViewStream(cameraId);
+  // await cam.stopLiveViewStream();
 });
 
 await manager.start();
@@ -188,18 +191,18 @@ const manager = new CameraManager({
 });
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  const client = manager.client;
+  const cam = manager.camera(cameraId);
 
   // List available settings files on camera
-  const { files } = await client.listSettingsFiles(cameraId);
+  const { files } = await cam.listSettingsFiles();
   console.log('Settings files:', files);
 
   // Download a settings .DAT file to host PC
-  await client.downloadCameraSettings(cameraId, { filename: 'CUMSET.DAT' });
+  await cam.downloadCameraSettings({ filename: 'CUMSET.DAT' });
   console.log('Settings downloaded to host PC');
 
   // Upload a settings .DAT file back to camera
-  await client.uploadCameraSettings(cameraId, { filename: 'CUMSET.DAT' });
+  await cam.uploadCameraSettings({ filename: 'CUMSET.DAT' });
   console.log('Settings uploaded to camera');
 });
 
@@ -222,23 +225,23 @@ const manager = new CameraManager({
 });
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  const client = manager.client;
-  await client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
 
   // Configure shooting settings
-  await client.setProperty(cameraId, 'iso', { value: '400' });
-  await client.setProperty(cameraId, 'aperture', { value: 'f/2.8' });
-  await client.setProperty(cameraId, 'shutter-speed', { value: '1/250' });
-  await client.setProperty(cameraId, 'drive-mode', { value: 'continuous-hi' });
+  await cam.setProperty('iso', { value: '400' });
+  await cam.setProperty('aperture', { value: 'f/2.8' });
+  await cam.setProperty('shutter-speed', { value: '1/250' });
+  await cam.setProperty('drive-mode', { value: 'continuous-hi' });
 
   // Verify settings were applied
-  const iso = await client.getProperty(cameraId, 'iso');
+  const iso = await cam.getProperty('iso');
   console.log('ISO set to:', iso.data.formatted);
 
   // Start continuous shooting burst (hold shutter for 3 seconds)
-  await client.triggerShutter(cameraId, { action: 'down' });
+  await cam.triggerShutter({ action: 'down' });
   setTimeout(async () => {
-    await client.triggerShutter(cameraId, { action: 'up' });
+    await cam.triggerShutter({ action: 'up' });
     console.log('Burst complete');
   }, 3000);
 });

@@ -34,8 +34,37 @@ events.on('transferProgress', (data) => {
   console.log(`Transfer: ${data.percent}%`);
 });
 
+// One-shot listener — auto-removed after first fire
+events.once('downloadComplete', (data) => {
+  console.log('First download:', data.filename);
+});
+
 // Cleanup
 events.close();
 ```
+
+### Events
+
+| Event | Payload | When |
+|-------|---------|------|
+| `connected` | `{ cameraId }` | Camera connected |
+| `disconnected` | `{ error }` | Camera disconnected |
+| `propertyChanged` | `{ codes }` | Settings changed |
+| `warning` | `{ code }` | Camera warning |
+| `afStatus` | `{ state }` | AF state changed |
+| `downloadComplete` | `{ filename }` | File saved to host |
+| `transferProgress` | `{ percent, filename }` | Transfer progress |
+| `error` | `{ code }` | SSE error |
+| `close` | — | Stream closed by manager |
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `on(event, callback)` | Subscribe to events |
+| `off(event, callback?)` | Unsubscribe |
+| `once(event, callback)` | One-shot listener — auto-removed after first fire |
+| `close()` | Close SSE connection |
+| `connected` | Whether SSE is connected (read-only) |
 
 See [Events](/sdk/events#property--action-events) for the full event reference.

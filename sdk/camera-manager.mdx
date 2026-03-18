@@ -16,8 +16,9 @@ const manager = new CameraManager({ port: 8080 });
 
 manager.on('camera-ready', async ({ cameraId, camera }) => {
   console.log(`${camera.model} connected`);
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-  await manager.client.triggerShutter(cameraId);
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
+  await cam.triggerShutter();
 });
 
 await manager.start();
@@ -42,7 +43,7 @@ manager.start();  // Synchronous — just starts polling + SSE
 ```
 
 <Info>
-`manager.client` is a full `CameraClient` instance — use it for all REST calls (properties, actions, live view, SD card). See [Properties & Actions](/sdk/properties-actions).
+Use `manager.camera(cameraId)` to get a bound camera object with all methods pre-bound — no need to pass the camera ID to every call. For direct access, `manager.client` is also available as a full `CameraClient` instance. See [Properties & Actions](/sdk/properties-actions).
 </Info>
 
 ---
@@ -124,11 +125,25 @@ await manager.connect(camera.id, { mode: 'remote-transfer' });
 // Start — boots binary (server), begins polling, subscribes to SSE
 await manager.start();
 
-// Access the underlying client for REST calls
+// Get a bound camera — all methods pre-bound with the camera ID
+const cam = manager.camera(cameraId);
+await cam.setProperty('iso', { value: '400' });
+
+// Or use the underlying client directly
 await manager.client.setProperty(cameraId, 'iso', { value: '400' });
 
 // Stop — closes SSE, stops polling, kills binary (server)
 await manager.close();
+```
+
+### Discovery & batch connection
+
+```typescript
+// Trigger immediate discovery (useful when autoConnect is off)
+const cameras = await manager.discover();
+
+// Connect all detected cameras in parallel
+await manager.connectAll({ mode: 'remote-transfer' });
 ```
 
 ### Server-only methods
@@ -156,6 +171,77 @@ const cameras = manager.getCameras();
 const cam = manager.getCamera('D10F60149B0C');
 // → { info: {...}, state: 'connected', reconnectAttempts: 0 }
 ```
+
+---
+
+## Bound Camera Accessor
+
+`manager.camera(id)` returns a `BoundCamera` object with all `CameraClient` methods pre-bound with the camera ID. This is the recommended way to interact with cameras — it eliminates the need to thread the camera ID through every call.
+
+```typescript
+const cam = manager.camera('D10F60149B0C');
+
+// No cameraId parameter needed
+await cam.setPriorityKey({ setting: 'pc-remote' });
+await cam.triggerShutter();
+const iso = await cam.getProperty('iso');
+console.log(iso.data.formatted);  // "ISO 400"
+
+// Per-camera SSE events via .events
+cam.events.on('downloadComplete', (data) => {
+  console.log('Saved:', data.filename);
+});
+
+// One-shot listener — auto-removed after first fire
+cam.events.once('transferProgress', (data) => {
+  console.log('First transfer:', data.filename);
+});
+```
+
+<Tip>
+Bound cameras are lazily created and cached — calling `manager.camera(id)` multiple times returns the same object.
+</Tip>
+
+### Available methods
+
+All `CameraClient` methods are available without the camera ID parameter:
+
+| Category | Methods |
+|----------|---------|
+| **Connection** | `connect()`, `disconnect()`, `getConnectionStatus()` |
+| **Properties** | `getProperty()`, `setProperty()`, `getAllProperties()`, `getPriorityKey()`, `setPriorityKey()` |
+| **Actions** | `triggerShutter()`, `halfPress()`, `afShutter()`, `controlZoom()`, `stopZoom()`, `focusNearFar()` |
+| **Live View** | `enableLiveView()`, `disableLiveView()`, `getLiveViewStatus()`, `startLiveViewStream()`, `stopLiveViewStream()`, `getLiveViewFrame()` |
+| **OSD** | `enableOSD()`, `disableOSD()`, `getOSDStatus()`, `getOSDFrame()` |
+| **SD Card** | `listSDCardFiles()`, `downloadSDCardFile()` |
+| **Settings** | `getSaveInfo()`, `setSaveInfo()`, `downloadCameraSettings()`, `uploadCameraSettings()`, `listSettingsFiles()` |
+
+### Per-camera events
+
+The `events` property returns a `CameraEventStream` — a typed SSE client scoped to that camera.
+
+```typescript
+const cam = manager.camera(cameraId);
+
+cam.events.on('propertyChanged', (data) => {
+  console.log('Changed:', data.codes);
+});
+
+cam.events.on('warning', (data) => {
+  if (data.code === '0x20011') console.log('Photo captured!');
+});
+
+// Cleanup
+cam.events.close();
+```
+
+| Method | Description |
+|--------|-------------|
+| `on(event, callback)` | Subscribe to events |
+| `off(event, callback?)` | Unsubscribe |
+| `once(event, callback)` | One-shot listener — auto-removed after first fire |
+| `close()` | Close SSE connection |
+| `connected` | Whether SSE is connected (read-only) |
 
 ---
 
