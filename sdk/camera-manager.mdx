@@ -1,6 +1,9 @@
 ---
 title: "CameraManager"
-description: "The single entry point for camera discovery, connection, and control"
+description: "CameraManager API — camera discovery, connection lifecycle, BoundCamera accessor, per-camera events, connectAll, discover, and reconnection for the TypeScript Client SDK"
+seo:
+  title: "CameraManager — TypeScript Camera Control API"
+  description: "CameraManager handles camera discovery, auto-connect, reconnection, BoundCamera accessor (manager.camera(id)), per-camera SSE events, connectAll, discover, and graceful shutdown."
 ---
 
 CameraManager is the entry point for the Client SDK. It replaces the manual `ServerManager` + `CameraClient` + `EventStream` workflow — one class handles binary management, camera discovery, connection lifecycle, SSE events, and reconnection.

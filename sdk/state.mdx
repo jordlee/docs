@@ -1,6 +1,9 @@
 ---
 title: "State Management"
-description: "Automatic connection lifecycle — discovery, state tracking, and reconnection"
+description: "TypeScript Client SDK connection state machine — detected, connecting, connected, disconnected states, automatic reconnection with backoff, CameraManager lifecycle events"
+seo:
+  title: "SDK State Management — Connection Lifecycle & Reconnection"
+  description: "CameraManager connection state machine: detected → connecting → connected → disconnected. Auto-reconnection with exponential backoff (2s, 4s, 6s... capped at 30s)."
 ---
 
 CameraManager handles camera discovery, connection, and reconnection automatically. You monitor state via [connection events](/sdk/events#connection-events) and inspect cameras via `getCameras()` — you don't drive state transitions manually.

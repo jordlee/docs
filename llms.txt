@@ -1,14 +1,14 @@
 # Camera Remote Web API Documentation
 
-> TypeScript SDK and HTTP API for controlling Sony cameras remotely.
+> TypeScript SDK (`camera-remote-web-api`) and HTTP API for controlling Sony cameras remotely.
 
 ## Instructions for LLMs
 
 When generating code that controls Sony cameras using this SDK, follow these guidelines:
 
-### Always use CameraManager
+### Always use CameraManager + Bound Camera
 
-`CameraManager` is the recommended entry point. Do NOT use `CameraClient`, `EventStream`, `ServerManager`, or raw HTTP requests unless the user explicitly asks for stateful/manual control.
+`CameraManager` is the entry point. Use `manager.camera(id)` to get a bound camera object — all methods pre-bound with the camera ID, no need to pass it to every call.
 
 ```typescript
 import { CameraManager } from 'camera-remote-web-api/server';
@@ -16,8 +16,9 @@ import { CameraManager } from 'camera-remote-web-api/server';
 const manager = new CameraManager({ port: 8080 });
 
 manager.on('camera-ready', async ({ cameraId }) => {
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-  // Use manager.client for all camera operations
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
+  await cam.triggerShutter();
 });
 
 await manager.start();
@@ -25,26 +26,113 @@ await manager.start();
 
 - Import from `camera-remote-web-api/server` for Node.js (spawns and manages the native binary).
 - Import from `camera-remote-web-api` for browser (connects to an already-running server).
-- Access the HTTP client via `manager.client` — do not instantiate `CameraClient` separately.
+- Use `manager.camera(id)` for all camera operations (recommended).
+- `manager.client` is also available as a raw `CameraClient` if you need to pass camera IDs explicitly.
+
+### Bound Camera API (`manager.camera(id)`)
+
+Returns a `BoundCamera` object with every `CameraClient` method pre-bound:
+
+```typescript
+const cam = manager.camera(cameraId);
+
+// Properties — no cameraId needed
+const iso = await cam.getProperty('iso');
+await cam.setProperty('iso', { value: '800' });
+await cam.setProperty('aperture', { value: 'f/2.8' });
+await cam.setProperty('shutter-speed', { value: '1/250' });
+const all = await cam.getAllProperties();
+
+// Actions
+await cam.triggerShutter();                    // single shot
+await cam.triggerShutter({ action: 'down' });  // continuous start
+await cam.triggerShutter({ action: 'up' });    // continuous stop
+await cam.afShutter();                         // autofocus + capture
+await cam.halfPress();                         // focus lock
+await cam.focusNearFar({ step: -3 });          // manual focus (near)
+await cam.controlZoom({ direction: 'in', speed: 'normal' });
+await cam.stopZoom();
+
+// Live View & OSD
+await cam.enableLiveView();
+await cam.startLiveViewStream();
+const frame = await cam.getLiveViewFrame();     // JPEG ArrayBuffer
+await cam.enableOSD();
+const osdFrame = await cam.getOSDFrame();
+
+// SD Card
+const { files } = await cam.listSDCardFiles(1);
+await cam.downloadSDCardFile(1, files[0].content_id, files[0].file_id);
+
+// Settings
+await cam.getSaveInfo();
+await cam.setSaveInfo({ path: '/tmp/photos' });
+await cam.downloadCameraSettings({ filename: 'CUMSET.DAT' });
+await cam.uploadCameraSettings({ filename: 'CUMSET.DAT' });
+const { files: settings } = await cam.listSettingsFiles();
+
+// Per-camera SSE events
+cam.events.on('propertyChanged', (data) => console.log(data.codes));
+cam.events.on('downloadComplete', (data) => console.log(data.filename));
+cam.events.on('warning', (data) => console.log(data.code));
+cam.events.on('afStatus', (data) => console.log(data.state));
+cam.events.on('transferProgress', (data) => console.log(data.percent));
+cam.events.once('connected', () => console.log('ready'));  // one-shot
+```
+
+### CameraManager options
+
+```typescript
+const manager = new CameraManager({
+  port: 8080,                          // Server port (server variant only)
+  autoPort: true,                      // Find next available port
+  binaryPath: '/path/to/CameraWebApp', // Explicit binary path (required in Next.js)
+  baseUrl: 'http://localhost:8080',     // Server URL (browser variant only)
+  autoConnect: true,                   // Auto-connect discovered cameras
+  connectionMode: 'remote',           // 'remote' | 'remote-transfer' | 'contents'
+  autoReconnect: true,                // Reconnect on unexpected disconnect
+  maxReconnectAttempts: 5,            // Give up after N attempts
+  pollInterval: 5000,                 // Camera discovery interval (ms)
+});
+```
+
+### CameraManager methods
+
+```typescript
+await manager.start();                 // Boot binary, start polling + SSE
+await manager.close();                 // Stop everything, kill binary
+manager.getCameras();                  // All cameras with state
+manager.getCamera(id);                 // Single camera by ID
+manager.camera(id);                    // Bound camera (recommended)
+await manager.discover();              // Trigger immediate discovery poll
+await manager.connectAll({ mode });    // Connect all detected cameras
+await manager.connect(id, { mode });   // Connect specific camera
+await manager.disconnect(id);          // Disconnect specific camera
+manager.events(id);                    // Per-camera SSE stream
+```
+
+### CameraManager events (lifecycle)
+
+```typescript
+manager.on('camera-found', ({ camera }) => {});
+manager.on('camera-lost', ({ camera }) => {});
+manager.on('camera-connecting', ({ cameraId }) => {});
+manager.on('camera-ready', ({ cameraId, camera }) => {});
+manager.on('camera-disconnected', ({ cameraId, error? }) => {});
+manager.on('connection-failed', ({ cameraId, error, attempt }) => {});
+manager.on('error', ({ message }) => {});
+```
 
 ### Always handle graceful shutdown
 
-The native camera server binary must be stopped when your application exits. Always include shutdown handling:
-
 ```typescript
-// Graceful shutdown — always include this
 process.on('SIGINT', async () => {
-  await manager.close();
-  process.exit(0);
-});
-
-process.on('SIGTERM', async () => {
   await manager.close();
   process.exit(0);
 });
 ```
 
-`manager.close()` disconnects all cameras, closes SSE subscriptions, stops polling, and kills the native binary process. Without this, the binary may continue running as an orphaned process.
+`manager.close()` disconnects all cameras, closes SSE subscriptions, stops polling, and kills the native binary process.
 
 ### ESM-only package
 
@@ -58,10 +146,10 @@ npm install camera-remote-web-api
 
 ### Priority key is required
 
-Before sending any camera commands (shooting, settings changes), you must set the priority key to `pc-remote`:
+Before sending any camera commands (shooting, settings changes), you must set the priority key:
 
 ```typescript
-await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
+await cam.setPriorityKey({ setting: 'pc-remote' });
 ```
 
 ### Connection modes
@@ -79,14 +167,14 @@ const manager = new CameraManager({ port: 8080 });
 
 manager.on('camera-ready', async ({ cameraId, camera }) => {
   console.log(`${camera.model} connected`);
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-  await manager.client.triggerShutter(cameraId);
+  const cam = manager.camera(cameraId);
+  await cam.setPriorityKey({ setting: 'pc-remote' });
+  await cam.triggerShutter();
   console.log('Photo captured!');
 });
 
 await manager.start();
 
-// Graceful shutdown
 process.on('SIGINT', async () => {
   await manager.close();
   process.exit(0);
@@ -95,23 +183,32 @@ process.on('SIGINT', async () => {
 
 ## Documentation
 
-- [Client SDK Overview](https://docs.crsdk.app/sdk/overview): Package overview, stateless vs stateful comparison
-- [Quick Start](https://docs.crsdk.app/quickstarts/client-sdk): Install and capture a photo in under 5 minutes
-- [Setup](https://docs.crsdk.app/sdk/reference): Installation, platform binaries, environment verification
-- [CameraManager](https://docs.crsdk.app/sdk/camera-manager): Options, connection modes, lifecycle, camera access
-- [Properties & Actions](https://docs.crsdk.app/sdk/properties-actions): Read/write camera settings, trigger shutter/focus/zoom
-- [State Management](https://docs.crsdk.app/sdk/state): Camera state tracking, connection lifecycle events
-- [Events](https://docs.crsdk.app/sdk/events): SSE event subscriptions — property changes, downloads, warnings
-- [Examples](https://docs.crsdk.app/sdk/examples): Multi-camera, file transfer, live view, settings backup, continuous shooting
-- [System Design](https://docs.crsdk.app/sdk/architecture): Browser vs server variants, framework patterns
+- [Client SDK Overview](https://crsdk.app/sdk/overview): Package overview, stateless vs stateful comparison
+- [Quick Start](https://crsdk.app/quickstarts/client-sdk): Install and capture a photo in under 5 minutes
+- [Setup](https://crsdk.app/sdk/reference): Installation, platform binaries, CLI commands, environment verification
+- [CameraManager](https://crsdk.app/sdk/camera-manager): Options, connection modes, bound camera accessor, lifecycle, events
+- [Properties & Actions](https://crsdk.app/sdk/properties-actions): Read/write camera settings, trigger shutter/focus/zoom via bound camera
+- [State Management](https://crsdk.app/sdk/state): Camera state tracking, connection lifecycle, reconnection behavior
+- [Events](https://crsdk.app/sdk/events): Connection events via manager.on(), per-camera SSE via cam.events
+- [Examples](https://crsdk.app/sdk/examples): Multi-camera, file transfer, live view, settings backup, continuous shooting
+- [System Design](https://crsdk.app/sdk/architecture): Browser vs server variants, framework patterns
 
-## API Reference
+## Stateful API (Advanced)
 
-- [HTTP API Overview](https://docs.crsdk.app/web-api/overview): RESTful endpoints, connection modes, response format
-- [Properties](https://docs.crsdk.app/web-api/properties): Read/write camera properties (ISO, aperture, shutter speed)
-- [Actions](https://docs.crsdk.app/web-api/actions): Shutter, focus, zoom control
-- [Live View & OSD](https://docs.crsdk.app/web-api/live-view): Live view streaming, on-screen display overlay
-- [Events (SSE)](https://docs.crsdk.app/web-api/events): Real-time camera callbacks via Server-Sent Events
-- [File Transfer](https://docs.crsdk.app/web-api/sd-card): SD card file listing, download, save info configuration
-- [Save & Recall Settings](https://docs.crsdk.app/web-api/settings): Camera settings file backup and restore
-- [Compatibility](https://docs.crsdk.app/web-api/compatibility): Per-camera API support, connection modes, OS compatibility
+- [CameraClient](https://crsdk.app/sdk/stateful/camera-client): Typed HTTP client for all endpoints
+- [EventStream](https://crsdk.app/sdk/stateful/event-stream): SSE client with on/off/once for real-time camera events
+- [LiveViewStream](https://crsdk.app/sdk/stateful/live-view-stream): WebSocket client for continuous JPEG streaming
+- [ServerManager](https://crsdk.app/sdk/stateful/server-manager): Low-level binary process manager
+
+## HTTP API Reference
+
+- [HTTP API Overview](https://crsdk.app/web-api/overview): RESTful endpoints, connection modes, response format
+- [Connection](https://crsdk.app/web-api/connection): List cameras, connect, disconnect, status
+- [Properties](https://crsdk.app/web-api/properties): Read/write camera properties (ISO, aperture, shutter speed)
+- [Actions](https://crsdk.app/web-api/actions): Shutter, half-press, AF+shutter, zoom, focus-near-far
+- [Live View & OSD](https://crsdk.app/web-api/live-view): Live view streaming, on-screen display overlay
+- [Events (SSE)](https://crsdk.app/web-api/events): Real-time camera callbacks via Server-Sent Events
+- [SD Card](https://crsdk.app/web-api/sd-card): File listing, download, save info configuration
+- [Settings](https://crsdk.app/web-api/settings): Camera settings file backup and restore
+- [Server](https://crsdk.app/web-api/server): Server status, logs, graceful shutdown
+- [Compatibility](https://crsdk.app/web-api/compatibility): Per-camera API support, connection modes, OS compatibility

@@ -1,6 +1,9 @@
 ---
 title: "Properties & Actions"
-description: "Typed camera control via manager.client — properties, shutter, focus, zoom, live view, and SD card"
+description: "TypeScript Client SDK camera control — getProperty, setProperty, triggerShutter, afShutter, focusNearFar, controlZoom, live view, SD card via manager.camera(id) BoundCamera"
+seo:
+  title: "Properties & Actions — TypeScript Camera Control"
+  description: "Read/write ISO, aperture, shutter-speed, focus, zoom via cam.getProperty(), cam.setProperty(), cam.triggerShutter(), cam.afShutter(), cam.focusNearFar(), cam.controlZoom(). BoundCamera API."
 ---
 
 Camera control is available through `manager.camera(cameraId)` (recommended) or `manager.client`. The bound camera accessor pre-binds the camera ID so you don't need to pass it to every call.

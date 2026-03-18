@@ -1,6 +1,9 @@
 ---
 title: "System Design"
-description: "Browser vs server implementations and how they map to real frameworks"
+description: "TypeScript Client SDK architecture — browser vs Node.js server variants, CameraManager implementation differences, Next.js and React integration patterns"
+seo:
+  title: "SDK Architecture — Browser vs Server, Framework Patterns"
+  description: "Client SDK architecture: browser variant (connects to running server) vs Node.js variant (spawns binary). Integration patterns for Next.js, React, Express, and plain Node.js."
 ---
 
 The Client SDK ships two CameraManager implementations. Both share the same camera control API (`manager.client`), but differ in how they connect to the native server binary.
