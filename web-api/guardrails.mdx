@@ -84,13 +84,13 @@ In a tethered studio, a photographer may be adjusting settings on the camera bod
 
 <Steps>
   <Step title="Connect and set initial exposure">
-    Connect the camera, set your baseline exposure. The shutter starts **locked**.
+    Connect the camera, set your baseline exposure. The shutter starts **unlocked** — the photographer can shoot immediately.
   </Step>
   <Step title="Monitor ISO via SSE">
     Listen for `propertyChanged` events on `iso`. When ISO changes, check if it exceeds your limit.
   </Step>
   <Step title="Lock if ISO exceeds limit">
-    If the photographer dials ISO above 800 on the camera body, immediately set `shooting-enable` to `0x2`. The shutter is blocked — no capture is possible.
+    If the photographer dials ISO above 800 on the camera body, immediately set `shooting-enable` to `0x2`. The shutter is blocked — no capture is possible until corrected.
   </Step>
   <Step title="Unlock when corrected">
     When the photographer brings ISO back to 800 or below, set `shooting-enable` to `0x1`. Shooting resumes.
@@ -101,8 +101,8 @@ In a tethered studio, a photographer may be adjusting settings on the camera bod
 const MAX_ISO = 800;
 const cam = manager.camera(cameraId);
 
-// Start locked
-await cam.setProperty('shooting-enable', '0x2');
+// Start unlocked — photographer can shoot immediately
+await cam.setProperty('shooting-enable', '0x1');
 
 // Monitor ISO changes from the camera body
 cam.events.on('propertyChanged', async (event) => {
