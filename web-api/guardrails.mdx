@@ -78,100 +78,130 @@ await cam(cameraId).setProperty('shooting-enable', '0x1');
 
 ## Practical Workflows
 
-### Setup → Shoot → Review cycle
+### ISO limit enforcement
 
-In a volume photography studio, lock the shutter during setup and review to prevent misfires, then unlock only during the active shooting window.
+In a tethered studio, a photographer may be adjusting settings on the camera body between shots. If they accidentally push ISO above your quality threshold, the shutter locks until the setting is corrected. This prevents noisy images from entering the pipeline.
 
 <Steps>
-  <Step title="Connect and configure">
-    Connect the camera, set exposure, white balance, and focus as needed.
+  <Step title="Connect and set initial exposure">
+    Connect the camera, set your baseline exposure. The shutter starts **locked**.
   </Step>
-  <Step title="Lock the shutter">
-    Set `shooting-enable` to `0x2` (Disabled). The camera is now safe to handle — no accidental captures.
+  <Step title="Monitor ISO via SSE">
+    Listen for `propertyChanged` events on `iso`. When ISO changes, check if it exceeds your limit.
   </Step>
-  <Step title="Position the subject">
-    The photographer or assistant can adjust framing, lighting, and the subject without risk of unwanted shots.
+  <Step title="Lock if ISO exceeds limit">
+    If the photographer dials ISO above 800 on the camera body, immediately set `shooting-enable` to `0x2`. The shutter is blocked — no capture is possible.
   </Step>
-  <Step title="Unlock and shoot">
-    Set `shooting-enable` to `0x1` (Enabled). Fire the shutter via `POST /api/cameras/{id}/actions/shutter`.
-  </Step>
-  <Step title="Lock and review">
-    Immediately re-lock with `0x2`. Review images, adjust settings, repeat.
+  <Step title="Unlock when corrected">
+    When the photographer brings ISO back to 800 or below, set `shooting-enable` to `0x1`. Shooting resumes.
   </Step>
 </Steps>
 
-<CodeGroup>
-```typescript TypeScript
+```typescript
+const MAX_ISO = 800;
 const cam = manager.camera(cameraId);
 
-// Setup phase — lock shutter
+// Start locked
 await cam.setProperty('shooting-enable', '0x2');
-console.log('Shutter locked — safe to handle camera');
 
-// ... position subject, adjust lighting ...
+// Monitor ISO changes from the camera body
+cam.events.on('propertyChanged', async (event) => {
+  if (event.property !== 'iso') return;
 
-// Shooting phase — unlock, capture, re-lock
-await cam.setProperty('shooting-enable', '0x1');
-await cam.capturePhoto();
-await cam.setProperty('shooting-enable', '0x2');
-console.log('Captured and re-locked');
+  const isoValue = parseInt(event.value, 16);
+
+  if (isoValue > MAX_ISO) {
+    await cam.setProperty('shooting-enable', '0x2');
+    console.log(`ISO ${isoValue} exceeds limit ${MAX_ISO} — shutter locked`);
+  } else {
+    await cam.setProperty('shooting-enable', '0x1');
+    console.log(`ISO ${isoValue} within limit — shutter unlocked`);
+  }
+});
 ```
 
-```bash curl
-# Lock
-curl -X PUT .../properties/shooting-enable -d '{"value": "0x2"}'
+### Scan & Tag subject tracking
 
-# Shoot
-curl -X PUT .../properties/shooting-enable -d '{"value": "0x1"}'
-curl -X POST .../actions/shutter
-curl -X PUT .../properties/shooting-enable -d '{"value": "0x2"}'
-```
-</CodeGroup>
+In volume photography workflows using Sony's [Scan & Tag](https://helpguide.sony.net/di/volumephoto/v1/en/contents/vlph_scan_and_tag.html) system, each subject is identified by an [`image-id-string`](/web-api/properties#image-id-string) scanned from a QR code or barcode. The shutter should be locked when no subject is tagged, or when the tag is stale (too many shots taken for the same subject).
 
-### Combining with other property guards
-
-You can combine shutter lock with other property settings to create a fully guarded shooting environment. Set preconditions before unlocking the shutter to ensure the camera is in the correct state.
+<Steps>
+  <Step title="Start with shutter locked">
+    Camera connects with `shooting-enable` = Disabled. No captures until a valid subject ID is present.
+  </Step>
+  <Step title="Scan subject ID">
+    The operator scans a QR code. Your application writes the ID via `PUT /properties/image-id-string`. The shutter unlocks.
+  </Step>
+  <Step title="Track shot count per subject">
+    Each time a capture completes (via `downloadComplete` or `transferProgress` SSE event), increment the count for the current subject ID.
+  </Step>
+  <Step title="Lock when limit reached">
+    After the defined number of shots per subject (e.g. 5), lock the shutter. The operator must scan a **new** subject ID to continue.
+  </Step>
+  <Step title="Lock on empty or cleared ID">
+    If the image ID is cleared (empty string) or the session resets, lock the shutter immediately.
+  </Step>
+</Steps>
 
 ```typescript
-async function guardedCapture(cam, options) {
-  // 1. Ensure correct mode
-  await cam.setProperty('exposure-program-mode', options.mode);
+const MAX_SHOTS_PER_SUBJECT = 5;
+const cam = manager.camera(cameraId);
 
-  // 2. Set exposure parameters
-  await cam.setProperty('iso', options.iso);
-  await cam.setProperty('shutter-speed', options.shutterSpeed);
-  await cam.setProperty('aperture', options.aperture);
+let currentSubjectId = '';
+let shotCount = 0;
 
-  // 3. Set save destination
-  await cam.setSaveInfo({ path: options.savePath });
-  await cam.setProperty('still-image-store-destination', '0x0003'); // Both
+// Start locked — no subject tagged
+await cam.setProperty('shooting-enable', '0x2');
 
-  // 4. Tag the image
-  await cam.setProperty('image-id-string', options.imageId);
+// Called when operator scans a new subject QR code
+async function onSubjectScanned(subjectId: string) {
+  // Write the ID to the camera's MakerNote field
+  await cam.setProperty('image-id-string', subjectId);
 
-  // 5. Unlock → capture → re-lock
-  await cam.setProperty('shooting-enable', '0x1');
-  await cam.capturePhoto();
-  await cam.setProperty('shooting-enable', '0x2');
+  currentSubjectId = subjectId;
+  shotCount = 0;
+
+  if (subjectId) {
+    // Valid subject — unlock shutter
+    await cam.setProperty('shooting-enable', '0x1');
+    console.log(`Subject "${subjectId}" tagged — shutter unlocked (${MAX_SHOTS_PER_SUBJECT} shots allowed)`);
+  } else {
+    // Empty scan — keep locked
+    await cam.setProperty('shooting-enable', '0x2');
+    console.log('No subject ID — shutter locked');
+  }
 }
+
+// Track completed captures
+cam.events.on('downloadComplete', async () => {
+  shotCount++;
+  console.log(`Shot ${shotCount}/${MAX_SHOTS_PER_SUBJECT} for "${currentSubjectId}"`);
+
+  if (shotCount >= MAX_SHOTS_PER_SUBJECT) {
+    await cam.setProperty('shooting-enable', '0x2');
+    console.log(`Limit reached for "${currentSubjectId}" — shutter locked, scan next subject`);
+  }
+});
 ```
 
 ### Multi-camera selective firing
 
-In a multi-camera rig, keep all cameras locked by default and only unlock the specific camera that should fire.
+In a multi-camera rig, keep all cameras locked by default and only unlock the specific camera that should fire. This prevents one trigger from firing every camera in the setup.
 
 ```typescript
 const cameras = manager.getCameras();
 
-// Lock all cameras
-for (const cam of cameras) {
-  await manager.camera(cam.id).setProperty('shooting-enable', '0x2');
+// Lock all cameras on startup
+for (const c of cameras) {
+  await manager.camera(c.id).setProperty('shooting-enable', '0x2');
 }
 
-// Fire only camera 1
-await manager.camera(cameras[0].id).setProperty('shooting-enable', '0x1');
-await manager.camera(cameras[0].id).capturePhoto();
-await manager.camera(cameras[0].id).setProperty('shooting-enable', '0x2');
+// Fire only a specific camera
+async function fireCamera(cameraId: string) {
+  const cam = manager.camera(cameraId);
+  await cam.setProperty('shooting-enable', '0x1');
+  await cam.capturePhoto();
+  await cam.setProperty('shooting-enable', '0x2');
+}
 ```
 
 ---
