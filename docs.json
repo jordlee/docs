@@ -129,6 +129,7 @@
               "web-api/events",
               "web-api/lut",
               "web-api/cineei",
+              "web-api/guardrails",
               "web-api/sd-card",
               "web-api/settings",
               "web-api/server"

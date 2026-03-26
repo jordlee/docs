@@ -1,0 +1,206 @@
+---
+title: "Guardrail Commands"
+description: "Prevent unwanted camera operations in tethered and mixed-use shooting environments"
+---
+
+## Overview
+
+When cameras are used in **mixed-mode environments** — where both SDK-driven automation and hands-on photographer operation happen simultaneously — unwanted shutter actuations or setting changes can disrupt a shoot. Guardrail commands let you programmatically **lock down camera operations** to prevent accidental captures during setup, review, or transitions.
+
+This is especially valuable for:
+- **Volume photography** studios where cameras fire on automated triggers
+- **Tethered shooting** setups where an assistant may accidentally press the shutter
+- **Multi-camera rigs** where only specific cameras should be active at a given time
+- **Training environments** where inexperienced operators share access to the camera
+
+---
+
+## Shutter Lock (shooting-enable)
+
+The `shooting-enable` property allows you to **completely disable or enable the shutter** via the SDK. When disabled, the camera will not fire — neither from SDK commands nor from the physical shutter button.
+
+<Warning>
+  This property requires a **Volume Photography Commands license** from Sony, installed on the camera. Without the license, the property will not appear.
+
+  License information: [Sony Volume Photography Commands](https://pro.sony/ue_US/products/software-licences-and-upgrades-for-interchangeable-lens-cameras/volume-photography-commands)
+</Warning>
+
+### Reading the current state
+
+```bash
+curl http://localhost:8080/api/cameras/{id}/properties/shooting-enable
+```
+
+```json
+{
+  "data": {
+    "property": "shooting-enable",
+    "value": "0x1",
+    "formatted": "Enabled",
+    "writable": "true",
+    "available_values": [
+      { "value": "0x1", "formatted": "Enabled" },
+      { "value": "0x2", "formatted": "Disabled" }
+    ]
+  }
+}
+```
+
+If the response returns empty `available_values` and `writable: "false"`, the license is not active on this camera.
+
+### Disabling the shutter
+
+```bash
+curl -X PUT .../properties/shooting-enable \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+```typescript
+// Lock the shutter
+await cam(cameraId).setProperty('shooting-enable', '0x2');
+```
+
+### Re-enabling the shutter
+
+```bash
+curl -X PUT .../properties/shooting-enable \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+```typescript
+// Unlock the shutter
+await cam(cameraId).setProperty('shooting-enable', '0x1');
+```
+
+---
+
+## Practical Workflows
+
+### Setup → Shoot → Review cycle
+
+In a volume photography studio, lock the shutter during setup and review to prevent misfires, then unlock only during the active shooting window.
+
+<Steps>
+  <Step title="Connect and configure">
+    Connect the camera, set exposure, white balance, and focus as needed.
+  </Step>
+  <Step title="Lock the shutter">
+    Set `shooting-enable` to `0x2` (Disabled). The camera is now safe to handle — no accidental captures.
+  </Step>
+  <Step title="Position the subject">
+    The photographer or assistant can adjust framing, lighting, and the subject without risk of unwanted shots.
+  </Step>
+  <Step title="Unlock and shoot">
+    Set `shooting-enable` to `0x1` (Enabled). Fire the shutter via `POST /api/cameras/{id}/actions/shutter`.
+  </Step>
+  <Step title="Lock and review">
+    Immediately re-lock with `0x2`. Review images, adjust settings, repeat.
+  </Step>
+</Steps>
+
+<CodeGroup>
+```typescript TypeScript
+const cam = manager.camera(cameraId);
+
+// Setup phase — lock shutter
+await cam.setProperty('shooting-enable', '0x2');
+console.log('Shutter locked — safe to handle camera');
+
+// ... position subject, adjust lighting ...
+
+// Shooting phase — unlock, capture, re-lock
+await cam.setProperty('shooting-enable', '0x1');
+await cam.capturePhoto();
+await cam.setProperty('shooting-enable', '0x2');
+console.log('Captured and re-locked');
+```
+
+```bash curl
+# Lock
+curl -X PUT .../properties/shooting-enable -d '{"value": "0x2"}'
+
+# Shoot
+curl -X PUT .../properties/shooting-enable -d '{"value": "0x1"}'
+curl -X POST .../actions/shutter
+curl -X PUT .../properties/shooting-enable -d '{"value": "0x2"}'
+```
+</CodeGroup>
+
+### Combining with other property guards
+
+You can combine shutter lock with other property settings to create a fully guarded shooting environment. Set preconditions before unlocking the shutter to ensure the camera is in the correct state.
+
+```typescript
+async function guardedCapture(cam, options) {
+  // 1. Ensure correct mode
+  await cam.setProperty('exposure-program-mode', options.mode);
+
+  // 2. Set exposure parameters
+  await cam.setProperty('iso', options.iso);
+  await cam.setProperty('shutter-speed', options.shutterSpeed);
+  await cam.setProperty('aperture', options.aperture);
+
+  // 3. Set save destination
+  await cam.setSaveInfo({ path: options.savePath });
+  await cam.setProperty('still-image-store-destination', '0x0003'); // Both
+
+  // 4. Tag the image
+  await cam.setProperty('image-id-string', options.imageId);
+
+  // 5. Unlock → capture → re-lock
+  await cam.setProperty('shooting-enable', '0x1');
+  await cam.capturePhoto();
+  await cam.setProperty('shooting-enable', '0x2');
+}
+```
+
+### Multi-camera selective firing
+
+In a multi-camera rig, keep all cameras locked by default and only unlock the specific camera that should fire.
+
+```typescript
+const cameras = manager.getCameras();
+
+// Lock all cameras
+for (const cam of cameras) {
+  await manager.camera(cam.id).setProperty('shooting-enable', '0x2');
+}
+
+// Fire only camera 1
+await manager.camera(cameras[0].id).setProperty('shooting-enable', '0x1');
+await manager.camera(cameras[0].id).capturePhoto();
+await manager.camera(cameras[0].id).setProperty('shooting-enable', '0x2');
+```
+
+---
+
+## SSE Events
+
+When `shooting-enable` changes, a `propertyChanged` SSE event is emitted:
+
+```json
+{
+  "property": "shooting-enable",
+  "value": "0x2",
+  "formatted": "Disabled"
+}
+```
+
+Listen for this event to keep your UI in sync with the actual shutter lock state.
+
+---
+
+## Compatibility
+
+The `shooting-enable` property requires:
+
+1. A camera that supports `CrDeviceProperty_ShootingEnableSettingLicense`
+2. An active **Volume Photography Commands** license installed on the camera
+
+Without the license, the property returns empty/not writable. The camera body shutter button always works regardless of this setting — the lock applies to SDK-initiated and physical shutter operations.
+
+<Note>
+  The license is a one-time purchase per camera body. See [Sony Volume Photography Commands](https://pro.sony/ue_US/products/software-licences-and-upgrades-for-interchangeable-lens-cameras/volume-photography-commands) for pricing, compatible models, and installation instructions.
+</Note>
