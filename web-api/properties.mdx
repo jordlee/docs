@@ -1,6 +1,6 @@
 ---
 title: "Properties"
-description: "Read and write camera properties — ISO, aperture, shutter speed, and more"
+description: "Read and write camera properties — exposure, video, media, creative controls, and more"
 ---
 
 ## Get Property
@@ -12,7 +12,7 @@ description: "Read and write camera properties — ISO, aperture, shutter speed,
 Returns the current value, human-readable format, writability flag, and all values the camera currently accepts.
 
 <ParamField path="propertyName" type="string" required>
-  One of: `iso`, `aperture`, `shutter-speed`, `exposure-program-mode`, `focus-mode`, `focus-area`, `white-balance`, `drive-mode`, `file-format`, `image-quality`, `raw-compression`, `still-image-store-destination`, `focus-position`, `focus-position-current`, `focus-driving-status`, `focus-distance`, `zoom-distance`
+  Any property name from the reference tables below (e.g. `iso`, `battery-remain`, `movie-file-format`, `creative-look`)
 </ParamField>
 
 <CodeGroup>
@@ -153,7 +153,10 @@ console.log(all.properties);
     "white-balance": "Auto",
     "focus-mode": "AF-C",
     "drive-mode": "Single",
-    "file-format": "RAW+JPEG"
+    "file-format": "RAW+JPEG",
+    "battery-remain": "96%",
+    "recording-state": "Not Recording",
+    "creative-look": "ST"
   }
 }
 ```
@@ -227,29 +230,143 @@ await client.setPriorityKey('D10F60149B0C', { setting: 'pc-remote' });
 
 ## Property Reference
 
-| Property                        | Read/Write | Description                                                 |
-| ------------------------------- | ---------- | ----------------------------------------------------------- |
-| `iso`                           | R/W        | ISO sensitivity (Auto, 125, 200, 400, ...)                  |
-| `aperture`                      | R/W        | F-number (f/1.4, f/2.0, ..., f/22)                          |
-| `shutter-speed`                 | R/W        | Shutter speed (1/8000, ..., 30s, Bulb)                      |
-| `exposure-program-mode`         | Read-only  | Dial-controlled: P, A, S, M, Auto                           |
-| `focus-mode`                    | R/W        | Manual, AF-S, AF-C, AF-A, DMF                               |
-| `focus-area`                    | R/W        | Wide, Zone, Center, Flexible Spot, Tracking                 |
-| `white-balance`                 | R/W        | Auto, Daylight, Shade, Cloudy, etc.                         |
-| `drive-mode`                    | R/W        | Single, Continuous Hi/Lo, Timer, Bracket                    |
-| `file-format`                   | R/W        | RAW, JPEG, RAW+JPEG, HEIF                                   |
-| `image-quality`                 | R/W        | Fine, Standard, Extra Fine                                  |
-| `raw-compression`               | R/W        | Uncompressed, Compressed, Lossless                          |
-| `still-image-store-destination` | R/W        | Host PC (`0x0001`), Memory Card (`0x0002`), Both (`0x0003`) |
-| `focus-position`                | R/W        | Absolute position 0–65535                                   |
-| `focus-position-current`        | Read-only  | Actual lens position                                        |
-| `focus-driving-status`          | Read-only  | Not Driving / Driving                                       |
-| `focus-distance`                | Read-only  | Distance in 1/1000 meter units                              |
-| `zoom-distance`                 | Read-only  | Focal length in 0.001mm units                               |
+All 56 properties organized by category. Every property supports **hex values** from the GET response — hex always works. Always GET the property first to see what your specific camera supports.
 
 <Tip>
-  Every property supports **hex values** from the GET response. The human-readable formats below are shortcuts — hex always works. Always GET the property first to see what your specific camera supports.
+  Properties marked **R/W** can be read and written. **Read-only** properties return data but reject SET requests. Some R/W properties may be read-only depending on the camera's current mode.
 </Tip>
+
+### Core Exposure
+
+| Property                | R/W       | Description                                    |
+| ----------------------- | --------- | ---------------------------------------------- |
+| `iso`                   | R/W       | ISO sensitivity (Auto, 125, 200, 400, ...)     |
+| `aperture`              | R/W       | F-number (f/1.4, f/2.0, ..., f/22)             |
+| `shutter-speed`         | R/W       | Shutter speed (1/8000, ..., 30s, Bulb)         |
+| `exposure-program-mode` | R/W       | P, A, S, M, Auto, Movie modes                  |
+| `exposure-compensation` | R/W       | Exposure bias (+/- EV steps)                   |
+| `exposure-step`         | R/W       | EV step size (1/3 or 1/2)                      |
+| `metering-mode`         | R/W       | Multi, Center, Spot, Highlight, etc.           |
+| `ae-lock`               | R/W       | Auto-exposure lock (Off / On)                  |
+
+### Focus & Zoom
+
+| Property                | R/W       | Description                                    |
+| ----------------------- | --------- | ---------------------------------------------- |
+| `focus-mode`            | R/W       | Manual, AF-S, AF-C, AF-A, DMF                  |
+| `focus-area`            | R/W       | Wide, Zone, Center, Flexible Spot, Tracking     |
+| `focus-position`        | R/W       | Absolute position 0-65535                       |
+| `focus-position-current`| Read-only | Actual lens position                            |
+| `focus-driving-status`  | Read-only | Not Driving / Driving                           |
+| `focus-distance`        | Read-only | Distance in 1/1000 meter units                 |
+| `zoom-distance`         | Read-only | Focal length in 0.001mm units                  |
+| `zoom-setting`          | R/W       | Optical Zoom / Clear Image Zoom / Digital Zoom |
+
+### White Balance
+
+| Property                    | R/W | Description                                    |
+| --------------------------- | --- | ---------------------------------------------- |
+| `white-balance`             | R/W | Auto, Daylight, Shade, Cloudy, etc.            |
+| `white-balance-color-temp`  | R/W | Color temperature in Kelvin (range: 2500-9900K)|
+| `awb-lock`                  | R/W | Auto white balance lock (Off / On)             |
+
+### Drive & Shutter
+
+| Property      | R/W | Description                                       |
+| ------------- | --- | ------------------------------------------------- |
+| `drive-mode`  | R/W | Single, Continuous Hi/Lo, Timer, Bracket          |
+| `shutter-type`| R/W | Auto, Mechanical, Electronic                      |
+| `shutter-mode`| R/W | Speed (shutter speed) / Angle (shutter angle)     |
+| `shutter-angle`| R/W | Shutter angle in degrees (when shutter-mode = Angle) |
+| `silent-mode` | R/W | Silent (electronic) shutter (Off / On)            |
+| `flicker-less-shooting` | R/W | Anti-flicker shooting (Off / On)         |
+
+### Flash
+
+| Property             | R/W | Description                              |
+| -------------------- | --- | ---------------------------------------- |
+| `flash-mode`         | R/W | Off, Auto, Fill, Rear Sync, Slow Sync    |
+| `flash-compensation` | R/W | Flash exposure compensation (+/- EV)     |
+| `wireless-flash`     | R/W | Wireless flash control (Off / On)        |
+
+### Image Format
+
+| Property                        | R/W       | Description                                                 |
+| ------------------------------- | --------- | ----------------------------------------------------------- |
+| `file-format`                   | R/W       | RAW, JPEG, RAW+JPEG, HEIF                                   |
+| `image-quality`                 | R/W       | Fine, Standard, Extra Fine                                  |
+| `raw-compression`               | R/W       | Uncompressed, Compressed, Lossless                          |
+| `image-size`                    | R/W       | L, M, S image resolution                                    |
+| `aspect-ratio`                  | R/W       | 3:2, 16:9, 1:1, 4:3                                        |
+| `color-space`                   | R/W       | sRGB, AdobeRGB                                              |
+| `still-image-store-destination` | R/W       | Host PC (`0x1`), Memory Card (`0x2`), Both (`0x3`)          |
+
+### Image Processing
+
+| Property          | R/W | Description                                        |
+| ----------------- | --- | -------------------------------------------------- |
+| `dro`             | R/W | D-Range Optimizer (Off, Auto, Lv1-Lv5)            |
+| `high-iso-nr`     | R/W | High ISO noise reduction (Off, Low, Normal)        |
+| `long-exposure-nr` | R/W | Long exposure noise reduction (Off / On)          |
+| `creative-look`   | R/W | ST, PT, NT, VV, VV2, FL, IN, SH, BW, SE           |
+| `picture-profile`  | R/W | PP1-PP11, Off                                     |
+| `aps-c-s35`       | R/W | APS-C / Super 35mm crop mode (Off / On / Auto)    |
+
+### Stabilization
+
+| Property               | R/W | Description                               |
+| ---------------------- | --- | ----------------------------------------- |
+| `image-stabilization`  | R/W | SteadyShot for stills (Off / On)          |
+| `movie-stabilization`  | R/W | SteadyShot for video (Off / Standard / Active) |
+
+### Video Recording
+
+| Property                      | R/W       | Description                                |
+| ----------------------------- | --------- | ------------------------------------------ |
+| `recording-state`             | Read-only | Not Recording / Recording                  |
+| `movie-file-format`           | R/W       | XAVC S 4K, XAVC S HD, XAVC HS 4K, etc.   |
+| `movie-recording-setting`     | R/W       | Resolution/bitrate combination             |
+| `movie-recording-frame-rate`  | R/W       | 24p, 30p, 60p, 120p, etc.                 |
+| `audio-recording`             | R/W       | Audio recording on/off                     |
+| `audio-input-master-level`    | R/W       | Audio input level (range: 0-31)            |
+
+### Timecode
+
+| Property           | R/W | Description                              |
+| ------------------ | --- | ---------------------------------------- |
+| `timecode-preset`  | R/W | Timecode preset value                    |
+| `timecode-format`  | R/W | Drop Frame (DF) / Non-Drop Frame (NDF)  |
+| `timecode-run`     | R/W | Rec Run / Free Run                       |
+| `timecode-make`    | R/W | Preset / Regenerate                      |
+
+### CineEI & LUT
+
+| Property                          | R/W       | Description                                |
+| --------------------------------- | --------- | ------------------------------------------ |
+| `movie-shooting-mode`             | R/W       | Normal / CineEI / CineEI Quick / Flexible ISO |
+| `movie-shooting-mode-color-gamut` | R/W       | S-Gamut3.Cine, S-Gamut3, etc.              |
+| `base-look-import-enable`         | Read-only | Whether base look import is available      |
+| `embed-lut-file`                  | R/W       | Embed LUT in recording (Off / On)          |
+| `pp-lut-base-look`               | R/W       | User base look selection for Picture Profile LUT |
+| `exposure-index`                 | R/W       | Exposure Index in CineEI mode (e.g. 800 EI) |
+| `base-iso`                       | R/W       | Base ISO sensitivity (High / Low)        |
+
+### Battery & Media
+
+| Property                       | R/W       | Description                              |
+| ------------------------------ | --------- | ---------------------------------------- |
+| `battery-remain`               | Read-only | Battery percentage (0-100%)              |
+| `overheating-state`            | Read-only | Camera thermal state                     |
+| `media-slot1-status`           | Read-only | Slot 1 media status                      |
+| `media-slot1-remaining-photos` | Read-only | Remaining photos on slot 1               |
+| `media-slot1-remaining-time`   | Read-only | Remaining recording time on slot 1 (seconds) |
+| `media-slot2-status`           | Read-only | Slot 2 media status                      |
+| `media-slot2-remaining-photos` | Read-only | Remaining photos on slot 2               |
+| `media-slot2-remaining-time`   | Read-only | Remaining recording time on slot 2 (seconds) |
+
+---
+
+## Detailed Property Reference
 
 ### iso
 
@@ -335,16 +452,81 @@ curl -X PUT .../properties/shutter-speed -d '{"value": "0x100fa"}'
 
 ### exposure-program-mode
 
-**Read-only** — Controlled by the camera's mode dial.
+**Read/Write** — Shooting mode. Can be set via the API to switch between still and movie modes.
 
-| Formatted             | Hex      |
-| --------------------- | -------- |
-| P (Program)           | `0x1`    |
-| A (Aperture Priority) | `0x2`    |
-| S (Shutter Priority)  | `0x3`    |
-| M (Manual)            | `0x4`    |
-| Auto                  | `0x8000` |
-| Auto+                 | `0x8001` |
+| Formatted             | Hex      | PUT Example            |
+| --------------------- | -------- | ---------------------- |
+| P (Program)           | `0x1`    | `{"value": "0x1"}`     |
+| A (Aperture Priority) | `0x2`    | `{"value": "0x2"}`     |
+| S (Shutter Priority)  | `0x3`    | `{"value": "0x3"}`     |
+| M (Manual)            | `0x4`    | `{"value": "0x4"}`     |
+| Auto                  | `0x8000` | `{"value": "0x8000"}`  |
+| Auto+                 | `0x8001` | `{"value": "0x8001"}`  |
+| Movie (P/A/S/M)       | `0x8050`–`0x8055` | `{"value": "0x8055"}` |
+
+```bash
+curl -X PUT .../properties/exposure-program-mode \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x8055"}'
+```
+
+<Note>
+  Available modes depend on the camera model. Always check `available_values` from GET.
+</Note>
+
+---
+
+### exposure-compensation
+
+**Read/Write** — Exposure bias compensation in EV steps. Values are signed — the server formats them as EV (e.g. "+1.0 EV", "-2.0 EV", "0.0 EV"). The step size depends on `exposure-step` (1/3 or 1/2 EV).
+
+```bash
+curl -X PUT .../properties/exposure-compensation \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x0"}'
+```
+
+<Note>
+  Typically 31 available values ranging from -3.0 EV to +3.0 EV. Always GET first to see hex values for your camera. Negative values use two's complement (e.g. `0xf830` = -2.0 EV).
+</Note>
+
+---
+
+### metering-mode
+
+**Read/Write** — Metering mode for exposure calculation.
+
+| Formatted           | Hex   | PUT Example        |
+| ------------------- | ----- | ------------------ |
+| Multi               | `0x5` | `{"value": "0x5"}` |
+| Center Weighted Avg | `0x2` | `{"value": "0x2"}` |
+| Spot (Standard)     | `0x8` | `{"value": "0x8"}` |
+| Spot (Large)        | `0x9` | `{"value": "0x9"}` |
+| Entire Screen Avg   | `0x7` | `{"value": "0x7"}` |
+| Highlight Weighted  | `0xa` | `{"value": "0xa"}` |
+
+```bash
+curl -X PUT .../properties/metering-mode \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x5"}'
+```
+
+---
+
+### ae-lock
+
+**Read/Write** — Auto-exposure lock.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/ae-lock \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
 
 ---
 
@@ -414,6 +596,28 @@ curl -X PUT .../properties/white-balance -d '{"value": "0x11"}'
 
 ---
 
+### white-balance-color-temp
+
+**Read/Write** — Color temperature in Kelvin. This is a **range property** (min/max/step).
+
+| Parameter | Value |
+| --------- | ----- |
+| Min       | 2500K |
+| Max       | 9900K |
+| Step      | 100K  |
+
+```bash
+curl -X PUT .../properties/white-balance-color-temp \
+  -H "Content-Type: application/json" \
+  -d '{"value": "5600"}'
+```
+
+<Note>
+  Set `white-balance` to Color Temp (`0x8003`) first, then adjust the temperature.
+</Note>
+
+---
+
 ### drive-mode
 
 **Read/Write** — Accepts hex or string name.
@@ -434,6 +638,42 @@ curl -X PUT .../properties/white-balance -d '{"value": "0x11"}'
 ```bash
 curl -X PUT .../properties/drive-mode -d '{"value": "single"}'
 ```
+
+---
+
+### flash-mode
+
+**Read/Write** — Flash firing mode. Only available on cameras with flash capability.
+
+| Formatted  | Hex   | PUT Example        |
+| ---------- | ----- | ------------------ |
+| Auto       | `0x1` | `{"value": "0x1"}` |
+| Off        | `0x2` | `{"value": "0x2"}` |
+| Fill       | `0x3` | `{"value": "0x3"}` |
+| Slow Sync  | `0x5` | `{"value": "0x5"}` |
+| Rear Sync  | `0x6` | `{"value": "0x6"}` |
+
+```bash
+curl -X PUT .../properties/flash-mode \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+---
+
+### flash-compensation
+
+**Read/Write** — Flash exposure compensation in EV steps.
+
+```bash
+curl -X PUT .../properties/flash-compensation \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x0"}'
+```
+
+<Note>
+  Typically 19 available values. Not available on cameras without flash (e.g. FX30).
+</Note>
 
 ---
 
@@ -487,6 +727,60 @@ curl -X PUT .../properties/raw-compression -d '{"value": "0x0"}'
 
 ---
 
+### image-size
+
+**Read/Write** — Still image resolution.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| L         | `0x1` | `{"value": "0x1"}` |
+| M         | `0x2` | `{"value": "0x2"}` |
+| S         | `0x3` | `{"value": "0x3"}` |
+
+```bash
+curl -X PUT .../properties/image-size \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### aspect-ratio
+
+**Read/Write** — Still image aspect ratio.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| 3:2       | `0x1` | `{"value": "0x1"}` |
+| 16:9      | `0x2` | `{"value": "0x2"}` |
+| 4:3       | `0x3` | `{"value": "0x3"}` |
+| 1:1       | `0x4` | `{"value": "0x4"}` |
+
+```bash
+curl -X PUT .../properties/aspect-ratio \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### color-space
+
+**Read/Write** — Color space for still images.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| sRGB      | `0x1` | `{"value": "0x1"}` |
+| AdobeRGB  | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/color-space \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
 ### still-image-store-destination
 
 **Read/Write** — Where captured images are saved.
@@ -504,6 +798,243 @@ curl -X PUT .../properties/still-image-store-destination -d '{"value": "0x3"}'
 <Note>
   Set to `0x1` or `0x3` for auto-transfer in `remote` mode. Also requires `SetSaveInfo` path to be configured.
 </Note>
+
+---
+
+### shutter-type
+
+**Read/Write** — Shutter mechanism.
+
+```bash
+curl -X PUT .../properties/shutter-type \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+Common values: Auto, Mechanical Shutter, Electronic Shutter. Not available on all cameras (A9 III uses global shutter exclusively).
+
+---
+
+### shutter-mode
+
+**Read/Write** — Shutter mode: Speed (conventional shutter speed, e.g. 1/125) or Angle (shutter angle in degrees, e.g. 180°). Primarily available on cinema cameras (FX30, FX3, FX6, etc.).
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Speed     | `0x1` | `{"value": "0x1"}` |
+| Angle     | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/shutter-mode \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### shutter-angle
+
+**Read/Write** — Shutter angle in degrees. Only active when `shutter-mode` is set to Angle (`0x2`). Values are in 1/10 degree units (e.g. `1800` = 180.0°). Available on cinema cameras (FX3A, FX3, FX2, FX30).
+
+```bash
+curl -X PUT .../properties/shutter-angle \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x708"}'
+```
+
+Common angles: 180.0° (`0x708`), 90.0° (`0x384`), 360.0° (`0xe10`). GET first to see all available values — the server formats them with degree symbols (e.g. "180.0°").
+
+<Note>
+  Set `shutter-mode` to Angle (`0x2`) first. Value `0x0` = Off.
+</Note>
+
+---
+
+### silent-mode
+
+**Read/Write** — Silent (electronic) shutter mode.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/silent-mode \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+---
+
+### flicker-less-shooting
+
+**Read/Write** — Anti-flicker shooting to avoid banding under artificial lighting.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/flicker-less-shooting \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+---
+
+### dro
+
+**Read/Write** — D-Range Optimizer for shadow recovery.
+
+| Formatted | Hex    | PUT Example         |
+| --------- | ------ | ------------------- |
+| Off       | `0x0`  | `{"value": "0x0"}`  |
+| Auto      | `0x10` | `{"value": "0x10"}` |
+| Lv1       | `0x11` | `{"value": "0x11"}` |
+| Lv2       | `0x12` | `{"value": "0x12"}` |
+| Lv3       | `0x13` | `{"value": "0x13"}` |
+| Lv4       | `0x14` | `{"value": "0x14"}` |
+| Lv5       | `0x15` | `{"value": "0x15"}` |
+
+```bash
+curl -X PUT .../properties/dro \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x10"}'
+```
+
+---
+
+### high-iso-nr
+
+**Read/Write** — Noise reduction applied at high ISO values.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| Low       | `0x2` | `{"value": "0x2"}` |
+| Normal    | `0x3` | `{"value": "0x3"}` |
+| High      | `0x4` | `{"value": "0x4"}` |
+
+```bash
+curl -X PUT .../properties/high-iso-nr \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x3"}'
+```
+
+---
+
+### long-exposure-nr
+
+**Read/Write** — Noise reduction for long exposures.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/long-exposure-nr \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+---
+
+### creative-look
+
+**Read/Write** — Built-in picture styles.
+
+| Formatted | Hex   | PUT Example        | Description   |
+| --------- | ----- | ------------------ | ------------- |
+| ST        | `0x1` | `{"value": "0x1"}` | Standard      |
+| PT        | `0x2` | `{"value": "0x2"}` | Portrait      |
+| NT        | `0x3` | `{"value": "0x3"}` | Neutral       |
+| VV        | `0x4` | `{"value": "0x4"}` | Vivid         |
+| VV2       | `0x5` | `{"value": "0x5"}` | Vivid 2       |
+| FL        | `0x6` | `{"value": "0x6"}` | Film          |
+| IN        | `0x7` | `{"value": "0x7"}` | Instant       |
+| SH        | `0x8` | `{"value": "0x8"}` | Soft Highkey  |
+| BW        | `0x9` | `{"value": "0x9"}` | Black & White |
+| SE        | `0xa` | `{"value": "0xa"}` | Sepia         |
+
+```bash
+curl -X PUT .../properties/creative-look \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+<Note>
+  A9 III supports 9 looks, A7 IV supports 8 looks. Check `available_values`.
+</Note>
+
+---
+
+### picture-profile
+
+**Read/Write** — Picture Profile presets (PP1-PP11, includes S-Log, HLG, etc.).
+
+| Formatted | Hex    | PUT Example         |
+| --------- | ------ | ------------------- |
+| Off       | `0x0`  | `{"value": "0x0"}`  |
+| PP1       | `0x1`  | `{"value": "0x1"}`  |
+| PP2       | `0x2`  | `{"value": "0x2"}`  |
+| PP3       | `0x3`  | `{"value": "0x3"}`  |
+| PP4       | `0x4`  | `{"value": "0x4"}`  |
+| PP5       | `0x5`  | `{"value": "0x5"}`  |
+| PP6       | `0x6`  | `{"value": "0x6"}`  |
+| PP7       | `0x7`  | `{"value": "0x7"}`  |
+| PP8       | `0x8`  | `{"value": "0x8"}`  |
+| PP9       | `0x9`  | `{"value": "0x9"}`  |
+| PP10      | `0xa`  | `{"value": "0xa"}`  |
+| PP11      | `0xb`  | `{"value": "0xb"}`  |
+| Custom 1  | `0x41` | `{"value": "0x41"}` |
+| Custom 2  | `0x42` | `{"value": "0x42"}` |
+| Custom 3  | `0x43` | `{"value": "0x43"}` |
+| Custom 4  | `0x44` | `{"value": "0x44"}` |
+
+```bash
+curl -X PUT .../properties/picture-profile \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x7"}'
+```
+
+<Note>
+  FX30 supports 13 profiles, A9 III supports 9, A7 IV supports 3. Custom slots (`0x41`–`0x44`) are used with [PPLUT workflows](/web-api/lut#pplut-workflow). Check `available_values`.
+</Note>
+
+---
+
+### aps-c-s35
+
+**Read/Write** — APS-C / Super 35mm crop mode.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+| Auto      | `0x3` | `{"value": "0x3"}` |
+
+```bash
+curl -X PUT .../properties/aps-c-s35 \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### zoom-setting
+
+**Read/Write** — Zoom type selection.
+
+```bash
+curl -X PUT .../properties/zoom-setting \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+Values: Optical Zoom Only, Clear Image Zoom (CIZ), Digital Zoom.
 
 ---
 
@@ -538,3 +1069,400 @@ curl -X PUT .../properties/focus-position -d '{"value": "32000"}'
 ### zoom-distance
 
 **Read-only** — Current focal length in 0.001mm units.
+
+---
+
+### recording-state
+
+**Read-only** — Current video recording state.
+
+| Formatted        | Hex   |
+| ---------------- | ----- |
+| Not Recording    | `0x0` |
+| Recording        | `0x1` |
+| Recording Failed | `0x2` |
+
+```bash
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/recording-state
+```
+
+Use the [`movie-rec` action](/web-api/actions#movie-recording) to start/stop.
+
+---
+
+### movie-file-format
+
+**Read/Write** — Video file format.
+
+| Formatted      | Hex   | PUT Example        |
+| -------------- | ----- | ------------------ |
+| AVCHD          | `0x0` | `{"value": "0x0"}` |
+| MP4            | `0x1` | `{"value": "0x1"}` |
+| XAVC S 4K      | `0x2` | `{"value": "0x2"}` |
+| XAVC S HD      | `0x3` | `{"value": "0x3"}` |
+| XAVC HS 8K     | `0x4` | `{"value": "0x4"}` |
+| XAVC HS 4K     | `0x5` | `{"value": "0x5"}` |
+| XAVC S-I 4K    | `0x8` | `{"value": "0x8"}` |
+| XAVC S-I HD    | `0x9` | `{"value": "0x9"}` |
+| XAVC S-I DCI 4K| `0xd` | `{"value": "0xd"}` |
+
+```bash
+curl -X PUT .../properties/movie-file-format \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x5"}'
+```
+
+<Note>
+  Available formats vary by camera. Check `available_values`.
+</Note>
+
+---
+
+### movie-recording-setting
+
+**Read/Write** — Video resolution and bitrate combination.
+
+```bash
+curl -X PUT .../properties/movie-recording-setting \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### movie-recording-frame-rate
+
+**Read/Write** — Video frame rate.
+
+| Formatted | Hex    | PUT Example         |
+| --------- | ------ | ------------------- |
+| 120p      | `0x1`  | `{"value": "0x1"}`  |
+| 100p      | `0x2`  | `{"value": "0x2"}`  |
+| 60p       | `0x3`  | `{"value": "0x3"}`  |
+| 50p       | `0x4`  | `{"value": "0x4"}`  |
+| 30p       | `0x5`  | `{"value": "0x5"}`  |
+| 25p       | `0x6`  | `{"value": "0x6"}`  |
+| 24p       | `0x7`  | `{"value": "0x7"}`  |
+| 23.98p    | `0x8`  | `{"value": "0x8"}`  |
+| 29.97p    | `0x9`  | `{"value": "0x9"}`  |
+| 59.94p    | `0xa`  | `{"value": "0xa"}`  |
+| 119.88p   | `0x17` | `{"value": "0x17"}` |
+
+```bash
+curl -X PUT .../properties/movie-recording-frame-rate \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x7"}'
+```
+
+---
+
+### audio-recording
+
+**Read/Write** — Audio recording toggle for video.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x0` | `{"value": "0x0"}` |
+| On        | `0x1` | `{"value": "0x1"}` |
+
+```bash
+curl -X PUT .../properties/audio-recording \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### audio-input-master-level
+
+**Read/Write** — Audio input level. This is a **range property** (0-31).
+
+```bash
+curl -X PUT .../properties/audio-input-master-level \
+  -H "Content-Type: application/json" \
+  -d '{"value": "15"}'
+```
+
+---
+
+### timecode-preset
+
+**Read/Write** — Timecode preset value.
+
+```bash
+curl -X PUT .../properties/timecode-preset \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### timecode-format
+
+**Read/Write** — Drop Frame (DF) or Non-Drop Frame (NDF).
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| DF        | `0x1` | `{"value": "0x1"}` |
+| NDF       | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/timecode-format \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### timecode-run
+
+**Read/Write** — Timecode run mode.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Rec Run   | `0x1` | `{"value": "0x1"}` |
+| Free Run  | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/timecode-run \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### timecode-make
+
+**Read/Write** — Timecode generation mode.
+
+| Formatted  | Hex   | PUT Example        |
+| ---------- | ----- | ------------------ |
+| Preset     | `0x1` | `{"value": "0x1"}` |
+| Regenerate | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/timecode-make \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### movie-shooting-mode
+
+**Read/Write** — Video shooting mode selection.
+
+```bash
+curl -X PUT .../properties/movie-shooting-mode \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x0301"}'
+```
+
+| Formatted    | Hex      |
+| ------------ | -------- |
+| Normal       | `0x0001` |
+| CineEI       | `0x0301` |
+| CineEI Quick | `0x0302` |
+| Flexible ISO | `0x0201` |
+
+---
+
+### movie-shooting-mode-color-gamut
+
+**Read/Write** — Color gamut for CineEI/Flexible ISO modes.
+
+| Formatted     | Hex   | PUT Example        |
+| ------------- | ----- | ------------------ |
+| S-Gamut3.Cine | `0x1` | `{"value": "0x1"}` |
+| S-Gamut3      | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/movie-shooting-mode-color-gamut \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+---
+
+### base-look-import-enable
+
+**Read-only** — Whether the camera currently allows base look / LUT import operations.
+
+```bash
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/base-look-import-enable
+```
+
+---
+
+### embed-lut-file
+
+**Read/Write** — Embed LUT in video recording.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/embed-lut-file \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+---
+
+### pp-lut-base-look
+
+**Read/Write** — Select which user base look to apply in Picture Profile LUT mode.
+
+```bash
+curl -X PUT .../properties/pp-lut-base-look \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+<Note>
+  Only available when `picture-profile` is set to a Custom slot (`0x41`–`0x44` = Custom 1–4). Shows PPLUT 1–8 as options. May appear read-only in `getAllProperties` — use individual GET for accurate state.
+</Note>
+
+---
+
+### exposure-index
+
+**Read/Write** — Exposure Index (EI) value. Only active in CineEI mode (`movie-shooting-mode` = `0x0301`).
+
+```bash
+curl -X PUT .../properties/exposure-index \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x320"}'
+```
+
+Formatted values show as EI (e.g. "800 EI"). Available values depend on `base-iso` setting.
+
+<Note>
+  Set `movie-shooting-mode` to CineEI (`0x0301`) first. Not available in Normal or Flexible ISO modes.
+</Note>
+
+---
+
+### base-iso
+
+**Read/Write** — Base ISO sensitivity for CineEI mode. Toggles between High and Low base ISO.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| High      | `0x1` | `{"value": "0x1"}` |
+| Low       | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/base-iso \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x1"}'
+```
+
+Changing this affects which `exposure-index` values are available.
+
+---
+
+### image-stabilization
+
+**Read/Write** — SteadyShot for still images.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/image-stabilization \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+---
+
+### movie-stabilization
+
+**Read/Write** — SteadyShot for video. Uses SDK `format_movie_image_stabilization_steady_shot`.
+
+```bash
+curl -X PUT .../properties/movie-stabilization \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+<Note>
+  Values vary by camera. Always GET first to see `available_values`. Common values: Off, Standard, Active.
+</Note>
+
+---
+
+### battery-remain
+
+**Read-only** — Battery charge percentage.
+
+```bash
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/battery-remain
+```
+
+```json
+{
+  "success": true,
+  "data": {
+    "property": "battery-remain",
+    "value": "96",
+    "formatted": "96%",
+    "writable": "false"
+  }
+}
+```
+
+---
+
+### overheating-state
+
+**Read-only** — Camera thermal/overheating state.
+
+| Formatted       | Hex   |
+| --------------- | ----- |
+| Normal          | `0x0` |
+| Pre-Overheating | `0x1` |
+| Overheating     | `0x2` |
+
+```bash
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/overheating-state
+```
+
+---
+
+### media-slot1-status / media-slot2-status
+
+**Read-only** — Media card status for slot 1 or slot 2.
+
+```bash
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/media-slot1-status
+```
+
+---
+
+### media-slot1-remaining-photos / media-slot2-remaining-photos
+
+**Read-only** — Remaining photo count on the media card.
+
+```bash
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/media-slot1-remaining-photos
+```
+
+---
+
+### media-slot1-remaining-time / media-slot2-remaining-time
+
+**Read-only** — Remaining video recording time in seconds.
+
+```bash
+curl http://localhost:8080/api/cameras/D10F60149B0C/properties/media-slot1-remaining-time
+```
+
+<Note>
+  Only returns meaningful data in movie mode.
+</Note>

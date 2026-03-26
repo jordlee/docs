@@ -127,6 +127,7 @@
               "web-api/actions",
               "web-api/live-view",
               "web-api/events",
+              "web-api/lut",
               "web-api/sd-card",
               "web-api/settings",
               "web-api/server"

@@ -76,44 +76,65 @@ Data sourced from Camera Remote SDK V2.01.00 `api_list`.
 
 ### Per-Camera API Support
 
-| Model | Live View | OSD | SD Card (C) | SD Card (T) | Transfer Callback | Settings DL | Settings UL |
-|-------|-----------|-----|-------------|-------------|-------------------|-------------|-------------|
-| ILX-LR1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-1M2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-9M3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-9M2 | ✓ | ✓ | — | — | — | — | — |
-| ILCE-7RM5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-7RM4A | ✓ | ✓ | ✓ | — | — | — | — |
-| ILCE-7RM4 | ✓ | ✓ | — | — | — | — | — |
-| ILCE-7CR | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-7SM3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-7M5 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-7M4 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-7CM2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILCE-7C | ✓ | ✓ | ✓ | — | — | — | — |
-| ILCE-6700 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILME-FX3A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILME-FX3 (Ver.2.00+) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILME-FX2 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ILME-FX30 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ZV-E1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| ZV-E10M2 | ✓ | ✓ | ✓ | — | — | ✓ | ✓ |
-| DSC-RX1RM3 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| DSC-RX0M2 (Ver.3.00+) | ✓ | ✓ | ✓ | — | — | — | — |
-
-### API Details
-
-| Column | Client SDK Method | HTTP Endpoint | CRSDK API | Mode |
-|--------|------------------|---------------|-----------|------|
-| Live View | `enableLiveView()` / `getLiveViewFrame()` | `POST .../live-view/enable`, `GET .../live-view/frame` | GetLiveViewImage | R / T |
-| OSD | `enableOSD()` / `getOSDFrame()` | `POST .../live-view/osd-enable`, `GET .../live-view/osd-frame` | GetSelectLiveViewProperties | R / T |
-| SD Card (C) | `listSDCardFiles()` / `downloadSDCardFile()` | `GET .../sd-card/slot/{n}/files`, `POST .../download` | PullContentsFile | C |
-| SD Card (T) | `downloadSDCardFile()` | `POST .../sd-card/slot/{n}/files/{cid}/{fid}/download` | GetRemoteTransferContentsDataFile | T |
-| Transfer Callback | EventStream `transferProgress` | SSE `transferProgress` event | OnNotifyRemoteTransferResult | T |
-| Settings DL | `downloadCameraSettings()` | `POST .../settings/download` | DownloadSettingFile | R / T |
-| Settings UL | `uploadCameraSettings()` | `POST .../settings/upload` | UploadSettingFile | R / T |
+| API | LR1 | A1II | A1 | A9III | A9II | A7RV | A7RIVa | A7RIV | A7CR | A7SIII | A7V | A7IV | A7CII | A7C | A6700 | FX3A | FX3 | FX2 | FX30 | ZV-E1 | ZV-E10II | RX1RIII | RX0II |
+|-----|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| [Live View](/web-api/live-view) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [OSD](/web-api/live-view#osd) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [SD Card (C)](/web-api/sd-card) | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [SD Card (T)](/web-api/sd-card#download-file-remote-transfer) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — |
+| [Transfer Callback](/web-api/events#transferprogress) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — |
+| [Settings Download](/web-api/settings#download-settings-to-pc) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| [Settings Upload](/web-api/settings#upload-settings-to-camera) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
 
 <Info>
-**SD Card (C)** requires **Contents** mode. **SD Card (T)** and **Transfer Callback** require **Remote Transfer** mode. Cameras that only support **R** (Remote) mode cannot use SD card file operations. See the [Camera Connection Compatibility](#camera-connection-compatibility) table above to check which modes each camera supports.
+**SD Card (C)** requires **Contents** mode. **SD Card (T)** and **Transfer Callback** require **Remote Transfer** mode. See the [Camera Connection Compatibility](#camera-connection-compatibility) table above for which modes each camera supports.
+</Info>
+
+---
+
+## Property Compatibility
+
+Most properties (ISO, aperture, shutter speed, white balance, drive mode, focus, exposure program mode, metering mode, etc.) are supported on all cameras. The table below lists only **properties that vary across models**.
+
+### Legend
+
+| Symbol | Meaning |
+|--------|---------|
+| ✓ | Supported |
+| — | Not supported |
+
+### Per-Camera Property Support
+
+<Note>
+  Camera names abbreviated. Properties not listed are universal (all cameras). Data sourced from SDK V2.01.00.
+</Note>
+
+| Property | LR1 | A1II | A1 | A9III | A9II | A7RV | A7RIVa | A7RIV | A7CR | A7SIII | A7V | A7IV | A7CII | A7C | A6700 | FX3A | FX3 | FX2 | FX30 | ZV-E1 | ZV-E10II | RX1RIII | RX0II |
+|----------|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| [creative-look](/web-api/properties#creative-look) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| [picture-profile](/web-api/properties#picture-profile) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| [silent-mode](/web-api/properties#silent-mode) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — | — |
+| [shutter-type](/web-api/properties#shutter-type) | ✓ | ✓ | ✓ | — | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | — |
+| [shutter-mode](/web-api/properties#shutter-mode) | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
+| [flicker-less-shooting](/web-api/properties#flicker-less-shooting) | — | ✓ | ✓ | ✓ | — | — | — | — | ✓ | — | ✓ | — | ✓ | — | — | — | — | ✓ | — | — | — | — | — |
+| [flash-mode](/web-api/properties#flash-mode) | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | — |
+| [audio-recording](/web-api/properties#audio-recording) | — | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| [timecode-*](/web-api/properties#timecode-preset) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| [image-stabilization](/web-api/properties#image-stabilization) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — |
+| [movie-stabilization](/web-api/properties#movie-stabilization) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| [long-exposure-nr](/web-api/properties#long-exposure-nr) | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ | — |
+| [aps-c-s35](/web-api/properties#aps-c-s35) | ✓ | ✓ | — | ✓ | — | ✓ | — | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ | ✓ | ✓ | — | ✓ | — | — | — |
+| [movie-shooting-mode](/web-api/properties#movie-shooting-mode) | ✓ | ✓ | — | ✓ | — | — | — | — | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — |
+| [color-gamut](/web-api/properties#movie-shooting-mode-color-gamut) | ✓ | ✓ | — | ✓ | — | — | — | — | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — |
+| [base-look-import](/web-api/properties#base-look-import-enable) | ✓ | ✓ | — | ✓ | — | — | — | — | ✓ | — | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — |
+| [embed-lut](/web-api/properties#embed-lut-file) | ✓ | ✓ | — | ✓ | — | — | — | — | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| [lut-import](/web-api/lut) | ✓ | ✓ | — | ✓ | — | — | — | — | ✓ | ✓ | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — |
+| [pp-lut-base-look](/web-api/properties#pp-lut-base-look) | ✓ | ✓ | — | ✓ | — | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — |
+| [shutter-angle](/web-api/properties#shutter-angle) | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
+| [exposure-index](/web-api/properties#exposure-index) | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
+| [base-iso](/web-api/properties#base-iso) | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
+| [battery-remain](/web-api/properties#battery-remain) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+
+<Info>
+  Universal properties (all cameras): `recording-state`, `overheating-state`, `zoom-setting`, `media-slot1/2-status`, `media-slot1/2-remaining-photos`, `media-slot1/2-remaining-time`, and all core exposure/focus/white-balance properties.
 </Info>

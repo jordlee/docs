@@ -1,6 +1,6 @@
 ---
 title: "Actions"
-description: "Shooting commands, zoom, and focus control"
+description: "Shooting commands, video recording, zoom, and focus control"
 ---
 
 ## Shutter
@@ -138,3 +138,34 @@ await client.focusNearFar('D10F60149B0C', { step: 7 });  // far, fast
 <Tip>
 For absolute focus positioning, use `PUT /api/cameras/{id}/properties/focus-position` with a value from 0 (infinity) to 65535 (closest).
 </Tip>
+
+---
+
+## Movie Recording
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/movie-rec`</ParamField>
+
+Start or stop video recording. This is a toggle action — call once to start recording, call again to stop. Uses the SDK's hold-style command (Down to start, Up to stop).
+
+Monitor recording state via the [`recording-state`](/web-api/properties#recording-state) property or [`propertyChanged`](/web-api/events#propertychanged) SSE events.
+
+<CodeGroup>
+```bash curl
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/movie-rec
+```
+
+```typescript TypeScript
+await cam('D10F60149B0C').toggleMovieRecording();
+```
+
+```json Response
+{
+  "success": true,
+  "message": "Movie recording toggled"
+}
+```
+</CodeGroup>
+
+<Note>
+  Ensure the camera is in a video-capable exposure mode (e.g. Movie mode `0x8050`–`0x8055`) before triggering. Check `recording-state` to confirm the current state.
+</Note>

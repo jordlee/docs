@@ -1,0 +1,202 @@
+---
+title: "LUT Import"
+description: "Upload .cube LUT files to the camera for CineEI and Picture Profile workflows"
+---
+
+## Import LUT File
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/lut/import`</ParamField>
+
+Upload a `.cube` LUT file to the camera. The file is imported asynchronously — the endpoint returns `202 Accepted` immediately and the result is delivered via the [`lutImportResult`](/web-api/events#lutimportresult) SSE event.
+
+<ParamField body="filePath" type="string" required>
+  Absolute path to a `.cube` LUT file on the server's filesystem.
+</ParamField>
+
+<ParamField body="slot" type="integer" required>
+  LUT slot number on the camera (1-16).
+</ParamField>
+
+<CodeGroup>
+```bash curl
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/lut/import \
+  -H "Content-Type: application/json" \
+  -d '{"filePath": "/path/to/MyLUT.cube", "slot": 1}'
+```
+
+```typescript TypeScript
+await cam('D10F60149B0C').importLUT({
+  filePath: '/path/to/MyLUT.cube',
+  slot: 1
+});
+```
+
+```json Response (202 Accepted)
+{
+  "success": true,
+  "message": "LUT import started"
+}
+```
+</CodeGroup>
+
+### SSE Result
+
+The import result is delivered asynchronously via the `lutImportResult` SSE event:
+
+```json Success
+{
+  "slot": 1,
+  "status": "success"
+}
+```
+
+```json Error
+{
+  "slot": 1,
+  "status": "error",
+  "error": "invalid_file"
+}
+```
+
+**Error codes:**
+
+| Code | Description |
+| ---- | ----------- |
+| `general_failure` | Unspecified import failure |
+| `invalid_filename` | File name not accepted by camera |
+| `device_busy` | Camera is busy (recording, etc.) |
+| `storage_full` | Camera storage is full |
+| `invalid_parameter` | Invalid slot number or parameter |
+| `invalid_file` | File is not a valid `.cube` LUT |
+| `invalid` | Generic validation failure |
+
+<Warning>
+  On macOS with SDK V2.01.00, the `OnWarning` callback for LUT import results may not fire. The import itself succeeds — verify by checking the camera's LUT slot directly.
+</Warning>
+
+---
+
+## CineEI Workflow
+
+A typical CineEI setup using properties and LUT import:
+
+<Steps>
+  <Step title="Switch to movie mode">
+    Set `exposure-program-mode` to a movie mode (e.g. `0x8055` for Movie Manual).
+  </Step>
+  <Step title="Enable CineEI">
+    Set `movie-shooting-mode` to `0x0301` (CineEI).
+  </Step>
+  <Step title="Set color gamut">
+    Set `movie-shooting-mode-color-gamut` to `0x1` (S-Gamut3.Cine).
+  </Step>
+  <Step title="Import LUT">
+    `POST /api/cameras/{id}/lut/import` with your `.cube` file and slot number.
+  </Step>
+  <Step title="Enable LUT embedding">
+    Set `embed-lut-file` to `0x2` (On).
+  </Step>
+  <Step title="Start recording">
+    `POST /api/cameras/{id}/actions/movie-rec`
+  </Step>
+</Steps>
+
+<CodeGroup>
+```bash curl (Full workflow)
+# 1. Set CineEI mode
+curl -X PUT .../properties/movie-shooting-mode \
+  -d '{"value": "0x0301"}'
+
+# 2. Set color gamut
+curl -X PUT .../properties/movie-shooting-mode-color-gamut \
+  -d '{"value": "0x1"}'
+
+# 3. Import LUT
+curl -X POST .../lut/import \
+  -d '{"filePath": "/path/to/MyLUT.cube", "slot": 1}'
+
+# 4. Enable LUT embedding
+curl -X PUT .../properties/embed-lut-file \
+  -d '{"value": "0x2"}'
+
+# 5. Start recording
+curl -X POST .../actions/movie-rec
+```
+
+```typescript TypeScript
+const cam = manager.camera('D10F60149B0C');
+
+// 1. Set CineEI mode
+await cam.setProperty('movie-shooting-mode', { value: '0x0301' });
+
+// 2. Set color gamut
+await cam.setProperty('movie-shooting-mode-color-gamut', { value: '0x1' });
+
+// 3. Import LUT
+await cam.importLUT({ filePath: '/path/to/MyLUT.cube', slot: 1 });
+
+// 4. Enable LUT embedding
+await cam.setProperty('embed-lut-file', { value: '0x2' });
+
+// 5. Start recording
+await cam.toggleMovieRecording();
+```
+</CodeGroup>
+
+### CineEI Properties
+
+Once in CineEI mode, two additional properties become available:
+
+- [`base-iso`](/web-api/properties#base-iso) — Toggle between High and Low base ISO sensitivity. Changing this affects which Exposure Index values are available.
+- [`exposure-index`](/web-api/properties#exposure-index) — Set the Exposure Index (EI) value (e.g. "800 EI"). Only writable in CineEI mode.
+
+---
+
+## PPLUT Workflow
+
+Apply an imported LUT as the base look for a Picture Profile.
+
+<Steps>
+  <Step title="Import the LUT">
+    `POST /api/cameras/{id}/lut/import` with your `.cube` file and a slot (1–16).
+  </Step>
+  <Step title="Set Picture Profile to a Custom slot">
+    Set [`picture-profile`](/web-api/properties#picture-profile) to Custom 1–4 (`0x41`–`0x44`).
+  </Step>
+  <Step title="Select the LUT as base look">
+    Set [`pp-lut-base-look`](/web-api/properties#pp-lut-base-look) to the PPLUT slot (1–8) that maps to your imported LUT.
+  </Step>
+</Steps>
+
+<CodeGroup>
+```bash curl
+# 1. Import LUT to slot 1
+curl -X POST .../lut/import \
+  -d '{"filePath": "/path/to/MyLUT.cube", "slot": 1}'
+
+# 2. Set Picture Profile to Custom 1
+curl -X PUT .../properties/picture-profile \
+  -d '{"value": "0x41"}'
+
+# 3. Select PPLUT 1 as base look
+curl -X PUT .../properties/pp-lut-base-look \
+  -d '{"value": "0x1"}'
+```
+
+```typescript TypeScript
+const cam = manager.camera('D10F60149B0C');
+
+// 1. Import LUT
+await cam.importLUT({ filePath: '/path/to/MyLUT.cube', slot: 1 });
+
+// 2. Set Picture Profile to Custom 1
+await cam.setProperty('picture-profile', { value: '0x41' });
+
+// 3. Select PPLUT 1 as base look
+await cam.setProperty('pp-lut-base-look', { value: '0x1' });
+```
+</CodeGroup>
+
+<Note>
+  `pp-lut-base-look` is only writable when `picture-profile` is set to a Custom slot. It may appear read-only in `getAllProperties` — use an individual GET for accurate state.
+</Note>

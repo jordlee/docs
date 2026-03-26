@@ -83,6 +83,7 @@ Real-time notifications from camera activity — settings changes, shutter event
 | `afStatus` | `OnWarningExt` | Autofocus state change |
 | `downloadComplete` | `OnCompleteDownload` | Auto-transferred image saved |
 | `transferProgress` | `OnNotifyRemoteTransferResult` | File pull completed |
+| `lutImportResult` | `OnWarning` | LUT import completed or failed |
 
 ### propertyChanged
 ```json
@@ -112,6 +113,16 @@ Only fires in `remote` connection mode with `still-image-store-destination` set 
 {"percent": 100, "notify": "0x20093", "filename": "/path/to/DSC09598.JPG"}
 ```
 Only fires in `remote-transfer` mode after explicit file pull.
+
+### lutImportResult
+```json
+{"slot": 1, "status": "success"}
+```
+
+```json
+{"slot": 1, "status": "error", "error": "invalid_file"}
+```
+Fires after a [LUT import](/web-api/lut) operation completes. Error codes: `general_failure`, `invalid_filename`, `device_busy`, `storage_full`, `invalid_parameter`, `invalid_file`, `invalid`.
 
 ---
 
