@@ -1,12 +1,13 @@
-/* Sticky first column on wide tables */
+/* All tables: allow horizontal scroll */
 table {
   display: block;
   overflow-x: auto;
   white-space: nowrap;
 }
 
-table th:first-child,
-table td:first-child {
+/* Sticky first column — only on wide scrollable tables (5+ columns) */
+table:has(th:nth-child(5)) th:first-child,
+table:has(th:nth-child(5)) td:first-child {
   position: sticky;
   left: 0;
   z-index: 1;
@@ -14,14 +15,13 @@ table td:first-child {
   box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.15);
 }
 
-table th:first-child {
+table:has(th:nth-child(5)) th:first-child {
   z-index: 2;
-  background: #ffffff;
 }
 
-/* Dark mode: solid opaque background so scrolling columns don't show through */
-.dark table th:first-child,
-.dark table td:first-child {
+/* Dark mode */
+.dark table:has(th:nth-child(5)) th:first-child,
+.dark table:has(th:nth-child(5)) td:first-child {
   background: #100F0F;
   box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.4);
 }
