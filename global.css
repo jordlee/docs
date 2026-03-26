@@ -22,7 +22,7 @@ table th:first-child {
 /* Dark mode: solid opaque background so scrolling columns don't show through */
 .dark table th:first-child,
 .dark table td:first-child {
-  background: #000000;
+  background: #100F0F;
   box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.4);
 }
 
