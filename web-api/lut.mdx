@@ -1,6 +1,79 @@
 ---
-title: "LUT Import"
-description: "Upload .cube LUT files to the camera for CineEI and Picture Profile workflows"
+title: "LUTs"
+description: "Import .cube LUT files and apply them via CineEI monitoring or Picture Profile recording"
+---
+
+## LUTs in CineEI vs Picture Profiles
+
+LUTs serve different purposes depending on your shooting mode.
+
+<Tabs>
+  <Tab title="CineEI / Log Shooting (Select LUT)">
+    In [CineEI, CineEI Quick, or Flexible ISO](/web-api/cineei) mode, the camera always **records S-Log3** — the raw log data is never altered. The selected LUT (`base-look-value`) controls what you see on the **viewfinder and monitoring output** to help you expose and frame, but the recorded file remains flat S-Log3.
+
+    `Embed LUT File` writes the LUT as **metadata only** into the recorded file — post-production tools can read it, but the actual video data is still S-Log3.
+
+    **Properties used:**
+    | Property | Purpose |
+    | -------- | ------- |
+    | `base-look-value` | Select active monitoring LUT — shows real names like "s709", "User5:February.cube" |
+    | `embed-lut-file` | Embed LUT metadata in file for post reference (On/Off) — does **not** bake the LUT |
+
+    **LUT slots:** 3 preset base looks (S-Log3, s709, 709(800%)) + up to 16 user slots for imported `.cube` LUTs.
+
+    ```bash
+    # See all available LUTs with real names
+    curl .../properties/base-look-value
+    ```
+
+    ```json
+    {
+      "available_values": [
+        { "value": "0x1", "formatted": "S-Log3" },
+        { "value": "0x2", "formatted": "s709" },
+        { "value": "0x3", "formatted": "709(800%)" },
+        { "value": "0x101", "formatted": "User1:Portra+.cube" },
+        { "value": "0x102", "formatted": "User2:Venice.cube" }
+      ]
+    }
+    ```
+  </Tab>
+
+  <Tab title="Picture Profile with PPLUT (Non-Log)">
+    Without CineEI/Log Shooting, LUTs are used through **PPLUT slots** in Picture Profiles. The standard PP1-PP11 presets **do not use LUTs** — they are gamma/color/detail presets (including S-Log2/S-Log3 gamma curves, but applied as the recording pipeline, not as a separate LUT).
+
+    To apply an actual `.cube` LUT in non-log mode, you use **PPLUT1-PPLUT4** (Custom slots `0x41`-`0x44`). The Sony help guide states: PPLUT slots **"shoot and record movies with the user LUT applied"** — the LUT is **baked into the recorded file**.
+
+    **Properties used:**
+    | Property | Purpose |
+    | -------- | ------- |
+    | `picture-profile` | Select PP1-PP11 (no LUT) or Custom 1-4 (PPLUT, LUT baked in) |
+    | `pp-lut-base-look` | Select which PPLUT slot (1-8) to use as base look |
+
+    **Key difference:**
+    | | CineEI (Select LUT) | PPLUT (Picture Profile) |
+    | --- | --- | --- |
+    | **Recording** | Always S-Log3 (flat) | LUT baked into recording |
+    | **LUT purpose** | Monitoring/viewfinder only | Applied to recorded video |
+    | **Post flexibility** | Full — grade from S-Log3 | Limited — LUT already applied |
+    | **Embed LUT File** | Writes metadata only | N/A — LUT is the pipeline |
+
+    ```bash
+    # Set Custom 1 profile (PPLUT)
+    curl -X PUT .../properties/picture-profile \
+      -d '{"value": "0x41"}'
+
+    # Apply PPLUT slot 1 as base look — this LUT IS the recording
+    curl -X PUT .../properties/pp-lut-base-look \
+      -d '{"value": "0x1"}'
+    ```
+
+    <Note>
+      `pp-lut-base-look` is only writable when `picture-profile` is set to a Custom slot (`0x41`-`0x44`). It may appear read-only in `getAllProperties` — use an individual GET for accurate state.
+    </Note>
+  </Tab>
+</Tabs>
+
 ---
 
 ## Import LUT File
@@ -76,95 +149,69 @@ The import result is delivered asynchronously via the `lutImportResult` SSE even
 
 ---
 
-## CineEI Workflow
+## CineEI LUT Workflow
 
-A typical CineEI setup using properties and LUT import:
+Import a LUT and apply it as the monitoring base look for [CineEI](/web-api/cineei) recording.
 
 <Steps>
-  <Step title="Switch to movie mode">
-    Set `exposure-program-mode` to a movie mode (e.g. `0x8055` for Movie Manual).
-  </Step>
   <Step title="Enable CineEI">
-    Set `movie-shooting-mode` to `0x0301` (CineEI).
-  </Step>
-  <Step title="Set color gamut">
-    Set `movie-shooting-mode-color-gamut` to `0x1` (S-Gamut3.Cine).
+    Set `movie-shooting-mode` to `0x0301` (CineEI). See [CineEI setup](/web-api/cineei#full-cineei-workflow) for full details.
   </Step>
   <Step title="Import LUT">
-    `POST /api/cameras/{id}/lut/import` with your `.cube` file and slot number.
+    `POST /api/cameras/{id}/lut/import` with your `.cube` file and slot number (1-16).
   </Step>
-  <Step title="Enable LUT embedding">
-    Set `embed-lut-file` to `0x2` (On).
+  <Step title="Select the active base look">
+    Set [`base-look-value`](/web-api/properties#base-look-value) to the imported LUT slot. GET the property first to see available values with real LUT names (e.g. "User1:MyLUT.cube").
   </Step>
-  <Step title="Start recording">
-    `POST /api/cameras/{id}/actions/movie-rec`
+  <Step title="Enable LUT embedding (optional)">
+    Set `embed-lut-file` to `0x2` (On) to write LUT metadata into the recorded file for post reference.
   </Step>
 </Steps>
 
 <CodeGroup>
-```bash curl (Full workflow)
-# 1. Set CineEI mode
-curl -X PUT .../properties/movie-shooting-mode \
-  -d '{"value": "0x0301"}'
-
-# 2. Set color gamut
-curl -X PUT .../properties/movie-shooting-mode-color-gamut \
-  -d '{"value": "0x1"}'
-
-# 3. Import LUT
+```bash curl
+# 1. Import LUT
 curl -X POST .../lut/import \
   -d '{"filePath": "/path/to/MyLUT.cube", "slot": 1}'
 
-# 4. Enable LUT embedding
+# 2. Select the imported LUT (User slot 1 = 0x101)
+curl -X PUT .../properties/base-look-value \
+  -d '{"value": "0x101"}'
+
+# 3. Enable LUT embedding
 curl -X PUT .../properties/embed-lut-file \
   -d '{"value": "0x2"}'
-
-# 5. Start recording
-curl -X POST .../actions/movie-rec
 ```
 
 ```typescript TypeScript
 const cam = manager.camera('D10F60149B0C');
 
-// 1. Set CineEI mode
-await cam.setProperty('movie-shooting-mode', { value: '0x0301' });
-
-// 2. Set color gamut
-await cam.setProperty('movie-shooting-mode-color-gamut', { value: '0x1' });
-
-// 3. Import LUT
+// 1. Import LUT
 await cam.importLUT({ filePath: '/path/to/MyLUT.cube', slot: 1 });
 
-// 4. Enable LUT embedding
-await cam.setProperty('embed-lut-file', { value: '0x2' });
+// 2. Select the imported LUT (User slot 1 = 0x101)
+await cam.setProperty('base-look-value', { value: '0x101' });
 
-// 5. Start recording
-await cam.toggleMovieRecording();
+// 3. Enable LUT embedding
+await cam.setProperty('embed-lut-file', { value: '0x2' });
 ```
 </CodeGroup>
-
-### CineEI Properties
-
-Once in CineEI mode, two additional properties become available:
-
-- [`base-iso`](/web-api/properties#base-iso) — Toggle between High and Low base ISO sensitivity. Changing this affects which Exposure Index values are available.
-- [`exposure-index`](/web-api/properties#exposure-index) — Set the Exposure Index (EI) value (e.g. "800 EI"). Only writable in CineEI mode.
 
 ---
 
 ## PPLUT Workflow
 
-Apply an imported LUT as the base look for a Picture Profile.
+Apply an imported LUT as the base look for a Picture Profile. This is for **non-log shooting** — the LUT is baked into the recorded image.
 
 <Steps>
   <Step title="Import the LUT">
-    `POST /api/cameras/{id}/lut/import` with your `.cube` file and a slot (1–16).
+    `POST /api/cameras/{id}/lut/import` with your `.cube` file and a slot (1-16).
   </Step>
   <Step title="Set Picture Profile to a Custom slot">
-    Set [`picture-profile`](/web-api/properties#picture-profile) to Custom 1–4 (`0x41`–`0x44`).
+    Set [`picture-profile`](/web-api/properties#picture-profile) to Custom 1-4 (`0x41`-`0x44`).
   </Step>
   <Step title="Select the LUT as base look">
-    Set [`pp-lut-base-look`](/web-api/properties#pp-lut-base-look) to the PPLUT slot (1–8) that maps to your imported LUT.
+    Set [`pp-lut-base-look`](/web-api/properties#pp-lut-base-look) to the PPLUT slot (1-8) that maps to your imported LUT.
   </Step>
 </Steps>
 

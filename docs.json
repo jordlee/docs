@@ -128,6 +128,7 @@
               "web-api/live-view",
               "web-api/events",
               "web-api/lut",
+              "web-api/cineei",
               "web-api/sd-card",
               "web-api/settings",
               "web-api/server"

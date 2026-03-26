@@ -1,0 +1,236 @@
+---
+title: "CineEI"
+description: "CineEI shooting modes, Exposure Index, Base ISO, and log shooting workflows"
+---
+
+## Overview
+
+CineEI is Sony's cinema-style log shooting system. The camera records **S-Log3** footage at a fixed Base ISO, and you control the monitoring brightness via **Exposure Index (EI)** — a virtual ISO that shifts the LUT preview without changing the recorded signal. This gives maximum dynamic range and full post-production flexibility.
+
+<Note>
+  CineEI modes are available on cinema-line and select Alpha cameras — including **FX3**, **FX3A**, **FX30**, **FX2**, **A7S III**, **A7C II**, **A7CR**, **A9 III**, **A1 II**, **A7 V**, **A6700**, **FR7**, and others. Not all cameras support every mode — the camera reports which modes it offers via `available_values` in the `movie-shooting-mode` property. Cameras without CineEI (e.g. A7R V, A7 IV, ZV-E1) only return `Off` (`0x1`).
+</Note>
+
+---
+
+## Shooting Modes
+
+| Mode | Hex | ISO Control | Use Case |
+| ---- | --- | ----------- | -------- |
+| **Off** | `0x1` | Normal ISO | Standard video, no log |
+| **CineEI** | `0x0301` | Exposure Index (EI) | Full cinema workflow, locked base ISO |
+| **CineEI Quick** | `0x0302` | Exposure Index (EI) | Simplified CineEI, auto base ISO |
+| **Flexible ISO** | `0x0501` | Normal ISO range | Log recording with variable ISO |
+
+<AccordionGroup>
+  <Accordion title="CineEI" icon="film">
+    Records S-Log3 footage at a **fixed Base ISO**. You choose High or Low base sensitivity, then adjust the **Exposure Index** to preview how the final graded image will look. The EI value only affects the monitoring LUT — the recorded S-Log3 data is identical regardless of EI setting.
+
+    **Key properties:**
+    - `base-iso` — High or Low base sensitivity (determines noise floor and latitude balance)
+    - `exposure-index` — EI value reflected on the monitor (e.g. 800 EI). Range is +/-2EV from Base ISO.
+    - `base-look-value` — Active monitoring LUT
+    - `movie-shooting-mode-color-gamut` — S-Gamut3.Cine or S-Gamut3
+  </Accordion>
+
+  <Accordion title="CineEI Quick" icon="bolt">
+    Same S-Log3 recording as CineEI, but the camera **auto-selects Base ISO** based on your EI setting. Fewer manual controls, faster to set up. Good for run-and-gun log shooting where you want CineEI latitude without managing Base ISO yourself.
+
+    **Key properties:**
+    - `exposure-index` — Available, auto-adjusts base sensitivity
+    - `base-look-value` — Active monitoring LUT
+    - `movie-shooting-mode-color-gamut` — Color gamut selection
+
+    <Warning>
+      In CineEI Quick, be careful when changing EI — it may affect the base sensitivity, unlike full CineEI where Base ISO is locked.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Flexible ISO" icon="sliders">
+    Records in S-Log3 but lets you change **ISO freely** like normal shooting — no fixed base ISO or EI offset. You get log footage with full ISO range, but without the controlled latitude management of CineEI.
+
+    **Key properties:**
+    - Standard `iso` property — full ISO range available
+    - `base-look-value` — Active monitoring LUT
+    - `movie-shooting-mode-color-gamut` — Color gamut selection
+
+    <Note>
+      `base-iso` and `exposure-index` are **not available** in Flexible ISO mode. Use the normal `iso` property instead.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+### Switching modes
+
+```bash
+# Enable CineEI
+curl -X PUT .../properties/movie-shooting-mode \
+  -d '{"value": "0x0301"}'
+
+# Enable CineEI Quick
+curl -X PUT .../properties/movie-shooting-mode \
+  -d '{"value": "0x0302"}'
+
+# Enable Flexible ISO
+curl -X PUT .../properties/movie-shooting-mode \
+  -d '{"value": "0x0501"}'
+
+# Disable (back to normal)
+curl -X PUT .../properties/movie-shooting-mode \
+  -d '{"value": "0x1"}'
+```
+
+<Note>
+  The camera must be in a movie exposure mode (e.g. Movie Manual `0x8055`) before switching `movie-shooting-mode`. Set `exposure-program-mode` first.
+</Note>
+
+---
+
+## Exposure Index vs ISO
+
+In normal shooting, **ISO** directly controls the sensor's gain — higher ISO = brighter image but more noise. In CineEI mode, the camera locks the sensor to a fixed **Base ISO** and introduces **Exposure Index (EI)** as a separate concept.
+
+| | Normal ISO | Exposure Index (EI) |
+| --- | --- | --- |
+| **What it controls** | Sensor gain — changes recorded brightness | Monitoring LUT brightness only |
+| **Affects recording** | Yes — higher ISO = brighter + noisier | No — S-Log3 data is unchanged |
+| **Range** | Camera's full ISO range | +/-2EV from Base ISO |
+| **Noise impact** | Direct — higher ISO = more noise | None — noise is fixed at Base ISO |
+| **Purpose** | Expose the image | Preview post-production exposure adjustments |
+
+### How EI works in practice
+
+When you set EI to a value **lower** than Base ISO (e.g. 400 EI on Base ISO 800), the LUT preview gets darker — simulating underexposure. The actual S-Log3 recording hasn't changed, but you can see that you have extra headroom in the highlights. Conversely, setting EI **higher** than Base ISO brightens the preview, showing you're pushing into the shadows.
+
+This lets you make exposure decisions during shooting that you'd otherwise make in post. The recorded file always has the same S-Log3 data at the Base ISO.
+
+### API workflow
+
+```bash
+# 1. Set Base ISO (Low or High)
+curl -X PUT .../properties/base-iso \
+  -d '{"value": "0x2"}'  # Low
+
+# 2. Set Exposure Index
+curl -X PUT .../properties/exposure-index \
+  -d '{"value": "0x320"}'  # 800 EI
+
+# 3. Read current EI and available values
+curl .../properties/exposure-index
+```
+
+```json Response
+{
+  "data": {
+    "value": "0x320",
+    "formatted": "800 EI",
+    "writable": "true",
+    "available_values": [
+      { "value": "0xc8", "formatted": "200 EI" },
+      { "value": "0xfa", "formatted": "250 EI" },
+      { "value": "0x140", "formatted": "320 EI" },
+      { "value": "0x190", "formatted": "400 EI" },
+      { "value": "0x320", "formatted": "800 EI" },
+      { "value": "0x640", "formatted": "1600 EI" },
+      { "value": "0xc80", "formatted": "3200 EI" }
+    ]
+  }
+}
+```
+
+<Note>
+  The available EI values change when you switch `base-iso` between High and Low. Always re-read `exposure-index` after changing `base-iso` to get the updated range.
+</Note>
+
+---
+
+## Full CineEI Workflow
+
+<Steps>
+  <Step title="Switch to movie mode">
+    Set `exposure-program-mode` to a movie mode (e.g. `0x8055` for Movie Manual).
+  </Step>
+  <Step title="Enable CineEI">
+    Set `movie-shooting-mode` to `0x0301` (CineEI).
+  </Step>
+  <Step title="Set color gamut">
+    Set `movie-shooting-mode-color-gamut` to `0x1` (S-Gamut3.Cine).
+  </Step>
+  <Step title="Choose Base ISO">
+    Set `base-iso` to High (`0x1`) or Low (`0x2`) based on your lighting environment.
+  </Step>
+  <Step title="Set Exposure Index">
+    Set `exposure-index` to your desired EI value to preview the graded look on the monitor.
+  </Step>
+  <Step title="Select monitoring LUT">
+    Set [`base-look-value`](/web-api/properties#base-look-value) to your preferred LUT. Import a `.cube` file first via [`POST /lut/import`](/web-api/lut#import-lut-file) if needed.
+  </Step>
+  <Step title="Enable LUT embedding (optional)">
+    Set `embed-lut-file` to `0x2` (On) to write LUT metadata into the recorded file for post reference.
+  </Step>
+  <Step title="Start recording">
+    `POST /api/cameras/{id}/actions/movie-rec`
+  </Step>
+</Steps>
+
+<CodeGroup>
+```bash curl
+# 1. Set CineEI mode
+curl -X PUT .../properties/movie-shooting-mode \
+  -d '{"value": "0x0301"}'
+
+# 2. Set color gamut
+curl -X PUT .../properties/movie-shooting-mode-color-gamut \
+  -d '{"value": "0x1"}'
+
+# 3. Set Base ISO
+curl -X PUT .../properties/base-iso \
+  -d '{"value": "0x2"}'
+
+# 4. Set Exposure Index
+curl -X PUT .../properties/exposure-index \
+  -d '{"value": "0x320"}'
+
+# 5. Select monitoring LUT
+curl -X PUT .../properties/base-look-value \
+  -d '{"value": "0x2"}'  # s709
+
+# 6. Start recording
+curl -X POST .../actions/movie-rec
+```
+
+```typescript TypeScript
+const cam = manager.camera('D10F60149B0C');
+
+// 1. Set CineEI mode
+await cam.setProperty('movie-shooting-mode', { value: '0x0301' });
+
+// 2. Set color gamut
+await cam.setProperty('movie-shooting-mode-color-gamut', { value: '0x1' });
+
+// 3. Set Base ISO
+await cam.setProperty('base-iso', { value: '0x2' });
+
+// 4. Set Exposure Index
+await cam.setProperty('exposure-index', { value: '0x320' });
+
+// 5. Select monitoring LUT (s709)
+await cam.setProperty('base-look-value', { value: '0x2' });
+
+// 6. Start recording
+await cam.toggleMovieRecording();
+```
+</CodeGroup>
+
+---
+
+## Properties Reference
+
+| Property | Type | Modes | Description |
+| -------- | ---- | ----- | ----------- |
+| [`movie-shooting-mode`](/web-api/properties#movie-shooting-mode) | R/W | All | Off / CineEI / CineEI Quick / Flexible ISO |
+| [`movie-shooting-mode-color-gamut`](/web-api/properties#movie-shooting-mode-color-gamut) | R/W | All CineEI | S-Gamut3.Cine or S-Gamut3 |
+| [`base-iso`](/web-api/properties#base-iso) | R/W | CineEI | High or Low base sensitivity |
+| [`exposure-index`](/web-api/properties#exposure-index) | R/W | CineEI, CineEI Quick | EI value for monitoring preview |
+| [`base-look-value`](/web-api/properties#base-look-value) | R/W | All CineEI | Active monitoring LUT with real names |
+| [`embed-lut-file`](/web-api/properties#embed-lut-file) | R/W | All CineEI | Embed LUT metadata in recording |
