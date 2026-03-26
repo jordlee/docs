@@ -350,6 +350,18 @@ All 56 properties organized by category. Every property supports **hex values** 
 | `pp-lut-base-look`               | R/W       | User base look selection for Picture Profile LUT |
 | `exposure-index`                 | R/W       | Exposure Index in CineEI mode (e.g. 800 EI) |
 | `base-iso`                       | R/W       | Base ISO sensitivity (High / Low)        |
+| `base-look-value`                | R/W       | Active base look / LUT with real names (e.g. "s709", "User5:February.cube") |
+| `shutter-angle`                  | R/W       | Shutter angle in 1/1000° units           |
+
+### License & Image ID
+
+| Property                          | R/W       | Description                                |
+| --------------------------------- | --------- | ------------------------------------------ |
+| `shooting-enable`                 | R/W       | Enable/disable shutter operation (license-gated) |
+| `image-id-string`                 | R/W       | MakerNote string ID (Exif tag 0x2043, UTF-16) |
+| `image-id-string-max-length`      | Read-only | Maximum string length the camera accepts   |
+| `image-id-num`                    | R/W       | MakerNote numeric ID (UInt64 range)        |
+| `image-id-num-setting`            | R/W       | Enable/disable numeric ID writing (Off / On) |
 
 ### Battery & Media
 
@@ -1466,3 +1478,167 @@ curl http://localhost:8080/api/cameras/D10F60149B0C/properties/media-slot1-remai
 <Note>
   Only returns meaningful data in movie mode.
 </Note>
+
+---
+
+### base-look-value
+
+**Read/Write** — Active base look (LUT) for CineEI mode. The server queries the camera's display string list to return actual LUT names instead of raw codes.
+
+```json Response
+{
+  "data": {
+    "property": "base-look-value",
+    "value": "0x105",
+    "formatted": "User5:February.cube",
+    "writable": "true",
+    "available_values": [
+      { "value": "0x1", "formatted": "S-Log3" },
+      { "value": "0x2", "formatted": "s709" },
+      { "value": "0x3", "formatted": "709(800%)" },
+      { "value": "0x101", "formatted": "User1:Portra+.cube" },
+      { "value": "0x105", "formatted": "User5:February.cube" }
+    ]
+  }
+}
+```
+
+```bash
+curl -X PUT .../properties/base-look-value \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+Values are packed uint16: high byte = type (0x00=Preset, 0x01=User, 0x02=Scene), low byte = slot index. If the SDK display string list is unavailable, falls back to "Preset 1", "User 5", etc.
+
+<Note>
+  Requires CineEI mode (`movie-shooting-mode` = `0x0301`). The first request may take ~3 seconds as the server fetches display strings from the camera.
+</Note>
+
+---
+
+### shooting-enable
+
+**Read/Write** — Enable or disable the shutter operation via SDK license. This is a **license-gated** feature — the property only appears on cameras with an active shooting license.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Enabled   | `0x1` | `{"value": "0x1"}` |
+| Disabled  | `0x2` | `{"value": "0x2"}` |
+
+```bash
+curl -X PUT .../properties/shooting-enable \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+```
+
+<Warning>
+  Setting to Disabled (`0x2`) blocks all shutter operations via the SDK. The camera body shutter still works.
+</Warning>
+
+---
+
+### image-id-string
+
+**Read/Write** — Sets a string identifier that is written to the Exif MakerNote (tag 0x2043) of the next captured image. Used for asset tracking, production workflows, and GPS-image linking.
+
+```bash
+# Set the ID before shooting
+curl -X PUT .../properties/image-id-string \
+  -H "Content-Type: application/json" \
+  -d '{"value": "PROJECT-ALPHA-001"}'
+
+# Read current value
+curl .../properties/image-id-string
+```
+
+```json Response
+{
+  "data": {
+    "property": "image-id-string",
+    "value": "http://en.m.wikipedia.org",
+    "formatted": "http://en.m.wikipedia.org",
+    "writable": "true"
+  }
+}
+```
+
+- Stored as UTF-16BE in the SDK, decoded to UTF-8 in the API response
+- Maximum length from `image-id-string-max-length` (default 64, up to 128 chars)
+- Setting an empty string `""` clears the Exif tag from subsequent images
+- With a license enabled, supports alphanumeric + symbols: `. - _ ' @ ! ? # $ % & * + / = ^ { | } ~ ( ) : ; < > [ \ ] space`
+
+<Note>
+  The string is embedded in the **next** image after setting. If you shoot immediately after setting, it may not be recorded — wait for the property change confirmation via SSE `propertyChanged` event.
+</Note>
+
+---
+
+### image-id-string-max-length
+
+**Read-only** — Maximum number of characters the camera accepts for `image-id-string`.
+
+```bash
+curl .../properties/image-id-string-max-length
+```
+
+```json Response
+{
+  "data": {
+    "value": "0x80",
+    "formatted": "128 chars",
+    "writable": "false"
+  }
+}
+```
+
+Returns 128 on supported cameras (ILCE-1M2, ILCE-1, ILCE-9M3, ILCE-7RM5, ILCE-7SM3, ILCE-7M4, ILCE-6700). If the property is not supported, assume a default maximum of 64 characters.
+
+---
+
+### image-id-num
+
+**Read/Write** — Sets a numeric identifier written to the Exif MakerNote. Requires `image-id-num-setting` = On first.
+
+```bash
+# Enable numeric ID writing
+curl -X PUT .../properties/image-id-num-setting \
+  -H "Content-Type: application/json" \
+  -d '{"value": "0x2"}'
+
+# Set the numeric ID
+curl -X PUT .../properties/image-id-num \
+  -H "Content-Type: application/json" \
+  -d '{"value": "12345"}'
+```
+
+```json Response
+{
+  "data": {
+    "property": "image-id-num",
+    "value": "12345",
+    "formatted": "12345",
+    "writable": "true",
+    "min": "0",
+    "max": "18446744073709551615",
+    "step": "1"
+  }
+}
+```
+
+The value is a UInt64 range (0 to 2^64-1). Accepts decimal strings only (no hex).
+
+---
+
+### image-id-num-setting
+
+**Read/Write** — Toggles whether the numeric ID is saved to the Exif tag.
+
+| Formatted | Hex   | PUT Example        |
+| --------- | ----- | ------------------ |
+| Off       | `0x1` | `{"value": "0x1"}` |
+| On        | `0x2` | `{"value": "0x2"}` |
+
+<Warning>
+  Resets to **Off** when the camera is powered off or PC Remote is disconnected. You must re-enable it each session.
+</Warning>
