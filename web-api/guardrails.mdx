@@ -183,27 +183,6 @@ cam.events.on('downloadComplete', async () => {
 });
 ```
 
-### Multi-camera selective firing
-
-In a multi-camera rig, keep all cameras locked by default and only unlock the specific camera that should fire. This prevents one trigger from firing every camera in the setup.
-
-```typescript
-const cameras = manager.getCameras();
-
-// Lock all cameras on startup
-for (const c of cameras) {
-  await manager.camera(c.id).setProperty('shooting-enable', '0x2');
-}
-
-// Fire only a specific camera
-async function fireCamera(cameraId: string) {
-  const cam = manager.camera(cameraId);
-  await cam.setProperty('shooting-enable', '0x1');
-  await cam.capturePhoto();
-  await cam.setProperty('shooting-enable', '0x2');
-}
-```
-
 ---
 
 ## SSE Events
