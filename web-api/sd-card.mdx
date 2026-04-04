@@ -81,6 +81,82 @@ Listen for `transferProgress` SSE events to track download progress in `remote-t
 
 ---
 
+## Download Thumbnail
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/thumbnail`</ParamField>
+
+Download a compressed JPEG thumbnail (~50-60 KB) for fast preview or ML evaluation. Much faster than pulling the full file.
+
+<ParamField path="contentId" type="integer" required>Content ID from file listing</ParamField>
+<ParamField path="fileId" type="integer" required>File ID from file listing</ParamField>
+<ParamField body="save_path" type="string">Directory on host PC to save the thumbnail</ParamField>
+
+<CodeGroup>
+```bash curl
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files/12345/67890/thumbnail \
+  -H "Content-Type: application/json" \
+  -d '{"save_path": "/Users/me/thumbnails"}'
+```
+
+```typescript TypeScript
+await cam.downloadThumbnail(1, 12345, 67890, { save_path: '/Users/me/thumbnails' });
+```
+
+```json Response (HTTP 202)
+{
+  "success": true,
+  "message": "Thumbnail download started. Listen for transferProgress SSE events for completion.",
+  "type": "thumbnail"
+}
+```
+</CodeGroup>
+
+---
+
+## Download Screennail
+
+<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/screennail`</ParamField>
+
+Download a medium-resolution JPEG preview (~250-300 KB). Higher quality than thumbnail, still much smaller than the full file.
+
+<ParamField path="contentId" type="integer" required>Content ID from file listing</ParamField>
+<ParamField path="fileId" type="integer" required>File ID from file listing</ParamField>
+<ParamField body="save_path" type="string">Directory on host PC to save the screennail</ParamField>
+
+<CodeGroup>
+```bash curl
+curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files/12345/67890/screennail \
+  -H "Content-Type: application/json" \
+  -d '{"save_path": "/Users/me/previews"}'
+```
+
+```typescript TypeScript
+await cam.downloadScreennail(1, 12345, 67890, { save_path: '/Users/me/previews' });
+```
+
+```json Response (HTTP 202)
+{
+  "success": true,
+  "message": "Screennail download started. Listen for transferProgress SSE events for completion.",
+  "type": "screennail"
+}
+```
+</CodeGroup>
+
+<Tip>
+**Size comparison for ML workflows:**
+
+| Type | Size | Use Case |
+|------|------|----------|
+| Thumbnail | ~50-60 KB | Fast ML triage, grid views |
+| Screennail | ~250-300 KB | Detailed evaluation, composition analysis |
+| Full file | ~35 MB (ARW) | Final delivery, full processing |
+
+Both thumbnail and screennail endpoints are async — listen for `transferProgress` SSE events with `percent: 100` for completion.
+</Tip>
+
+---
+
 ## Save Info
 
 Configure where auto-transferred images are saved on the host PC.
