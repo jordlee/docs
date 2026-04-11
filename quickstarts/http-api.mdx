@@ -3,15 +3,33 @@ title: "HTTP API Quickstart"
 description: "Control a Sony camera with curl in under 5 minutes"
 ---
 
-## 1. Start the Server
+## 1. Install and start the server
 
-If you installed the Client SDK:
+Install the package (which includes the native binary and the CLI):
 
 ```bash
-npx camera-remote-web-api --port 8080
+npm install camera-remote-web-api
 ```
 
-The server discovers cameras connected via USB or network automatically.
+Start the camera server in the background:
+
+```bash
+npx camera-server start
+```
+
+The server runs detached on port 8080 and discovers cameras connected via USB or network automatically. It survives after your terminal closes, so you only need to start it once.
+
+To check it's running:
+
+```bash
+npx camera-server status
+```
+
+To stop it later:
+
+```bash
+npx camera-server stop
+```
 
 ## 2. Discover Cameras
 

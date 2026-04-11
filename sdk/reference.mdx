@@ -1,9 +1,9 @@
 ---
 title: "Setup"
-description: "Install camera-remote-web-api TypeScript Client SDK, configure platform binaries (macOS, Linux, Windows), CLI commands (camera-server), MCP server install, auth login"
+description: "Install camera-remote-web-api TypeScript Client SDK, configure platform binaries (macOS, Linux, Windows), CLI commands (camera-server) to start/stop/monitor the camera server, MCP server install, auth login"
 seo:
   title: "SDK Setup — Install, Platform Binaries, CLI Reference"
-  description: "Install camera-remote-web-api npm package, platform binaries for macOS/Linux/Windows, camera-server CLI commands: info, doctor, platforms, mcp install, auth login/logout."
+  description: "Install camera-remote-web-api npm package, start/stop the camera server via the camera-server CLI, check server status, install platform binaries for macOS/Linux/Windows, configure MCP servers."
 ---
 
 ## 1. Initialize your project
@@ -84,17 +84,86 @@ npx camera-server info
 
 ---
 
+## Running the camera server
+
+Once the package is installed, use the CLI to run the camera server in the background. Your app (Node.js, browser, or anything that speaks HTTP) then connects to it as a pure client.
+
+### Start the server
+
+```bash
+npx camera-server start                      # Start on default port 8080
+npx camera-server start --port 9090          # Start on a specific port
+npx camera-server start 9090                 # Shorthand for --port 9090
+```
+
+`start` spawns `CameraWebApp` as a **detached** background process — it keeps running after the CLI exits. You can close your terminal and the server stays up.
+
+- Without `--port`, it defaults to 8080 and auto-increments (8081, 8082, ...) if the port is taken.
+- With an explicit `--port N`, it uses exactly that port and errors if it's already in use.
+
+### Check status
+
+```bash
+npx camera-server status                     # Discover ALL running camera servers
+npx camera-server status --port 9090         # Status of a specific server
+```
+
+`status` (with no port) discovers every running `CameraWebApp` instance regardless of port, queries each one, and reports SDK version, uptime, and connected camera count. Useful when you're running multiple instances or aren't sure which port a server is on.
+
+### Stop the server
+
+```bash
+npx camera-server stop                       # Stop ALL running servers
+npx camera-server stop --port 9090           # Stop a specific server
+```
+
+`stop` first tries a graceful shutdown via the `/api/server/shutdown` endpoint, then falls back to `SIGTERM`/`SIGKILL` if needed. It only kills the actual listening process — browser tabs connected to the server are left untouched.
+
+### Interactive TUI
+
+Run `npx camera-server` with no arguments to launch an interactive terminal UI:
+
+```bash
+npx camera-server
+```
+
+Inside the TUI you can type commands (`start`, `stop`, `status`, etc.) with **Tab** autocomplete, press **/** to browse the command list, or **Esc** to exit.
+
+### Typical workflow
+
+```bash
+npm install camera-remote-web-api    # Install package (binary auto-downloads)
+npx camera-server start              # Start the server in the background
+npx camera-server status             # Verify it's running
+# ... your app connects to http://localhost:8080 ...
+npx camera-server stop               # Stop the server when done
+```
+
+<Warning>
+Don't manage the server lifecycle from both the CLI and code at the same time. If you use `npx camera-server start`, don't also call `ServerManager.start()` from your application — otherwise the two will fight each other (one respawning what the other kills). Pick one: CLI for interactive / deployment, `ServerManager` for fully programmatic control.
+</Warning>
+
+---
+
 ## CLI Reference
 
 All available `camera-server` commands:
 
 ```bash
+# Server management
+npx camera-server start [--port <number>]                 # Start the camera server
+npx camera-server stop [--port <number>]                  # Stop (all by default, or a specific port)
+npx camera-server status [--port <number>]                # Show running server(s)
+
+# Setup and diagnostics
 npx camera-server info                                    # Version and binary info
 npx camera-server install [--platform <name>]             # Install platform binary
 npx camera-server uninstall [--platform <name>]           # Remove platform binary
 npx camera-server doctor                                  # Check system prerequisites
 npx camera-server platforms                               # List available platforms
 npx camera-server docs                                    # Open API docs in browser
+
+# MCP and authentication
 npx camera-server mcp                                     # Interactive MCP setup
 npx camera-server mcp status                              # Show configured MCP servers
 npx camera-server mcp install <agent> <scope> [server]    # Install MCP server config
