@@ -19,24 +19,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Camera Remote SDK",
-          "icon": "download",
-          "href": "https://support.d-imaging.sony.co.jp/app/sdk/en/index.html"
-        },
-        {
-          "anchor": "Camera Remote Web API",
+          "anchor": "npm",
           "icon": "npm",
           "href": "https://www.npmjs.com/package/@alpha-sdk/api"
         },
         {
-          "anchor": "Products",
+          "anchor": "Cameras",
           "icon": "camera",
           "href": "https://electronics.sony.com/imaging/interchangeable-lens-cameras/c/all-interchangeable-lens-cameras?currentPage=1"
         },
         {
-          "anchor": "Help Guide",
-          "icon": "circle-question",
-          "href": "https://www.sony.com/electronics/support/interchangeable-lens-cameras-e-mount-body/manuals"
+          "anchor": "Status",
+          "icon": "eye",
+          "href": "https://sonydevplat.instatus.com"
         },
         {
           "anchor": "Report Bug",
@@ -44,74 +39,38 @@
           "href": "https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9"
         },
         {
-          "anchor": "Status Page",
-          "icon": "eye",
-          "href": "https://sonydevplat.instatus.com"
+          "anchor": "GitHub",
+          "icon": "github",
+          "href": "https://github.com/jordlee/crsdk"
         }
       ]
     },
     "tabs": [
       {
-        "tab": "Quickstarts",
+        "tab": "Docs",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Introduction",
             "pages": [
-              "platform-overview",
+              "index",
+              "platform-overview"
+            ]
+          },
+          {
+            "group": "Quickstarts",
+            "pages": [
               "quickstarts/overview",
               "quickstarts/client-sdk",
               "quickstarts/http-api",
               "quickstarts/mcp-server"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "SDKs",
-        "groups": [
-          {
-            "group": "Client SDKs",
-            "pages": [
-              "sdk/overview",
-              "sdk/typescript",
-              "sdk/python",
-              "sdk/swift"
-            ]
           },
           {
-            "group": "Recipes",
-            "pages": [
-              "sdk/recipes/sse-events",
-              "sdk/recipes/live-view-polling",
-              "sdk/recipes/server-subprocess",
-              "sdk/recipes/discovery-reconnect",
-              "sdk/recipes/retry-backoff",
-              "sdk/recipes/react-hook"
-            ]
-          },
-          {
-            "group": "Native Sony SDKs",
-            "pages": [
-              "sdk/camera-remote-sdk",
-              "sdk/camera-remote-command-sdk"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Web API",
-        "groups": [
-          {
-            "group": "Overview",
+            "group": "Guides",
             "pages": [
               "web-api/overview",
               "web-api/server-package",
-              "web-api/compatibility"
-            ]
-          },
-          {
-            "group": "Endpoints",
-            "pages": [
+              "web-api/compatibility",
               "web-api/connection",
               "web-api/properties",
               "web-api/actions",
@@ -124,14 +83,45 @@
               "web-api/settings",
               "web-api/server"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "CLI",
-        "groups": [
+          },
           {
-            "group": "camera-server",
+            "group": "SDK Reference",
+            "pages": [
+              "sdk/overview",
+              "sdk/typescript",
+              "sdk/python",
+              "sdk/swift"
+            ]
+          },
+          {
+            "group": "SDK Recipes",
+            "pages": [
+              "sdk/recipes/sse-events",
+              "sdk/recipes/live-view-polling",
+              "sdk/recipes/server-subprocess",
+              "sdk/recipes/discovery-reconnect",
+              "sdk/recipes/retry-backoff",
+              "sdk/recipes/react-hook"
+            ]
+          },
+          {
+            "group": "Sony Native SDKs",
+            "pages": [
+              "sdk/camera-remote-sdk",
+              "sdk/camera-remote-command-sdk"
+            ]
+          },
+          {
+            "group": "MCP Server",
+            "pages": [
+              "MCP-Server/overview",
+              "MCP-Server/setup",
+              "MCP-Server/system-prompt",
+              "MCP-Server/troubleshooting"
+            ]
+          },
+          {
+            "group": "CLI",
             "pages": [
               "cli/camera-server"
             ]
@@ -139,23 +129,8 @@
         ]
       },
       {
-        "tab": "MCP Server",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "MCP-Server/overview",
-              "MCP-Server/setup",
-              "MCP-Server/system-prompt"
-            ]
-          },
-          {
-            "group": "Reference",
-            "pages": [
-              "MCP-Server/troubleshooting"
-            ]
-          }
-        ]
+        "tab": "API Reference",
+        "openapi": "openapi.yaml"
       },
       {
         "tab": "Changelog",
@@ -189,7 +164,7 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/jordlee/Windows-SDK-Demo-Application",
+      "github": "https://github.com/jordlee/crsdk",
       "linkedin": "https://www.linkedin.com/company/sony-electronics-professional-solutions-of-america/"
     }
   }
