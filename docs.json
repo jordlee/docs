@@ -110,7 +110,6 @@
             "group": "MCP Server",
             "pages": [
               "MCP-Server/overview",
-              "MCP-Server/web-api-docs",
               "MCP-Server/setup",
               "MCP-Server/system-prompt",
               "MCP-Server/troubleshooting"
