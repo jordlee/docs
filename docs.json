@@ -111,8 +111,7 @@
           {
             "group": "CLI",
             "pages": [
-              "cli/camera-server",
-              "cli/crsdk"
+              "cli/camera-server"
             ]
           }
         ]
