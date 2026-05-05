@@ -94,8 +94,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerStatus"
-        "400":
-          $ref: "#/components/responses/BadRequest"
         "500":
           description: Server error
           content:
@@ -134,8 +132,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerLogsResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
 
   /api/server/shutdown:
     post:
@@ -154,8 +150,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShutdownServerResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
         "500":
           description: Shutdown failed
           content:
@@ -182,8 +176,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CameraListResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
         "500":
           description: SDK error during enumeration
           content:
@@ -214,7 +206,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          description: Connection failed
+          description: |
+            Connection request rejected. This includes invalid `mode` values,
+            no cameras discovered, target camera ID not present in the latest
+            enumeration, all cameras already connected, or an SDK connect
+            failure after a valid request.
           content:
             application/json:
               schema:
@@ -239,8 +235,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConnectionStatusResponse"
-        "404":
-          $ref: "#/components/responses/NotFound"
 
     delete:
       operationId: disconnectCamera
@@ -261,9 +255,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
-        "404":
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/OperationRejected"
 
   # ============================================================
   # Properties
@@ -290,7 +282,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetPropertyResponse"
         "400":
-          description: Invalid property name or camera not connected
+          description: |
+            Unknown property name, property getter not implemented, camera not
+            connected, or property retrieval failed inside the SDK.
           content:
             application/json:
               schema:
@@ -325,7 +319,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          description: Invalid value, property not writable, or camera not in pc-remote mode
+          description: |
+            Malformed request body, missing `value`, unknown property, invalid
+            value format, property not writable, camera not connected, or the
+            camera rejected the property set in its current state.
           content:
             application/json:
               schema:
@@ -366,7 +363,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetAllPropertiesResponse"
         "400":
-          description: Camera not connected or SDK error
+          description: Camera not connected or bulk property retrieval failed in the SDK
           content:
             application/json:
               schema:
@@ -395,7 +392,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetPriorityKeyResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
     put:
       operationId: setPriorityKey
@@ -423,7 +420,14 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          description: |
+            Invalid request body or the camera rejected the priority-key change.
+            FX3 / cinema bodies may return SDK error `0x8402` because this
+            property is not implemented there.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   # ============================================================
   # Actions
@@ -454,7 +458,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/actions/half-press:
     post:
@@ -474,7 +478,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/actions/af-shutter:
     post:
@@ -526,7 +530,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/actions/movie-rec:
     post:
@@ -611,7 +615,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/disable:
     post:
@@ -631,7 +635,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/status:
     get:
@@ -653,7 +657,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetLiveViewStatusResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/start:
     post:
@@ -673,7 +677,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/stop:
     post:
@@ -693,7 +697,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/frame:
     get:
@@ -717,7 +721,7 @@ paths:
                 type: string
                 format: binary
         "404":
-          description: No live view frame available — streaming not started or no frames captured yet
+          $ref: "#/components/responses/NoFrameAvailable"
           content:
             application/json:
               schema:
@@ -741,7 +745,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/osd-disable:
     post:
@@ -761,7 +765,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/osd-status:
     get:
@@ -781,7 +785,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetOSDStatusResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
   /api/cameras/{cameraId}/live-view/osd-frame:
     get:
@@ -940,7 +944,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SDCardFileListResponse"
         "400":
-          description: Wrong connection mode (remote mode does not support SD card listing)
+          $ref: "#/components/responses/WrongConnectionMode"
           content:
             application/json:
               schema:
@@ -981,7 +985,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AsyncOperationResponse"
         "400":
-          description: Download could not be started
+          description: Download could not be started for the requested file
           content:
             application/json:
               schema:
@@ -1021,7 +1025,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CompressedDownloadResponse"
         "400":
-          description: Download could not be started
+          description: Thumbnail download could not be started
           content:
             application/json:
               schema:
@@ -1062,7 +1066,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CompressedDownloadResponse"
         "400":
-          description: Download could not be started
+          description: Screennail download could not be started
           content:
             application/json:
               schema:
@@ -1096,7 +1100,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetSaveInfoResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OperationRejected"
 
     put:
       operationId: setSaveInfo
@@ -1121,7 +1125,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          description: |
+            Malformed JSON body, missing required `path`, or the camera/server
+            rejected the save-info update.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/cameras/{cameraId}/settings/download:
     post:
@@ -1146,7 +1156,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          description: Camera settings download failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/cameras/{cameraId}/settings/upload:
     post:
@@ -1171,7 +1185,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          description: |
+            Missing filename in the request body or the settings upload failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/cameras/{cameraId}/settings/files:
     get:
@@ -1179,7 +1198,11 @@ paths:
       x-fern-sdk-group-name: settings
       x-fern-sdk-method-name: listFiles
       summary: List saved settings files
-      description: Lists camera settings files (`*.DAT`) previously saved to the host PC via `downloadCameraSettings`.
+      description: |
+        Lists camera settings files (`*.DAT`) previously saved to the host PC
+        via `downloadCameraSettings`. This is a host-side file listing; the
+        path currently includes `cameraId` for consistency with the rest of
+        the API, but the handler does not validate that camera.
       tags: [Settings]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -1191,7 +1214,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/SettingsFileListResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          description: Host-side settings file listing failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/cameras/{cameraId}/lut/import:
     post:
@@ -1231,11 +1258,40 @@ paths:
 
 components:
   responses:
-    BadRequest:
+    RequestValidationError:
       description: |
-        Invalid request — wrong shape, missing required field, camera not connected,
-        wrong connection mode, property not writable in current shooting mode, or
-        other precondition failure.
+        Invalid request body or parameter shape. Use this when the JSON payload
+        is malformed, a required field is missing, or a parameter cannot be
+        parsed before any camera operation is attempted.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    OperationRejected:
+      description: |
+        The request was syntactically valid, but the camera or server rejected
+        it due to connection state, unsupported capability, property
+        writability, current shooting mode, or another runtime precondition.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    WrongConnectionMode:
+      description: |
+        The endpoint is valid, but not in the camera's current connection
+        mode. Reconnect using the documented mode for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    NoFrameAvailable:
+      description: |
+        No frame is currently available. This usually means streaming has not
+        been started yet, no frame has been captured yet, or OSD/composite
+        prerequisites are not satisfied.
       content:
         application/json:
           schema:
@@ -1316,10 +1372,13 @@ components:
       properties:
         connected:
           type: boolean
+          example: false
         model:
           type: string
+          example: ILCE-7M4
         id:
           type: string
+          example: D06CE05E3323
 
     # --- Standard responses ---
 
@@ -1490,13 +1549,27 @@ components:
 
     ErrorResponse:
       type: object
+      description: |
+        Standard non-2xx response envelope. The API does not currently expose a
+        stable machine-readable error code in the JSON body, so clients should
+        branch on HTTP status first and then inspect `message` for the
+        human-readable reason.
+      example:
+        success: false
+        message: Camera not connected
+        camera:
+          connected: false
+          model: ILCE-7M4
+          id: D06CE05E3323
       required: [success, message]
       properties:
         success:
           type: boolean
           const: false
+          example: false
         message:
           type: string
+          example: Camera not connected
         camera:
           $ref: "#/components/schemas/CameraSummary"
 
