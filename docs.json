@@ -162,5 +162,10 @@
     "socials": {
       "linkedin": "https://www.linkedin.com/company/sony-electronics-professional-solutions-of-america/"
     }
+  },
+  "api": {
+    "playground": {
+      "proxy": false
+    }
   }
 }
