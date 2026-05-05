@@ -1,0 +1,113 @@
+---
+title: crsdk CLI
+description: "Install the Sony Camera Remote SDK sample, build RemoteCli, manage SDK versions, and install MCP servers."
+---
+
+The `crsdk` CLI ships as [`@alpha-sdk/crsdk`](https://www.npmjs.com/package/@alpha-sdk/crsdk). It is a standalone developer tool for the **native Sony Camera Remote SDK** workflow:
+
+- accept the Sony SDK EULA
+- extract the SDK zip into a working sample tree
+- build the Sony `RemoteCli` sample
+- launch the interactive CLI sample
+- manage archived SDK versions
+- install the Sony SDK docs MCP servers for coding agents
+
+GitHub:
+
+- [`jordlee/crsdk-cli`](https://github.com/jordlee/crsdk-cli)
+
+## Install
+
+```bash
+npm install -g @alpha-sdk/crsdk
+```
+
+## Quick start
+
+```bash
+crsdk doctor
+crsdk install --zip ~/Downloads/CrSDK_v2.01.00_Mac.zip
+crsdk build
+crsdk launch
+```
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `crsdk help` | Show command list |
+| `crsdk doctor` | Check toolchain + SDK state |
+| `crsdk install --zip <path>` | Accept EULA and extract the Sony SDK into `cpp-sample/` |
+| `crsdk update --zip <path>` | Swap in a newer SDK zip and archive the previous one |
+| `crsdk versions` | List archived SDK versions |
+| `crsdk use <archive-name>` | Restore an archived SDK into `cpp-sample/` |
+| `crsdk build [--clean]` | Build the Sony `RemoteCli` sample |
+| `crsdk launch` | Launch `RemoteCli` in an interactive TTY |
+| `crsdk auth [login\|status\|logout]` | Athena Bridge authentication |
+| `crsdk athena-bridge [install\|status\|uninstall] <agent> <scope>` | Install or remove the Athena Bridge MCP |
+| `crsdk mcp [status\|install <agent> <scope> [server\|--all]]` | Manage the Sony SDK docs MCP servers |
+
+## SDK version management
+
+`crsdk` keeps the active SDK in `cpp-sample/` and archives prior versions in `sdk-archive/`.
+
+- `crsdk install` only works when no active sample exists yet
+- `crsdk update --zip <new.zip>` archives the current tree, then installs the new SDK
+- `crsdk use <archive-name>` swaps an archived SDK back into place
+
+The tool does not silently wipe edits from `cpp-sample/`. Swaps archive first so diffs against the stock Sony sample are preserved.
+
+## Project layout
+
+```text
+crsdk-cli/
+├── cpp-sample/
+│   ├── app/
+│   ├── external/crsdk/
+│   ├── CMakeLists.txt
+│   └── build/
+└── sdk-archive/
+```
+
+## MCP servers
+
+`crsdk` can install the Sony docs MCP servers for supported agents such as Claude Code, Cursor, and VS Code.
+
+Available servers:
+
+| Key | Description | Auth |
+|---|---|---|
+| `CameraRemoteSDK` | C++/C# SDK docs, API functions, and code examples | none |
+| `CameraHelp` | Camera help guides and compatibility docs | none |
+| `AthenaBridge` | Personalized SDK plans and bridge tools | `crsdk auth login` |
+
+Examples:
+
+```bash
+crsdk mcp status
+crsdk mcp install claude-code user --all
+crsdk auth login
+crsdk athena-bridge install claude-code user
+```
+
+## Getting the Sony SDK
+
+Sony distributes the native SDK behind a contact form:
+
+- [Camera Remote SDK contact form](https://pro.sony/ue_US/digital-imaging/camera-remote-sdk-contact-us)
+
+Once you have the zip:
+
+```bash
+crsdk install --zip <path-to-zip>
+```
+
+## macOS note
+
+Sony's macOS dylibs are ad-hoc signed. `crsdk install` clears quarantine automatically, and `crsdk build` repeats that step as a safety net.
+
+If you manually copy dylibs and hit Gatekeeper:
+
+```bash
+xattr -dr com.apple.quarantine cpp-sample/
+```
