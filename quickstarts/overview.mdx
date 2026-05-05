@@ -1,11 +1,11 @@
 ---
 title: "Quickstarts"
-description: "Choose the right integration path for your project"
+description: "Choose the right platform integration path for your project"
 ---
 
-## Available APIs & SDKs
+## Available platform entry points
 
-Several ways to control cameras programmatically — pick the one that fits your stack.
+Most developers should start with the Alpha Camera REST platform and choose the client or tool that fits their stack.
 
 | Product | Language | What it does |
 |---------|----------|--------------|
@@ -13,10 +13,7 @@ Several ways to control cameras programmatically — pick the one that fits your
 | [Python Client SDK](/sdk/python) | Python | Sync and async REST client with Pydantic models. |
 | [Swift Client SDK](/sdk/swift) | Swift | Native `async/await` client for iOS, macOS, tvOS, and watchOS. |
 | [Alpha Camera REST API](/web-api/server-package) | Any | The HTTP and SSE server itself. Install via npm; ships with the `camera-server` CLI and a Node.js `ServerManager` class. |
-| [Camera Remote SDK](/sdk/camera-remote-sdk) | C++, C# | Sony's official native SDK — bypasses the HTTP layer entirely. |
-| [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) | C++ | PTP-based protocol for low-level direct camera commands. |
-| [CameraRemoteSDK MCP Server](/mcp-server/overview) | — | MCP server connecting AI assistants to 13,000+ pieces of Camera Remote SDK documentation. |
-| [CameraHelp MCP Server](/mcp-server/overview) | — | MCP server connecting AI assistants to Sony's help guides for 24 camera models. |
+| [MCP Servers](/mcp-server/overview) | — | Connect Claude, Cursor, and other assistants to the SDK docs, Help Guides, and Web API docs. |
 
 ## How they relate
 
@@ -35,7 +32,7 @@ Your application
                                                 Sony camera (USB / network)
 ```
 
-All three managed clients call the same REST and SSE server. The server is distributed on npm as `@alpha-sdk/api` — run it standalone via `camera-server start`, or, from a Node application, embed its lifecycle via the `ServerManager` class. C++/C# developers can skip the HTTP layer and use the native SDK directly.
+All three managed clients call the same REST and SSE server. The server is distributed on npm as `@alpha-sdk/api` — run it standalone via `camera-server start`, or, from a Node application, embed its lifecycle via the `ServerManager` class.
 
 ---
 
