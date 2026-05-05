@@ -16,10 +16,6 @@ See the auto-generated [API reference](/web-api/overview) for full request/respo
 curl http://localhost:8080/api/cameras
 ```
 
-```typescript TypeScript
-const { cameras } = await client.listCameras();
-```
-
 ```json Response
 {
   "success": true,
@@ -58,9 +54,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/connection \
   -d '{"mode": "remote"}'
 ```
 
-```typescript TypeScript
-await client.connectCamera('D10F60149B0C', { mode: 'remote' });
-```
 
 ```json Response
 {
@@ -89,10 +82,6 @@ After `POST /api/cameras/{cameraId}/connection` returns success, use `GET /api/c
 ```bash curl
 curl http://localhost:8080/api/cameras/D10F60149B0C/connection
 ```
-
-```typescript TypeScript
-await client.getConnectionStatus('D10F60149B0C');
-```
 </CodeGroup>
 
 ---
@@ -105,8 +94,8 @@ await client.getConnectionStatus('D10F60149B0C');
 ```bash curl
 curl -X DELETE http://localhost:8080/api/cameras/D10F60149B0C/connection
 ```
-
-```typescript TypeScript
-await client.disconnectCamera('D10F60149B0C');
-```
 </CodeGroup>
+
+<Note>
+For typed client calls, use the language SDK pages: [TypeScript](/sdk/typescript), [Python](/sdk/python), or [Swift](/sdk/swift).
+</Note>

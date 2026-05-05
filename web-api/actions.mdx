@@ -28,14 +28,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/shutter \
   -d '{"action": "up"}'
 ```
 
-```typescript TypeScript
-// Single shot
-await client.triggerShutter('D10F60149B0C');
-
-// Continuous start/stop
-await client.triggerShutter('D10F60149B0C', { action: 'down' });
-await client.triggerShutter('D10F60149B0C', { action: 'up' });
-```
 </CodeGroup>
 
 <Note>For continuous shooting, set drive mode to a continuous mode first (e.g. `Continuous Hi`).</Note>
@@ -51,9 +43,6 @@ await client.triggerShutter('D10F60149B0C', { action: 'up' });
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/half-press
 ```
 
-```typescript TypeScript
-await client.halfPress('D10F60149B0C');
-```
 </CodeGroup>
 
 ---
@@ -67,9 +56,6 @@ await client.halfPress('D10F60149B0C');
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/af-shutter
 ```
 
-```typescript TypeScript
-await client.afShutter('D10F60149B0C');
-```
 </CodeGroup>
 
 ---
@@ -87,12 +73,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/zoom \
   -d '{"direction": "in", "speed": "normal"}'
 ```
 
-```typescript TypeScript
-await client.controlZoom('D10F60149B0C', { direction: 'in', speed: 'normal' });
-
-// Stop zoom
-await client.stopZoom('D10F60149B0C');
-```
 </CodeGroup>
 
 ---
@@ -114,10 +94,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/focus-near-f
   -d '{"step": 7}'
 ```
 
-```typescript TypeScript
-await client.focusNearFar('D10F60149B0C', { step: -1 }); // near, fine
-await client.focusNearFar('D10F60149B0C', { step: 7 });  // far, fast
-```
 </CodeGroup>
 
 <Tip>
@@ -137,11 +113,13 @@ Monitor recording state via the [`recording-state`](/web-api/properties#recordin
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/movie-rec
 ```
 
-```typescript TypeScript
-await cam('D10F60149B0C').toggleMovieRecording();
-```
 </CodeGroup>
 
 <Note>
   Ensure the camera is in a video-capable exposure mode (e.g. Movie mode `0x8050`–`0x8055`) before triggering. Check `recording-state` to confirm the current state.
+</Note>
+
+
+<Note>
+For typed action helpers, use the SDK pages: [TypeScript](/sdk/typescript), [Python](/sdk/python), or [Swift](/sdk/swift).
 </Note>

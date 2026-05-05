@@ -15,14 +15,6 @@ See the auto-generated [API reference](/web-api/overview) for full request/respo
 ```bash curl
 curl -N http://localhost:8080/api/events
 ```
-
-```typescript TypeScript
-const events = new EventStream('http://localhost:8080');
-
-events.on('downloadComplete', (data) => {
-  console.log('File saved:', data.filename);
-});
-```
 </CodeGroup>
 
 ## Subscribe to Select Camera Events
@@ -33,10 +25,6 @@ events.on('downloadComplete', (data) => {
 ```bash curl
 curl -N http://localhost:8080/api/cameras/D10F60149B0C/events
 ```
-
-```typescript TypeScript
-const events = new EventStream('http://localhost:8080', 'D10F60149B0C');
-```
 </CodeGroup>
 
 ---
@@ -46,7 +34,7 @@ const events = new EventStream('http://localhost:8080', 'D10F60149B0C');
 Events related to camera connection state and SDK errors.
 
 <Info>
-When using the Client SDK, connection and lifecycle events can also be accessed via `manager.on()`. See [Client SDK Events](/web-api/events) for details.
+When using the Client SDK, connection and lifecycle events can also be accessed via `manager.on()`. See the language SDK pages for typed event helpers and stream wrappers.
 </Info>
 
 | Event | SDK Callback | Description |
@@ -164,3 +152,8 @@ data: {"percent":100,"notify":"0x20093","filename":"/path/to/DSC09598.JPG"}
 ## Keepalive
 
 The server sends a `: keepalive` comment every 30 seconds to detect dead connections.
+
+
+<Note>
+For typed SSE consumers, use the examples under [/sdk/recipes/sse-events](/sdk/recipes/sse-events).
+</Note>

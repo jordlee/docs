@@ -52,7 +52,7 @@
             ]
           },
           {
-            "group": "Guides",
+            "group": "REST API",
             "pages": [
               "web-api/overview",
               "web-api/server",
@@ -97,7 +97,7 @@
             ]
           },
           {
-            "group": "CLI",
+            "group": "REST API CLI",
             "pages": [
               "cli/camera-server"
             ]

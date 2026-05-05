@@ -54,12 +54,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/lut/import \
   -d '{"filePath": "/path/to/MyLUT.cube", "slot": 1}'
 ```
 
-```typescript TypeScript
-await cam('D10F60149B0C').importLUT({
-  filePath: '/path/to/MyLUT.cube',
-  slot: 1,
-});
-```
 </CodeGroup>
 
 ### SSE result
@@ -245,3 +239,8 @@ In volume photography workflows, write [`image-id-string`](/web-api/properties#i
 2. An active **Volume Photography Commands** license installed on the camera
 
 Without the license, the property returns empty or not writable.
+
+
+<Note>
+For typed workflows around LUTs, live view, and guardrail-related automation, use the SDK pages and examples section.
+</Note>

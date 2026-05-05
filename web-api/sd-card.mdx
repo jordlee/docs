@@ -16,10 +16,6 @@ See the auto-generated [API reference](/web-api/overview) for full request/respo
 curl http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
 ```
 
-```typescript TypeScript
-const files = await client.listSDCardFiles('D10F60149B0C', 1);
-console.log(files.files);
-```
 
 ```json Response
 {
@@ -51,9 +47,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
   -d '{"save_path": "/Users/me/Photos"}'
 ```
 
-```typescript TypeScript
-await client.downloadSDCardFile('D10F60149B0C', 1, 12345, 67890);
-```
 </CodeGroup>
 
 Listen for `transferProgress` SSE events to track download progress in `remote-transfer` mode.
@@ -71,9 +64,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
   -d '{"save_path": "/Users/me/thumbnails"}'
 ```
 
-```typescript TypeScript
-await cam.downloadThumbnail(1, 12345, 67890, { save_path: '/Users/me/thumbnails' });
-```
 </CodeGroup>
 
 ---
@@ -89,9 +79,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
   -d '{"save_path": "/Users/me/previews"}'
 ```
 
-```typescript TypeScript
-await cam.downloadScreennail(1, 12345, 67890, { save_path: '/Users/me/previews' });
-```
 </CodeGroup>
 
 <Tip>
@@ -124,3 +111,8 @@ curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/settings/save-info \
   -H "Content-Type: application/json" \
   -d '{"path": "/Users/me/Photos", "prefix": "SHOOT", "startNo": 1}'
 ```
+
+
+<Note>
+For typed file-listing and download helpers, use the language SDK pages and examples.
+</Note>

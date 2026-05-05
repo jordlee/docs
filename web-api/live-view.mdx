@@ -9,34 +9,23 @@ See the auto-generated [API reference](/web-api/overview) for full request/respo
 
 ## Workflow
 
-<Tabs>
-  <Tab title="TypeScript">
-    ```typescript
-    await client.startLiveViewStream(id);  // auto-enables live view
-    const frame = await client.getLiveViewFrame(id);  // single JPEG
-    await client.stopLiveViewStream(id);
-    ```
-  </Tab>
-  <Tab title="REST">
-    <Steps>
-      <Step title="Start streaming">
-        `POST /api/cameras/{id}/live-view/start` — auto-enables live view if disabled
-      </Step>
-      <Step title="Get frames">
-        `GET /api/cameras/{id}/live-view/frame` — single JPEG frame
-      </Step>
-      <Step title="Optional: Enable OSD">
-        `POST /api/cameras/{id}/live-view/osd-enable` — overlay camera UI
-      </Step>
-      <Step title="Get OSD frames">
-        `GET /api/cameras/{id}/live-view/osd-frame` — composited JPEG (~189KB vs ~119KB raw)
-      </Step>
-      <Step title="Stop">
-        `POST /api/cameras/{id}/live-view/stop`
-      </Step>
-    </Steps>
-  </Tab>
-</Tabs>
+<Steps>
+  <Step title="Enable or start live view">
+    `POST /api/cameras/{id}/live-view/enable` or `POST /api/cameras/{id}/live-view/start`
+  </Step>
+  <Step title="Get frames">
+    `GET /api/cameras/{id}/live-view/frame` returns a single JPEG frame
+  </Step>
+  <Step title="Optional: enable OSD">
+    `POST /api/cameras/{id}/live-view/osd-enable`
+  </Step>
+  <Step title="Get OSD frames">
+    `GET /api/cameras/{id}/live-view/osd-frame`
+  </Step>
+  <Step title="Stop live view">
+    `POST /api/cameras/{id}/live-view/stop`
+  </Step>
+</Steps>
 
 ---
 
@@ -67,10 +56,6 @@ Returns the latest live view frame as a JPEG image. Streaming must be started fi
 ```bash curl
 curl -o frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/frame
 ```
-
-```typescript TypeScript
-const frame = await client.getLiveViewFrame('D10F60149B0C'); // ArrayBuffer (JPEG)
-```
 </CodeGroup>
 
 ### OSD Overlay
@@ -85,20 +70,6 @@ curl -o osd-frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/o
 
 ## Polling for continuous frames
 
-For a render loop at ~15 fps, poll the `live-view/frame` endpoint at ~66 ms intervals. The frame endpoint returns the most recent JPEG the server has captured — the camera-side frame rate is the cap, not the polling cadence.
+For a render loop at ~15 fps, poll `GET /api/cameras/{id}/live-view/frame` at roughly 66 ms intervals. The endpoint returns the latest JPEG the server has captured — the camera-side frame rate is the actual cap.
 
-```typescript TypeScript (polling via SDK)
-import { AlphaSDKClient } from "@alpha-sdk/client";
-
-const client = new AlphaSDKClient({ environment: "http://localhost:8080" });
-const cameraId = "D10F60149B0C";
-
-const interval = setInterval(async () => {
-  const res = await client.liveView.getFrame({ cameraId });
-  const jpeg = await res.arrayBuffer();
-  // render — e.g. drawImage on a canvas, or set <img src=URL.createObjectURL(...)>
-}, 66);
-// clearInterval(interval) when done.
-```
-
-See [the live-view polling recipe](/sdk/recipes/live-view-polling) for a full version with start/stop, a render loop, and back-pressure — in TypeScript, Python, and Swift.
+See [the live-view polling example](/sdk/recipes/live-view-polling) for full client implementations in TypeScript, Python, and Swift.
