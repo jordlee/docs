@@ -37,11 +37,6 @@
           "anchor": "Report Bug",
           "icon": "bug",
           "href": "https://sna-ipsa-developer-tools.atlassian.net/jira/software/form/68c76742-1683-4ac8-83f3-a2e2518e5ffc?atlOrigin=eyJpIjoiNTNmNWM0OWYxZTYyNGM2NWIzNTUwOWEzZGRjNmI1ZTIiLCJwIjoiaiJ9"
-        },
-        {
-          "anchor": "GitHub",
-          "icon": "github",
-          "href": "https://github.com/jordlee/crsdk"
         }
       ]
     },
@@ -115,6 +110,7 @@
             "group": "MCP Server",
             "pages": [
               "MCP-Server/overview",
+              "MCP-Server/web-api-docs",
               "MCP-Server/setup",
               "MCP-Server/system-prompt",
               "MCP-Server/troubleshooting"
@@ -151,8 +147,8 @@
     ]
   },
   "logo": {
-    "light": "/logo/sony-logo-resized-light.png",
-    "dark": "/logo/sony-logo-resized-dark.png"
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
   },
   "navbar": {
     "links": [
@@ -164,7 +160,6 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/jordlee/crsdk",
       "linkedin": "https://www.linkedin.com/company/sony-electronics-professional-solutions-of-america/"
     }
   }

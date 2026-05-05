@@ -3,12 +3,13 @@ title: "MCP Server Quickstart"
 description: "Connect Sony's AI documentation servers to your AI tool in under 5 minutes"
 ---
 
-We provide two MCP servers that give your AI assistant access to different parts of the camera development ecosystem. Install either or both.
+We provide three MCP endpoints that give your AI assistant access to different parts of the camera development ecosystem. Install whichever ones fit your workflow.
 
 | Server | Name | What It Covers |
 |--------|------|---------------|
 | **SDK Docs** | `CameraRemoteSDK` | Camera Remote SDK (C++/C#) — APIs, code examples, compatibility |
 | **Help Guides** | `CameraHelp` | Camera help guides for 24 Sony models — settings, features, troubleshooting |
+| **Web API Docs** | `CameraWebAPI` | Alpha Camera REST API docs — endpoints, schemas, examples, and client SDK guidance |
 
 ## Choose Your Tool
 
@@ -24,6 +25,7 @@ We provide two MCP servers that give your AI assistant access to different parts
     |------|-----|
     | `CameraRemoteSDK` | `https://sdk-rag-agent-production.up.railway.app/mcp` |
     | `CameraHelp` | `https://camera-rag-agent-production.up.railway.app/mcp` |
+    | `CameraWebAPI` | `https://crsdk.app/mcp` |
 
     4. Click **Add**
     5. Open a new chat, click the **search and tools** icon, and toggle the connectors **on**
@@ -35,6 +37,9 @@ We provide two MCP servers that give your AI assistant access to different parts
 
     # Help Guides
     claude mcp add CameraHelp --scope user -- npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp
+
+    # Web API Docs
+    claude mcp add CameraWebAPI --scope user -- npx mcp-remote https://crsdk.app/mcp
     ```
 
     Verify they're connected:
@@ -55,6 +60,7 @@ We provide two MCP servers that give your AI assistant access to different parts
     |------|---------|
     | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp` |
     | `CameraHelp` | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
+    | `CameraWebAPI` | `npx mcp-remote https://crsdk.app/mcp` |
 
     5. Click **Save**
   </Tab>
@@ -74,6 +80,7 @@ The AI assistant will automatically search through the relevant MCP server to gi
 - "What cameras support remote shooting via USB?" (SDK Docs)
 - "How do I enable real-time tracking on the A7R V?" (Help Guides)
 - "What's the menu path for changing autofocus area on the A7 IV?" (Help Guides)
+- "How do I connect using `remote-transfer` and list SD files over the Alpha Camera REST API?" (Web API Docs)
 
 ---
 
