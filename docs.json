@@ -89,7 +89,7 @@
             ]
           },
           {
-            "group": "SDK Recipes",
+            "group": "Examples",
             "pages": [
               "sdk/recipes/sse-events",
               "sdk/recipes/live-view-polling",
