@@ -215,7 +215,7 @@ await client.properties.getAll({
 By design, the following live in [recipes](/sdk/overview#recipes) rather than the generated SDK:
 
 - **SSE events** (`/api/events`, `/api/cameras/{id}/events`) — use native `EventSource` in the browser, or `fetch` + `ReadableStream` in Node 18+.
-- **`CameraManager`-style discovery + reconnect** — copy from the [discovery + reconnect recipe](/sdk/recipes/discovery-reconnect).
+- **Discovery + reconnect orchestration** — copy from the [discovery + reconnect recipe](/sdk/recipes/discovery-reconnect).
 
 ---
 

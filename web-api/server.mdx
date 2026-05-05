@@ -4,14 +4,14 @@ description: "Health check, logs, and graceful shutdown"
 ---
 
 <Info>
-For TypeScript projects, use [CameraManager](/sdk/typescript) instead of calling these endpoints directly — it manages the binary lifecycle, camera connections, and SSE events automatically.
+For TypeScript projects, use [`ServerManager`](/sdk/typescript) plus the published client/recipe patterns instead of calling these endpoints directly in application code.
 </Info>
 
 See the auto-generated [API reference](/web-api/overview) for full request/response schemas.
 
 ## Server Status
 
-`GET /api/server/status` — health check endpoint. Returns server version, uptime, platform, and camera counts. Used by `ServerManager` and `CameraManager` to confirm the server is ready.
+`GET /api/server/status` — health check endpoint. Returns server version, uptime, platform, and camera counts. Used by `ServerManager` to confirm the server is ready.
 
 <CodeGroup>
 ```bash curl

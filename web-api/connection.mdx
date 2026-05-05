@@ -75,9 +75,9 @@ await client.connectCamera('D10F60149B0C', { mode: 'remote' });
 ```
 </CodeGroup>
 
-<Warning>
-Connection is not complete until the SSE `connected` callback fires. Using the stateful `CameraClient` directly, wait for the SSE event before issuing commands. The Client SDK's `CameraManager` waits internally.
-</Warning>
+<Note>
+After `POST /api/cameras/{cameraId}/connection` returns success, use `GET /api/cameras/{cameraId}/connection` if you want to confirm the active mode from `data.mode`.
+</Note>
 
 ---
 
