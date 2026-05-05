@@ -52,15 +52,6 @@
             ]
           },
           {
-            "group": "Quickstarts",
-            "pages": [
-              "quickstarts/overview",
-              "quickstarts/client-sdk",
-              "quickstarts/http-api",
-              "quickstarts/mcp-server"
-            ]
-          },
-          {
             "group": "Guides",
             "pages": [
               "web-api/overview",
