@@ -20,7 +20,7 @@ Reference apps that use the published SDKs and server package:
 - **Swift SDK + macOS sample app:** [`alpha-sdk-swift`](https://github.com/jordlee/alpha-sdk-swift)
 
 <Note>
-  Every client targets the same REST server. To run that server locally, install [`@alpha-sdk/api`](/web-api/server-package) — it ships the native binary, the `camera-server` CLI, and (for Node.js applications) a `ServerManager` class for embedding the server lifecycle. Browser-only or mobile applications connect to a server running elsewhere on the network.
+  Every client targets the same REST server. To run that server locally, install [`@alpha-sdk/api`](/web-api/server) — it ships the native binary, the `camera-server` CLI, and (for Node.js applications) a `ServerManager` class for embedding the server lifecycle. Browser-only or mobile applications connect to a server running elsewhere on the network.
 </Note>
 
 ---
@@ -61,7 +61,7 @@ The following are intentionally outside the generated client surface — see [re
   </Card>
 </CardGroup>
 
-<Card title="Need to run the server?" href="/web-api/server-package">
+<Card title="Need to run the server?" href="/web-api/server">
   `@alpha-sdk/api` — installs the REST API server, the `camera-server` CLI, and a Node.js `ServerManager` class.
 </Card>
 

@@ -34,7 +34,7 @@ Then add `AlphaSDK` to your target's dependencies:
 
 In Xcode: **File → Add Package Dependencies…**, paste the URL, choose `from 0.3.1`.
 
-You also need a server reachable from the device. The Swift client does **not** ship a `ServerManager` class — start the server using the Node-based CLI from the [server distribution](/web-api/server-package), or, on macOS, spawn the bundled binary from your application using `Process` ([recipe](/sdk/recipes/server-subprocess#macos)). iOS applications typically connect over the local network to a server running on a Mac, Raspberry Pi, or similar host.
+You also need a server reachable from the device. The Swift client does **not** ship a `ServerManager` class — start the server using the Node-based CLI from the [server package](/web-api/server), or, on macOS, spawn the bundled binary from your application using `Process` ([recipe](/sdk/recipes/server-subprocess#macos)). iOS applications typically connect over the local network to a server running on a Mac, Raspberry Pi, or similar host.
 
 ---
 

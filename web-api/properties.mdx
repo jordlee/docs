@@ -301,11 +301,11 @@ Primarily available on cinema cameras (FX3A, FX3, FX2, FX30). Set `shutter-mode`
 
 ### creative-look / picture-profile
 
-Available look/profile slots vary by camera — A9 III supports 9 looks, A7 IV supports 8 looks; FX30 supports 13 profiles, A9 III supports 9, A7 IV supports 3. Custom slots (`0x41`–`0x44`) are used with [PPLUT workflows](/web-api/lut#pplut-workflow).
+Available look/profile slots vary by camera — A9 III supports 9 looks, A7 IV supports 8 looks; FX30 supports 13 profiles, A9 III supports 9, A7 IV supports 3. Custom slots (`0x41`–`0x44`) are used with [PPLUT workflows](/web-api/advanced-topics#pplut-workflow).
 
 ### movie-shooting-mode
 
-Values: Normal (`0x0001`), CineEI (`0x0301`), CineEI Quick (`0x0302`), Flexible ISO (`0x0201`). See the [CineEI guide](/web-api/cineei) for full workflows.
+Values: Normal (`0x0001`), CineEI (`0x0301`), CineEI Quick (`0x0302`), Flexible ISO (`0x0201`). See the [CineEI guide](/web-api/advanced-topics) for full workflows.
 
 ### pp-lut-base-look
 
@@ -322,7 +322,7 @@ Requires CineEI mode (`movie-shooting-mode` = `0x0301`). The first request may t
 ### shooting-enable
 
 <Warning>
-  Setting to Disabled (`0x2`) blocks all shutter operations via the SDK. License-gated — see [Guardrails](/web-api/guardrails).
+  Setting to Disabled (`0x2`) blocks all shutter operations via the SDK. License-gated — see [Guardrails](/web-api/advanced-topics).
 </Warning>
 
 ### image-id-string

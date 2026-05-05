@@ -18,10 +18,10 @@ description: "alpha-sdk-client — sync + async REST clients with Pydantic model
 pip install alpha-sdk-client
 ```
 
-You also need a running server on `localhost:8080`. The Python client does **not** ship a `ServerManager` class — start the server using the Node-based CLI from the [server distribution](/web-api/server-package), or spawn the binary as a subprocess from Python ([recipe](/sdk/recipes/server-subprocess)).
+You also need a running server on `localhost:8080`. The Python client does **not** ship a `ServerManager` class — start the server using the Node-based CLI from the [server package](/web-api/server), or spawn the binary as a subprocess from Python ([recipe](/sdk/recipes/server-subprocess)).
 
 ```bash
-# One-time install of the server distribution (Node)
+# One-time install of the server package (Node)
 npm install -g @alpha-sdk/api
 camera-server start
 ```

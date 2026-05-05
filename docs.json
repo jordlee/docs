@@ -64,19 +64,16 @@
             "group": "Guides",
             "pages": [
               "web-api/overview",
-              "web-api/server-package",
+              "web-api/server",
               "web-api/compatibility",
               "web-api/connection",
               "web-api/properties",
               "web-api/actions",
               "web-api/live-view",
               "web-api/events",
-              "web-api/lut",
-              "web-api/cineei",
-              "web-api/guardrails",
+              "web-api/advanced-topics",
               "web-api/sd-card",
-              "web-api/settings",
-              "web-api/server"
+              "web-api/settings"
             ]
           },
           {
