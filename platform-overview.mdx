@@ -1,15 +1,14 @@
 ---
 title: Platform overview
-description: "A map of the developer stack — native SDK, HTTP server, client SDKs, and MCP tooling."
+description: "A map of the developer stack — HTTP server, client SDKs, and MCP tooling."
 ---
 
-The Sony Developer Platform is a stack of layers, each wrapping the one below it with a cleaner interface. You can drop in at whichever layer matches your needs.
+The Sony Developer Platform docs are centered on the **Alpha Camera REST API** and the tooling around it. Most developers should start there and only look at Sony's native SDKs if they explicitly need direct C++ / C# integration.
 
 ## The stack
 
 | Layer | What it is | When to use it |
 |-------|-----------|---------------|
-| **Camera Remote SDK** (C++/C#) | Sony's official native SDK — direct USB/Ethernet control of the camera | Native desktop apps, maximum control, latency-critical workflows |
 | **Alpha Camera REST API** | A local HTTP and SSE server that wraps the native SDK. Distributed via npm (`@alpha-sdk/api`) with the `camera-server` CLI and a Node.js `ServerManager` class | Any language; multi-client setups; embedding the server in a Node / Electron / Tauri app |
 | **Language client SDKs** | Official REST clients in TypeScript, Python, and Swift | Apps in any of those languages that call the REST server |
 | **MCP Servers** | AI-assistant–consumable indexes of the SDK and Help Guide | Building with Claude, Cursor, or other MCP tooling |
@@ -29,13 +28,17 @@ The Sony Developer Platform is a stack of layers, each wrapping the one below it
   <Card title="I'm using a language without an SDK" href="/web-api/overview">
     Call the **Alpha Camera REST API** directly. Every language has an HTTP client.
   </Card>
-  <Card title="I need the lowest possible latency" href="/sdk/camera-remote-sdk">
-    Use the **Camera Remote SDK** natively in C++ / C#. No HTTP hop, no server process.
-  </Card>
   <Card title="I'm building with AI assistants" href="/mcp-server/overview">
     Point your assistant at the **MCP Servers** for SDK-accurate code and spec lookups.
   </Card>
 </CardGroup>
+
+## Native Sony SDKs
+
+If you explicitly need direct native integration rather than the REST stack, Sony also provides:
+
+- [Camera Remote SDK](/sdk/camera-remote-sdk) — official C++ / C# camera control SDK
+- [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) — lower-level PTP command SDK for specialized workflows
 
 ## Connection modes
 

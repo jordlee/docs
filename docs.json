@@ -100,13 +100,6 @@
             ]
           },
           {
-            "group": "Sony Native SDKs",
-            "pages": [
-              "sdk/camera-remote-sdk",
-              "sdk/camera-remote-command-sdk"
-            ]
-          },
-          {
             "group": "MCP Server",
             "pages": [
               "MCP-Server/overview",
