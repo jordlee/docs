@@ -1412,6 +1412,15 @@ components:
         mode (`remote` / `remote-transfer` / `contents`) so clients don't
         have to remember what they passed at connect time. When the camera
         is not connected, `data` is omitted.
+      example:
+        success: true
+        message: Camera connected
+        camera:
+          connected: true
+          model: ILCE-7M4
+          id: D06CE00004C4
+        data:
+          mode: remote-transfer
       required: [success]
       properties:
         success:
@@ -1480,6 +1489,16 @@ components:
 
     GetLiveViewStatusResponse:
       type: object
+      example:
+        success: true
+        message: Live view status retrieved
+        camera:
+          connected: true
+          model: ILCE-7M4
+          id: D06CE00004C4
+        data:
+          enabled: true
+          streaming: false
       required: [success, data]
       properties:
         success:
@@ -1493,6 +1512,16 @@ components:
 
     GetOSDStatusResponse:
       type: object
+      example:
+        success: true
+        message: OSD status retrieved
+        camera:
+          connected: true
+          model: ILCE-7M4
+          id: D06CE00004C4
+        data:
+          supported: true
+          enabled: false
       required: [success, data]
       properties:
         success:
