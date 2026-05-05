@@ -78,17 +78,9 @@ LUTs serve different purposes depending on your shooting mode.
 
 ## Import LUT File
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/lut/import`</ParamField>
+`POST /api/cameras/{cameraId}/lut/import` — upload a `.cube` LUT file to the camera. The file is imported asynchronously — the endpoint returns `202 Accepted` immediately and the result is delivered via the [`lutImportResult`](/web-api/events#lutimportresult) SSE event.
 
-Upload a `.cube` LUT file to the camera. The file is imported asynchronously — the endpoint returns `202 Accepted` immediately and the result is delivered via the [`lutImportResult`](/web-api/events#lutimportresult) SSE event.
-
-<ParamField body="filePath" type="string" required>
-  Absolute path to a `.cube` LUT file on the server's filesystem.
-</ParamField>
-
-<ParamField body="slot" type="integer" required>
-  LUT slot number on the camera (1-16).
-</ParamField>
+Body: `filePath` (absolute path to `.cube` file on the server's filesystem), `slot` (1-16).
 
 <CodeGroup>
 ```bash curl
@@ -102,13 +94,6 @@ await cam('D10F60149B0C').importLUT({
   filePath: '/path/to/MyLUT.cube',
   slot: 1
 });
-```
-
-```json Response (202 Accepted)
-{
-  "success": true,
-  "message": "LUT import started"
-}
 ```
 </CodeGroup>
 

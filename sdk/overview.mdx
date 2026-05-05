@@ -1,104 +1,93 @@
 ---
-title: "Overview"
-description: "TypeScript Client SDK (camera-remote-web-api) for controlling Sony cameras — CameraManager, BoundCamera, EventStream, automatic discovery, connection, and reconnection"
-seo:
-  title: "Client SDK Overview — TypeScript Camera Control"
-  description: "camera-remote-web-api TypeScript SDK for Sony camera control. CameraManager handles discovery, connection, reconnection. BoundCamera accessor for typed camera operations."
+title: "SDK Reference"
+description: "Three language clients + a Node.js server manager — pick what matches your stack"
 ---
+
+The Alpha Camera SDK family is a set of official REST clients for the Alpha Camera REST API. Each is published independently and tracks the same versioned API surface.
+
+| Language | Package | Registry | Reference |
+|---|---|---|---|
+| TypeScript / JavaScript | [`@alpha-sdk/client`](https://www.npmjs.com/package/@alpha-sdk/client) | npm | [TypeScript SDK](/sdk/typescript) |
+| Python | [`alpha-sdk-client`](https://pypi.org/project/alpha-sdk-client/) | PyPI | [Python SDK](/sdk/python) |
+| Swift | [`AlphaSDK`](https://github.com/jordlee/alpha-sdk-swift) | SwiftPM | [Swift SDK](/sdk/swift) |
+
+## Example apps
+
+Reference apps that use the published SDKs and server package:
+
+- **Next.js / TypeScript:** [`alpha-sdk-typescript`](https://github.com/jordlee/alpha-sdk-typescript)
+- **Python notebook / data collection:** [`alpha-sdk-python`](https://github.com/jordlee/alpha-sdk-python)
+- **Swift SDK + macOS sample app:** [`alpha-sdk-swift`](https://github.com/jordlee/alpha-sdk-swift)
 
 <Note>
-  The Client SDK is a community-built developer tool and is **not officially supported by Sony**. Only the [Camera Remote SDK](/sdk/camera-remote-sdk) (C++/C#) is an official Sony product.
+  Every client targets the same REST server. To run that server locally, install [`@alpha-sdk/api`](/web-api/server-package) — it ships the native binary, the `camera-server` CLI, and (for Node.js applications) a `ServerManager` class for embedding the server lifecycle. Browser-only or mobile applications connect to a server running elsewhere on the network.
 </Note>
 
-The Client SDK (`camera-remote-web-api`) is a TypeScript package that wraps the [Camera Remote Web API](/web-api/overview). It offers two ways to interact with cameras:
-
-- **Stateless** — `CameraManager` handles discovery, connection, reconnection, and state tracking automatically. Most users should start here.
-- **Stateful** — Import `CameraClient`, `EventStream`, `LiveViewStream`, and `ServerManager` individually for full manual control over the connection lifecycle.
-
-<CardGroup cols={2}>
-  <Card title="Quick Start" icon="rocket" href="/quickstarts/client-sdk">
-    Install, capture a photo, and run it — in under 5 minutes
-  </Card>
-  <Card title="Compatibility" icon="table" href="/web-api/compatibility">
-    Per-camera API support, connection modes, and OS compatibility
-  </Card>
-</CardGroup>
-
 ---
 
-## Stateless vs Stateful
+## Quick orientation
 
-| | CameraManager (Stateless) | Individual Classes (Stateful) |
-|---|---|---|
-| **State** | Managed for you | You own and manage all state |
-| **Connection lifecycle** | Automatic — discovery, connect, reconnect | Manual — call `connectCamera()` and wait for SSE callback |
-| **Server binary** | Managed internally | You spawn and stop `ServerManager` yourself |
-| **Event subscriptions** | `manager.on()` for lifecycle events | Wire up `EventStream` per camera |
-| **Camera selection** | All cameras auto-connected | You choose which cameras to connect |
-| **Best for** | Most applications | Custom connection managers, selective camera control, browser-only clients |
+Every language client follows the same shape:
 
----
-
-## Stateless: CameraManager
-
-`CameraManager` is the only class most users need. It abstracts three concerns:
-
-1. **Camera state management** — discovery, connection, reconnection, and state tracking happen automatically
-2. **Server binary management** — spawns and monitors the native binary (server variant only)
-3. **Typed camera control** — property read/write, shutter/focus/zoom actions, live view, and SD card access via `manager.camera(id)`
-
-```typescript
-import { CameraManager } from 'camera-remote-web-api/server';
-
-const manager = new CameraManager({ port: 8080 });
-
-manager.on('camera-ready', async ({ cameraId }) => {
-  const cam = manager.camera(cameraId);
-  await cam.setPriorityKey({ setting: 'pc-remote' });
-  await cam.triggerShutter();
-});
-
-await manager.start();
+```
+client
+  ├── server          health, status, logs
+  ├── cameras         list, connect, disconnect, getConnectionStatus
+  ├── properties      get, set, getAll, getPriorityKey, setPriorityKey
+  ├── actions         shutter, halfPress, afShutter, zoom, focusNearFar, movieRec
+  ├── liveView        enable, disable, getStatus, start, stop, getFrame
+  ├── sdCard          list, download, downloadThumbnail, downloadScreennail
+  └── settings        download, upload, list, importLut
 ```
 
-<CardGroup cols={2}>
-  <Card title="CameraManager" icon="video" href="/sdk/camera-manager">
-    Options, connection modes, and the full CameraManager API
-  </Card>
-  <Card title="System Design" icon="sitemap" href="/sdk/architecture">
-    Browser vs server variants and framework patterns
-  </Card>
-</CardGroup>
+The following are intentionally outside the generated client surface — see [recipes](#recipes) for the recommended patterns:
+
+- **Server-Sent Events** — consume with native `EventSource` (browser), `URLSession.bytes(for:)` (Swift), or `httpx.stream` (Python).
+- **Discovery, reconnect, and lifecycle helpers** — copy the recipe that fits your application.
 
 ---
 
-## Stateful: Individual Classes
+## Pick your path
 
-For advanced use cases, import the individual classes that CameraManager uses internally. This gives you full control over the connection lifecycle, event subscriptions, and binary management.
-
-<CardGroup cols={2}>
-  <Card title="CameraClient" icon="code" href="/sdk/stateful/camera-client">
-    Typed HTTP client for all endpoints
+<CardGroup cols={3}>
+  <Card title="TypeScript" href="/sdk/typescript">
+    `npm install @alpha-sdk/client` — Node, Electron, Tauri, browsers.
   </Card>
-  <Card title="EventStream" icon="bolt" href="/sdk/stateful/event-stream">
-    SSE client for real-time camera notifications
+  <Card title="Python" href="/sdk/python">
+    `pip install alpha-sdk-client` — sync + async clients, Pydantic models.
   </Card>
-  <Card title="LiveViewStream" icon="video" href="/sdk/stateful/live-view-stream">
-    WebSocket client for continuous JPEG streaming
-  </Card>
-  <Card title="ServerManager" icon="server" href="/sdk/stateful/server-manager">
-    Low-level binary process manager
+  <Card title="Swift" href="/sdk/swift">
+    SwiftPM — iOS 15+, macOS 12+, native async/await.
   </Card>
 </CardGroup>
 
+<Card title="Need to run the server?" href="/web-api/server-package">
+  `@alpha-sdk/api` — installs the REST API server, the `camera-server` CLI, and a Node.js `ServerManager` class.
+</Card>
+
 ---
 
-## Client SDK vs HTTP API
+## Recipes
 
-| | Client SDK | HTTP API |
-|---|---|---|
-| **Type safety** | Full TypeScript types for all operations | Raw JSON request/response |
-| **SSE events** | Built-in subscription via `manager.on()` and `EventStream` | Manual SSE client setup |
-| **Language** | TypeScript/JavaScript only | Any language with HTTP support |
+Patterns that live outside the generated SDK surface. Copy and adapt — every recipe shows TypeScript, Python, and Swift side-by-side.
 
-**Use the Client SDK** unless you need language-agnostic HTTP access or want full manual control over the request lifecycle. For raw HTTP endpoints, see the [API Reference](/web-api/overview).
+<CardGroup cols={2}>
+  <Card title="SSE event consumer" href="/sdk/recipes/sse-events">
+    React in real time to `propertyChanged`, `downloadComplete`, `transferProgress`, etc.
+  </Card>
+  <Card title="Live-view JPEG polling" href="/sdk/recipes/live-view-polling">
+    Pull a frame every ~66ms and render it.
+  </Card>
+  <Card title="Server subprocess" href="/sdk/recipes/server-subprocess">
+    Spawn the native server from Python or any non-Node runtime.
+  </Card>
+  <Card title="Discovery + reconnect" href="/sdk/recipes/discovery-reconnect">
+    Poll `/api/cameras`, track which is connected, hot-plug handling.
+  </Card>
+  <Card title="Retry + backoff" href="/sdk/recipes/retry-backoff">
+    Hand-roll exponential backoff for flaky connect / SD card calls.
+  </Card>
+  <Card title="React hook" href="/sdk/recipes/react-hook">
+    `useCamera()` — bind one camera's connection + property state.
+  </Card>
+</CardGroup>

@@ -5,6 +5,8 @@ description: "Live view streaming with optional camera UI overlay"
 
 Per-camera live view with optional OSD (On-Screen Display) overlay. All endpoints are scoped to a specific camera.
 
+See the auto-generated [API reference](/web-api/overview) for full request/response schemas.
+
 ## Workflow
 
 <Tabs>
@@ -38,59 +40,28 @@ Per-camera live view with optional OSD (On-Screen Display) overlay. All endpoint
 
 ---
 
-## Enable Live View
+## Endpoints
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/enable`</ParamField>
-
-Sends the SDK `Setting_Key_EnableLiveView` command to the camera.
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/cameras/{id}/live-view/enable` | Send SDK `Setting_Key_EnableLiveView` |
+| `POST` | `/api/cameras/{id}/live-view/disable` | Disable live view |
+| `GET` | `/api/cameras/{id}/live-view/status` | Returns `enabled` + `streaming` booleans |
+| `POST` | `/api/cameras/{id}/live-view/start` | Start the frame capture worker (auto-enables live view) |
+| `POST` | `/api/cameras/{id}/live-view/stop` | Stop the frame capture worker |
+| `GET` | `/api/cameras/{id}/live-view/frame` | Latest JPEG frame (`Content-Type: image/jpeg`) |
+| `POST` | `/api/cameras/{id}/live-view/osd-enable` | Enable OSD overlay |
+| `POST` | `/api/cameras/{id}/live-view/osd-disable` | Disable OSD overlay |
+| `GET` | `/api/cameras/{id}/live-view/osd-status` | Returns `supported` + `enabled` |
+| `GET` | `/api/cameras/{id}/live-view/osd-frame` | Composited JPEG (live view + OSD) |
 
 <Warning>
-Live view is disabled by default in `remote-transfer` mode. You must call this endpoint before requesting frames.
+Live view is disabled by default in `remote-transfer` mode. You must call `/live-view/enable` (or `/live-view/start` which auto-enables) before requesting frames.
 </Warning>
 
----
+### Get Frame
 
-## Disable Live View
-
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/disable`</ParamField>
-
----
-
-## Live View Status
-
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/status`</ParamField>
-
-```json
-{
-  "success": true,
-  "data": {
-    "enabled": "true",
-    "streaming": "true"
-  }
-}
-```
-
----
-
-## Start Streaming
-
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/start`</ParamField>
-
-Starts the frame capture worker thread. Auto-enables live view if disabled.
-
----
-
-## Stop Streaming
-
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/stop`</ParamField>
-
----
-
-## Get Frame
-
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/frame`</ParamField>
-
-Returns the latest live view frame as a JPEG image (`Content-Type: image/jpeg`). Streaming must be started first.
+Returns the latest live view frame as a JPEG image. Streaming must be started first.
 
 <CodeGroup>
 ```bash curl
@@ -102,43 +73,9 @@ const frame = await client.getLiveViewFrame('D10F60149B0C'); // ArrayBuffer (JPE
 ```
 </CodeGroup>
 
----
+### OSD Overlay
 
-## Enable OSD
-
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/osd-enable`</ParamField>
-
-Enable On-Screen Display overlay. The camera renders its UI (exposure info, focus points, histogram, etc.) as an overlay image.
-
----
-
-## Disable OSD
-
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/live-view/osd-disable`</ParamField>
-
----
-
-## OSD Status
-
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/osd-status`</ParamField>
-
-```json
-{
-  "success": true,
-  "data": {
-    "supported": "true",
-    "enabled": "true"
-  }
-}
-```
-
----
-
-## Get OSD Frame
-
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/live-view/osd-frame`</ParamField>
-
-Returns a composited JPEG — live view image with camera UI overlay on top.
+Enable on-screen display — the camera renders its UI (exposure info, focus points, histogram, etc.) as an overlay image composited onto the live view frame.
 
 ```bash
 curl -o osd-frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/osd-frame
@@ -146,51 +83,22 @@ curl -o osd-frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/o
 
 ---
 
-## WebSocket Streaming
+## Polling for continuous frames
 
-For continuous frame streaming at ~15fps, use the WebSocket endpoint.
+For a render loop at ~15 fps, poll the `live-view/frame` endpoint at ~66 ms intervals. The frame endpoint returns the most recent JPEG the server has captured — the camera-side frame rate is the cap, not the polling cadence.
 
-**Endpoint:** `ws://localhost:8080/ws`
+```typescript TypeScript (polling via SDK)
+import { AlphaSDKClient } from "@alpha-sdk/client";
 
-Connect with `binaryType: 'arraybuffer'`. Each binary message is a complete JPEG frame.
+const client = new AlphaSDKClient({ environment: "http://localhost:8080" });
+const cameraId = "D10F60149B0C";
 
-### Commands (send as JSON text)
-
-```json
-// Start live view for a specific camera
-{"action": "start_liveview", "cameraId": "D10F60149B0C"}
-
-// Stop live view
-{"action": "stop_liveview"}
+const interval = setInterval(async () => {
+  const res = await client.liveView.getFrame({ cameraId });
+  const jpeg = await res.arrayBuffer();
+  // render — e.g. drawImage on a canvas, or set <img src=URL.createObjectURL(...)>
+}, 66);
+// clearInterval(interval) when done.
 ```
 
-### Client Example
-
-<CodeGroup>
-```javascript Browser (WebSocket)
-const ws = new WebSocket('ws://localhost:8080/ws');
-ws.binaryType = 'arraybuffer';
-
-ws.onopen = () => {
-  ws.send(JSON.stringify({
-    action: 'start_liveview',
-    cameraId: 'D10F60149B0C'
-  }));
-};
-
-ws.onmessage = (event) => {
-  const blob = new Blob([event.data], { type: 'image/jpeg' });
-  document.getElementById('liveView').src = URL.createObjectURL(blob);
-};
-```
-
-```typescript TypeScript (LiveViewStream)
-import { LiveViewStream } from 'camera-remote-web-api/server';
-
-const liveView = new LiveViewStream('ws://localhost:8080', 'D10F60149B0C');
-liveView.onFrame((jpeg: ArrayBuffer) => {
-  // Process JPEG frame (~15fps)
-});
-liveView.close();
-```
-</CodeGroup>
+See [the live-view polling recipe](/sdk/recipes/live-view-polling) for a full version with start/stop, a render loop, and back-pressure — in TypeScript, Python, and Swift.

@@ -4,32 +4,34 @@ description: "RESTful control for Sony cameras — shooting, settings, live view
 ---
 
 <Note>
-  The Camera Remote Web API is a community-built developer tool and is **not officially supported by Sony**. Only the [Camera Remote SDK](/sdk/camera-remote-sdk) (C++/C#) is an official Sony product.
+  The Alpha Camera REST API is a community-built developer tool and is **not officially supported by Sony**. Only the [Camera Remote SDK](/sdk/camera-remote-sdk) (C++/C#) is an official Sony product.
 </Note>
 
-The Camera Remote Web API provides HTTP endpoints to control Sony cameras connected via USB or network. It runs as a local server and supports multi-camera simultaneous operation.
+The Alpha Camera REST API provides HTTP endpoints to control Sony cameras connected via USB or network. It runs as a local server and supports multi-camera simultaneous operation.
 
 ## Connection Modes
 
-<CardGroup cols={3}>
-  <Card title="remote" icon="camera">
-    Full camera control: shooting, settings, live view. Auto-transfer images to host PC.
-  </Card>
-  <Card title="remote-transfer" icon="camera-retro">
-    Camera control + explicit SD card file access. Most capable mode.
-  </Card>
-  <Card title="contents" icon="sd-card">
-    SD card file access only. No shooting or settings control.
-  </Card>
-</CardGroup>
+| Mode | Capabilities |
+|------|-------------|
+| `remote` | Full camera control — shooting, settings, live view. Auto-transfers images to the host PC. |
+| `remote-transfer` | Full camera control + explicit SD card file access. Most capable mode. |
+| `contents` | SD card file access only. No shooting or settings control. |
 
 ## Architecture
 
-The Camera Remote Web API is an HTTP server built on Sony's native [Camera Remote SDK](/sdk/camera-remote-sdk). It translates RESTful requests into native SDK calls, enabling camera control from any language or tool that can make HTTP requests. For TypeScript projects, the [Client SDK](/sdk/overview) wraps this API with managed lifecycle and typed methods.
+The Alpha Camera REST API is an HTTP + SSE server built on Sony's native [Camera Remote SDK](/sdk/camera-remote-sdk). It translates RESTful requests into native SDK calls, enabling camera control from any language or tool that can make HTTP requests.
+
+If you'd rather call typed methods than build URLs by hand, three [language clients](/sdk/overview) wrap this API:
+
+- **TypeScript / Node** — [`@alpha-sdk/client`](/sdk/typescript)
+- **Python** — [`alpha-sdk-client`](/sdk/python)
+- **Swift (iOS / macOS)** — [`AlphaSDK`](/sdk/swift)
+
+To run the server itself: `npm install -g @alpha-sdk/api && camera-server start`. Or embed it in your Node app via the [`ServerManager`](/web-api/server-package) class.
 
 ## Quick Start
 
-<Card title="HTTP API Quickstart" icon="rocket" href="/quickstarts/http-api">
+<Card title="Alpha Camera REST API Quickstart" href="/quickstarts/http-api">
   Discover, connect, and shoot with curl in under 5 minutes
 </Card>
 

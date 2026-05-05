@@ -3,15 +3,13 @@ title: "Actions"
 description: "Shooting commands, video recording, zoom, and focus control"
 ---
 
+Shooting, focus, zoom, and movie-record commands. All actions require the camera to be connected and `priority-key` set to `pc-remote`.
+
+See the auto-generated [API reference](/web-api/overview) for full request/response schemas.
+
 ## Shutter
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/shutter`</ParamField>
-
-Take a single photo, or control continuous shooting with `down`/`up`.
-
-<ParamField body="action" type="string">
-  Optional. `down` to start continuous shooting, `up` to stop. Omit for single shot.
-</ParamField>
+`POST /api/cameras/{cameraId}/actions/shutter` — take a single photo, or control continuous shooting with `{"action": "down"}` / `{"action": "up"}`.
 
 <CodeGroup>
 ```bash curl (Single Shot)
@@ -46,9 +44,7 @@ await client.triggerShutter('D10F60149B0C', { action: 'up' });
 
 ## Half-Press (Focus Lock)
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/half-press`</ParamField>
-
-Half-press the shutter button to lock autofocus (S1 press). No body required.
+`POST /api/cameras/{cameraId}/actions/half-press` — half-press the shutter button to lock autofocus (S1 press). No body required.
 
 <CodeGroup>
 ```bash curl
@@ -64,9 +60,7 @@ await client.halfPress('D10F60149B0C');
 
 ## AF + Shutter
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/af-shutter`</ParamField>
-
-Autofocus then immediately capture in one operation. No body required.
+`POST /api/cameras/{cameraId}/actions/af-shutter` — autofocus then immediately capture in one operation. No body required.
 
 <CodeGroup>
 ```bash curl
@@ -82,12 +76,9 @@ await client.afShutter('D10F60149B0C');
 
 ## Zoom
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/zoom`</ParamField>
+`POST /api/cameras/{cameraId}/actions/zoom` — control power zoom lenses. Requires a power zoom lens to be attached.
 
-Control power zoom lenses. Requires a power zoom lens to be attached.
-
-<ParamField body="direction" type="string" required>`in` or `out`</ParamField>
-<ParamField body="speed" type="string" required>`normal` or `fast`</ParamField>
+Body: `direction` (`in` or `out`), `speed` (`normal` or `fast`).
 
 <CodeGroup>
 ```bash curl
@@ -108,13 +99,7 @@ await client.stopZoom('D10F60149B0C');
 
 ## Focus Near/Far
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/focus-near-far`</ParamField>
-
-Move focus in discrete steps. Range: `-7` (near, max speed) to `+7` (far, max speed). Magnitude controls speed. `0` is not valid.
-
-<ParamField body="step" type="integer" required>
-  `-7` to `+7`. Negative = near, positive = far.
-</ParamField>
+`POST /api/cameras/{cameraId}/actions/focus-near-far` — move focus in discrete steps. Range: `-7` (near, max speed) to `+7` (far, max speed). Magnitude controls speed. `0` is not valid.
 
 <CodeGroup>
 ```bash curl (Focus Near)
@@ -143,9 +128,7 @@ For absolute focus positioning, use `PUT /api/cameras/{id}/properties/focus-posi
 
 ## Movie Recording
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/actions/movie-rec`</ParamField>
-
-Start or stop video recording. This is a toggle action — call once to start recording, call again to stop. Uses the SDK's hold-style command (Down to start, Up to stop).
+`POST /api/cameras/{cameraId}/actions/movie-rec` — start or stop video recording. This is a toggle action — call once to start recording, call again to stop. Uses the SDK's hold-style command (Down to start, Up to stop).
 
 Monitor recording state via the [`recording-state`](/web-api/properties#recording-state) property or [`propertyChanged`](/web-api/events#propertychanged) SSE events.
 
@@ -156,13 +139,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/actions/movie-rec
 
 ```typescript TypeScript
 await cam('D10F60149B0C').toggleMovieRecording();
-```
-
-```json Response
-{
-  "success": true,
-  "message": "Movie recording toggled"
-}
 ```
 </CodeGroup>
 

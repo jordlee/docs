@@ -5,45 +5,56 @@ description: "Choose the right integration path for your project"
 
 ## Available APIs & SDKs
 
-Sony offers several ways to control cameras programmatically. Each targets a different use case and language — pick the one that fits your project.
+Several ways to control cameras programmatically — pick the one that fits your stack.
 
-| Product | Language | What It Does |
-|---------|----------|-------------|
-| [Client SDK](/sdk/overview) | TypeScript | High-level npm package — managed camera lifecycle, auto-discovery, typed APIs, reconnection |
-| [HTTP API](/web-api/overview) | Any | RESTful endpoints on localhost — call from curl, Python, Go, or any HTTP client |
-| [Camera Remote SDK](/sdk/camera-remote-sdk) | C++, C# | Sony's official native SDK — direct camera control without an HTTP layer |
-| [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) | C++ | PTP-based protocol for low-level direct camera commands |
-| [AI SDK Assistant](/MCP-Server/overview) | -- | MCP server that connects AI assistants to 13,000+ pieces of SDK documentation |
+| Product | Language | What it does |
+|---------|----------|--------------|
+| [TypeScript Client SDK](/sdk/typescript) | TypeScript / JS | Official REST client. Pair with the [server distribution](/web-api/server-package) for an embedded server lifecycle. |
+| [Python Client SDK](/sdk/python) | Python | Sync and async REST client with Pydantic models. |
+| [Swift Client SDK](/sdk/swift) | Swift | Native `async/await` client for iOS, macOS, tvOS, and watchOS. |
+| [Alpha Camera REST API](/web-api/server-package) | Any | The HTTP and SSE server itself. Install via npm; ships with the `camera-server` CLI and a Node.js `ServerManager` class. |
+| [Camera Remote SDK](/sdk/camera-remote-sdk) | C++, C# | Sony's official native SDK — bypasses the HTTP layer entirely. |
+| [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) | C++ | PTP-based protocol for low-level direct camera commands. |
+| [CameraRemoteSDK MCP Server](/mcp-server/overview) | — | MCP server connecting AI assistants to 13,000+ pieces of Camera Remote SDK documentation. |
+| [CameraHelp MCP Server](/mcp-server/overview) | — | MCP server connecting AI assistants to Sony's help guides for 24 camera models. |
 
-## How They Relate
+## How they relate
 
 ```
-Your Application
-    |
-    ├── Client SDK (TypeScript)     ── npm package, manages cameras automatically
-    ├── HTTP API (curl / any lang)  ── RESTful endpoints on localhost
-    |       |
-    |   Camera Remote Web API Server (native binary, bundled with Client SDK)
-    |       |
-    └── Camera Remote SDK (C++ / C#) ── Sony's official native SDK
-            |
-        Sony Camera (USB / Network)
+Your application
+    │
+    ├─ @alpha-sdk/client  (TypeScript)  ┐
+    ├─ alpha-sdk-client    (Python)      ├─► Alpha Camera REST API (HTTP + SSE on :8080)
+    ├─ AlphaSDK            (Swift)       ┘             │
+    └─ raw HTTP client     (any lang)  ─►              │
+                                                        │
+                                            Native server binary
+                                            (shipped via @alpha-sdk/api,
+                                             built on Sony's Camera Remote SDK)
+                                                        │
+                                                Sony camera (USB / network)
 ```
 
-The **Client SDK** and **HTTP API** both use the Camera Remote Web API Server under the hood — a local HTTP server built on Sony's native **Camera Remote SDK**. The Client SDK manages the server binary for you; the HTTP API lets you call it directly from any language. The native SDKs (Camera Remote SDK, Camera Remote Command SDK) are for developers who want to bypass the HTTP layer entirely.
+All three managed clients call the same REST and SSE server. The server is distributed on npm as `@alpha-sdk/api` — run it standalone via `camera-server start`, or, from a Node application, embed its lifecycle via the `ServerManager` class. C++/C# developers can skip the HTTP layer and use the native SDK directly.
 
 ---
 
-## Get Started
+## Get started
 
 <CardGroup cols={3}>
-  <Card title="Client SDK" icon="js" href="/quickstarts/client-sdk">
-    Set up a TypeScript project with managed camera control
+  <Card title="TypeScript / Node" href="/quickstarts/client-sdk">
+    `npm install @alpha-sdk/client @alpha-sdk/api`
   </Card>
-  <Card title="HTTP API" icon="globe" href="/quickstarts/http-api">
-    Control cameras with curl or any HTTP client
+  <Card title="Python" href="/sdk/python">
+    `pip install alpha-sdk-client`
   </Card>
-  <Card title="MCP Server" icon="robot" href="/quickstarts/mcp-server">
-    Connect AI SDK Assistant to Claude or Cursor
+  <Card title="Swift" href="/sdk/swift">
+    SwiftPM — `https://github.com/jordlee/alpha-sdk-swift.git`
+  </Card>
+  <Card title="Raw HTTP / curl" href="/quickstarts/http-api">
+    Just talk to the REST endpoints on localhost
+  </Card>
+  <Card title="MCP Server" href="/mcp-server/overview">
+    Connect Claude, Cursor, or any MCP-capable assistant
   </Card>
 </CardGroup>

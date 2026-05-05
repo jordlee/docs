@@ -26,7 +26,7 @@
         {
           "anchor": "Camera Remote Web API",
           "icon": "npm",
-          "href": "https://www.npmjs.com/package/camera-remote-web-api"
+          "href": "https://www.npmjs.com/package/@alpha-sdk/api"
         },
         {
           "anchor": "Products",
@@ -55,8 +55,9 @@
         "tab": "Quickstarts",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Overview",
             "pages": [
+              "platform-overview",
               "quickstarts/overview",
               "quickstarts/client-sdk",
               "quickstarts/http-api",
@@ -72,50 +73,39 @@
             "group": "Client SDKs",
             "pages": [
               "sdk/overview",
-              "sdk/reference",
-              {
-                "group": "Stateless API Access",
-                "pages": [
-                  "sdk/camera-manager",
-                  "sdk/architecture",
-                  "sdk/state",
-                  "sdk/events",
-                  "sdk/properties-actions",
-                  "sdk/examples"
-                ]
-              },
-              {
-                "group": "Stateful API Access",
-                "pages": [
-                  "sdk/stateful/camera-client",
-                  "sdk/stateful/event-stream",
-                  "sdk/stateful/live-view-stream",
-                  "sdk/stateful/server-manager"
-                ]
-              }
+              "sdk/typescript",
+              "sdk/python",
+              "sdk/swift"
             ]
           },
           {
-            "group": "Camera Remote SDK",
+            "group": "Recipes",
             "pages": [
-              "sdk/camera-remote-sdk"
+              "sdk/recipes/sse-events",
+              "sdk/recipes/live-view-polling",
+              "sdk/recipes/server-subprocess",
+              "sdk/recipes/discovery-reconnect",
+              "sdk/recipes/retry-backoff",
+              "sdk/recipes/react-hook"
             ]
           },
           {
-            "group": "Camera Remote Command SDK",
+            "group": "Native Sony SDKs",
             "pages": [
+              "sdk/camera-remote-sdk",
               "sdk/camera-remote-command-sdk"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Web API",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Overview",
             "pages": [
               "web-api/overview",
+              "web-api/server-package",
               "web-api/compatibility"
             ]
           },
@@ -138,6 +128,17 @@
         ]
       },
       {
+        "tab": "CLI",
+        "groups": [
+          {
+            "group": "camera-server",
+            "pages": [
+              "cli/camera-server"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "MCP Server",
         "groups": [
           {
@@ -149,29 +150,25 @@
             ]
           },
           {
-            "group": "Camera Remote Web API Docs",
-            "pages": [
-              "MCP-Server/web-api-docs"
-            ]
-          },
-          {
-            "group": "Camera Remote SDK Docs",
-            "pages": [
-              "MCP-Server/sdk-docs"
-            ]
-          },
-          {
-            "group": "Camera Help Guides",
-            "pages": [
-              "MCP-Server/help-guides"
-            ]
-          },
-          {
             "group": "Reference",
             "pages": [
-              "MCP-Server/compatibility",
-              "MCP-Server/troubleshooting",
-              "MCP-Server/privacy"
+              "MCP-Server/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "groups": [
+          {
+            "group": "Releases",
+            "pages": [
+              "changelog/05-04-2026",
+              "changelog/04-03-2026",
+              "changelog/03-29-2026",
+              "changelog/03-25-2026",
+              "changelog/03-17-2026",
+              "changelog/02-27-2026"
             ]
           }
         ]

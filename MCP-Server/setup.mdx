@@ -1,23 +1,20 @@
 ---
-description: "Connecting your LLM to the MCP Servers"
-icon: "book"
 title: "Setup"
+description: "Connecting your LLM to the MCP Servers"
 ---
 
-<Card icon="rocket" href="/quickstarts/mcp-server" title="Quick Setup">
-  Want the short version? Get running in under 5 minutes
+<Card href="/mcp-server/overview" title="Overview">
+  New to the MCP servers? Start with the overview.
 </Card>
 
-Sony provides three public MCP servers and one authenticated server for AI-assisted development:
+We provide two public MCP servers for AI-assisted development:
 
-| Server                                       | Name              | Description                                                                       | URL                                                      |
-| -------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [**Web API Docs**](/MCP-Server/web-api-docs) | `CameraWebAPI`    | Camera Remote Web API endpoints, Client SDK (TypeScript)                          | `https://crsdk.app/mcp`                                  |
-| [**SDK Docs**](/MCP-Server/sdk-docs)         | `CameraRemoteSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#)       | `https://sdk-rag-agent-production.up.railway.app/mcp`    |
-| [**Help Guides**](/MCP-Server/help-guides)   | `CameraHelp`      | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
-| **Athena Bridge**                            | `AthenaBridge`    | AI-powered SDK planning and analysis (requires authentication)                    | `https://sdk-bridge-production.up.railway.app/mcp`       |
+| Server | Name | Description | URL |
+| --- | --- | --- | --- |
+| **SDK Docs** | `CameraRemoteSDK` | Camera Remote SDK documentation, API references, and code examples (C++/C#) | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+| **Help Guides** | `CameraHelp` | Camera help guides, settings, and feature documentation for 24 Sony camera models | `https://camera-rag-agent-production.up.railway.app/mcp` |
 
-All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor. You can install one, two, or all three public servers. Athena Bridge requires a one-time authentication step.
+Both servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Claude Desktop, and Claude Code) as well as other AI-powered IDEs like Cursor. You can install one or both.
 
 <Note>
   These tools are still in Private Beta. Please do not share the MCP server URLs with others.
@@ -43,7 +40,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     1. **Add the Connector**
        - Go to **Settings → Connectors**
        - Click **Add custom connector**
-       - Name it using the server name from the table above (e.g. `CameraWebAPI`, `CameraRemoteSDK`, or `CameraHelp`)
+       - Name it using the server name from the table above (e.g. `CameraRemoteSDK` or `CameraHelp`)
        - Paste the corresponding MCP Server URL into the "Remote MCP server URL" field
        - Click **Add**
        - Refresh if needed — you should now see your new connector
@@ -75,7 +72,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
        </Tip>
     4. **Configure System Prompt (Optional but Recommended)**
 
-       A system prompt significantly improves performance. See the [System Prompt](/MCP-Server/system-prompt) page for setup instructions.
+       A system prompt significantly improves performance. See the [System Prompt](/mcp-server/system-prompt) page for setup instructions.
 
     ### Using the MCP Servers
 
@@ -110,8 +107,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     <Tabs>
       <Tab title="macOS / Linux">
         ```bash
-        # Web API Docs
-        claude mcp add CameraWebAPI --scope user -- npx mcp-remote https://crsdk.app/mcp
         # SDK Docs
         claude mcp add CameraRemoteSDK --scope user -- npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
         # Help Guides
@@ -120,8 +115,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
       </Tab>
       <Tab title="Windows (PowerShell or CMD)">
         ```bash
-        # Web API Docs
-        claude mcp add CameraWebAPI --scope user -- cmd /c npx mcp-remote https://crsdk.app/mcp
         # SDK Docs
         claude mcp add CameraRemoteSDK --scope user -- cmd /c npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp
         # Help Guides
@@ -136,7 +129,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     ```
 
     <Tip>
-      For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
+      For system prompt setup, see the [System Prompt](/mcp-server/system-prompt) page.
     </Tip>
     ---
 
@@ -153,14 +146,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "CameraWebAPI": {
-              "type": "stdio",
-              "command": "npx",
-              "args": [
-                "mcp-remote",
-                "https://crsdk.app/mcp"
-              ]
-            },
             "CameraRemoteSDK": {
               "type": "stdio",
               "command": "npx",
@@ -187,14 +172,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "CameraWebAPI": {
-              "type": "stdio",
-              "command": "cmd",
-              "args": [
-                "/c", "npx", "mcp-remote",
-                "https://crsdk.app/mcp"
-              ]
-            },
             "CameraRemoteSDK": {
               "type": "stdio",
               "command": "cmd",
@@ -229,12 +206,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     | **Linux**   | `/home/<your-username>/.claude.json`    |
     | **Windows** | `C:\Users\<your-username>\.claude.json` |
 
-    This is a **hidden file** (starts with `.`). To see it:
-
-    - **macOS Finder:** Press `Cmd + Shift + .` to toggle hidden files
-    - **Windows Explorer:** View → Show → Hidden items
-    - **Terminal:** `code ~/.claude.json` (VS Code) or `notepad %USERPROFILE%\.claude.json` (Windows)
-
     Uses the same JSON format as Project Scope above.
 
     #### Local Scope — `.claude.local.json` (Private)
@@ -256,7 +227,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     ```json
     {
       "approvedTools": [
-        "mcp__CameraWebAPI",
         "mcp__CameraRemoteSDK",
         "mcp__CameraHelp"
       ]
@@ -268,10 +238,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     ```json
     {
       "approvedTools": [
-        "mcp__CameraWebAPI__search_sdk",
-        "mcp__CameraWebAPI__search_code_examples",
-        "mcp__CameraWebAPI__search_documentation",
-        "mcp__CameraWebAPI__search_api_functions",
         "mcp__CameraRemoteSDK__search_sdk",
         "mcp__CameraRemoteSDK__search_code_examples",
         "mcp__CameraRemoteSDK__search_documentation",
@@ -301,10 +267,9 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     ### Managing & Removing Servers
 
     ```bash
-    claude mcp list                                  # List all servers
-    claude mcp remove CameraWebAPI --scope user             # Remove Web API Docs
-    claude mcp remove CameraRemoteSDK --scope user             # Remove SDK Docs
-    claude mcp remove CameraHelp --scope user   # Remove Help Guides
+    claude mcp list                                       # List all servers
+    claude mcp remove CameraRemoteSDK --scope user        # Remove SDK Docs
+    claude mcp remove CameraHelp --scope user             # Remove Help Guides
     ```
 
     <Note>
@@ -317,7 +282,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     | `npx` not found                       | Ensure Node.js (v18+) is installed and `npx` is on your PATH. Verify with `npx --version`.                                             |
     | Windows: `npx` not recognized         | Use the `cmd /c` wrapper as shown in the Windows configs above. If still failing, try the full path: `C:\Program Files\nodejs\npx.cmd` |
     | Server not connecting                 | Ensure you're not behind a proxy/VPN blocking the server URLs.                                                                         |
-    | `approvedTools` not working           | Verify the server name in your MCP config matches the prefix in `approvedTools` (e.g. `CRSDK`, `Kando`, `CameraAssistant`).            |
+    | `approvedTools` not working           | Verify the server name in your MCP config matches the prefix in `approvedTools` (e.g. `CameraRemoteSDK`, `CameraHelp`).                |
     | `.mcp.json` not detected              | File must be in the **project root** directory. Restart Claude Code after creating it.                                                 |
     | macOS: permission prompt on first use | For project-scoped `.mcp.json`, Claude Code will prompt for approval on first use. Accept to continue.                                 |
   </Tab>
@@ -338,7 +303,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
 
     | Server       | Name              | Command                                                                 |
     | ------------ | ----------------- | ----------------------------------------------------------------------- |
-    | Web API Docs | `CameraWebAPI`    | `npx mcp-remote https://crsdk.app/mcp`                                  |
     | SDK Docs     | `CameraRemoteSDK` | `npx mcp-remote https://sdk-rag-agent-production.up.railway.app/mcp`    |
     | Help Guides  | `CameraHelp`      | `npx mcp-remote https://camera-rag-agent-production.up.railway.app/mcp` |
 
@@ -347,7 +311,7 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     7. Verify the server shows as connected in the MCP settings panel
 
     <Tip>
-      For system prompt setup, see the [System Prompt](/MCP-Server/system-prompt) page.
+      For system prompt setup, see the [System Prompt](/mcp-server/system-prompt) page.
     </Tip>
     ---
 
@@ -364,13 +328,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "CameraWebAPI": {
-              "command": "npx",
-              "args": [
-                "mcp-remote",
-                "https://crsdk.app/mcp"
-              ]
-            },
             "CameraRemoteSDK": {
               "command": "npx",
               "args": [
@@ -393,13 +350,6 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
         ```json
         {
           "mcpServers": {
-            "CameraWebAPI": {
-              "command": "cmd",
-              "args": [
-                "/c", "npx", "mcp-remote",
-                "https://crsdk.app/mcp"
-              ]
-            },
             "CameraRemoteSDK": {
               "command": "cmd",
               "args": [
@@ -450,41 +400,3 @@ All servers are compatible with Anthropic's LLMs (claude.ai, Claude Mobile, Clau
     | Tools not available in chat   | Verify the server is connected in **Settings \> Features \> MCP**. |
   </Tab>
 </Tabs>
-
----
-
-## Athena Bridge (Authenticated)
-
-Athena Bridge is an authenticated MCP server that provides AI-powered SDK planning and analysis. It requires a one-time OAuth login before installation.
-
-### 1. Authenticate
-
-```bash
-npx camera-server auth login
-```
-
-This opens your browser for OAuth authentication. A JWT token is stored locally (`~/.camera-remote-web-api/auth.json`) and is valid for 30 days.
-
-### 2. Install
-
-```bash
-# Install for Claude Code (user scope)
-npx camera-server athena-bridge install claude-code user
-
-# Or for other agents
-npx camera-server athena-bridge install vscode user
-npx camera-server athena-bridge install cursor project
-```
-
-The CLI automatically injects your Bearer token into the MCP server configuration.
-
-### 3. Manage authentication
-
-```bash
-npx camera-server auth status   # Check if authenticated and token expiry
-npx camera-server auth logout   # Sign out and remove stored token
-```
-
-<Note>
-When your token expires after 30 days, run `npx camera-server auth login` again to re-authenticate. The AthenaBridge MCP server will stop working until you re-authenticate.
-</Note>

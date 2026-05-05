@@ -3,9 +3,11 @@ title: "Client SDK Quickstart"
 description: "Control a Sony camera from TypeScript in under 5 minutes"
 ---
 
-## 1. Initialize Your Project
+This walks through the TypeScript / Node.js path. Python and Swift quickstarts live on their respective [SDK reference pages](/sdk/overview).
 
-If you don't already have a `package.json`, create one:
+## 1. Initialize your project
+
+If you don't already have a `package.json`:
 
 ```bash
 npm init -y
@@ -13,48 +15,52 @@ npm pkg set type=module
 ```
 
 <Info>
-`camera-remote-web-api` is an **ESM-only** package. Setting `"type": "module"` in your `package.json` enables ES module syntax (`import`/`export`) which is required to use the SDK.
+`@alpha-sdk/client` and `@alpha-sdk/api` ship dual ESM + CJS builds, but ESM is the recommended path on Node 18+. Setting `"type": "module"` enables `import`/`export` syntax.
 </Info>
 
-## 2. Install the Client SDK
+## 2. Install the SDK + server
+
+Two packages: the [REST client](/sdk/typescript) and the [server distribution](/web-api/server-package), which ships the native server binary plus a Node.js `ServerManager` class for embedding the lifecycle.
 
 ```bash
-npm install camera-remote-web-api
+npm install @alpha-sdk/client @alpha-sdk/api
 ```
 
-The correct native binary for your current OS is installed automatically (macOS ARM64, Linux x64/ARM64, Windows x64).
+The correct native binary for your current OS is pulled in automatically as an `optionalDependency`. On first run you'll be asked to accept the [Sony Camera Remote SDK License Agreement](https://support.d-imaging.sony.co.jp/app/sdk/licenseagreement_d/en.html).
 
-After installation, the CLI will walk you through installing any additional platform binaries you need. Follow the prompts to complete setup.
+## 3. Capture a photo
 
-## 3. Install MCP Servers (Optional)
+```ts
+import { ServerManager } from "@alpha-sdk/api";
+import { AlphaSDKClient } from "@alpha-sdk/client";
 
-The CLI also lets you install the AI SDK Assistant and AI Camera Assistant MCP servers during setup. These connect your AI tools (Claude, Claude Code, Cursor) to Sony's SDK documentation for intelligent search.
+const server = new ServerManager();
+await server.start();
 
-You can always install them later — see the [MCP Server quickstart](/quickstarts/mcp-server) for details.
-
-## 4. Capture a Photo
-
-```typescript
-import { CameraManager } from 'camera-remote-web-api/server';
-
-const manager = new CameraManager({ port: 8080 });
-
-manager.on('camera-ready', async ({ cameraId, camera }) => {
-  console.log(`${camera.model} connected`);
-
-  // Take control of the camera
-  await manager.client.setPriorityKey(cameraId, { setting: 'pc-remote' });
-
-  // Shoot
-  await manager.client.triggerShutter(cameraId);
-  console.log('Photo captured!');
+const client = new AlphaSDKClient({
+  environment: `http://localhost:${server.getPort()}`,
 });
 
-await manager.start();
-// Binary boots → cameras discovered → auto-connected → 'camera-ready' fires
+const { cameras } = await client.cameras.list();
+const cameraId = cameras[0].id;
+
+await client.cameras.connect({
+  cameraId,
+  mode: "remote-transfer",
+  reconnecting: "on",
+});
+
+// Required for the host PC to drive most settings:
+await client.properties.setPriorityKey({ cameraId, setting: "pc-remote" });
+
+await client.actions.shutter({ cameraId });
+console.log(`Photo captured on ${cameras[0].model}`);
+
+await client.cameras.disconnect({ cameraId });
+await server.stop();
 ```
 
-## 5. Run It
+## 4. Run it
 
 Connect your Sony camera via USB, then:
 
@@ -62,23 +68,35 @@ Connect your Sony camera via USB, then:
 npx tsx your-script.ts
 ```
 
-You should see the camera model name printed, followed by "Photo captured!".
+You should see `Photo captured on ILCE-XXXX` and a new file on the camera's SD card.
 
 ---
 
-## Next Steps
+## Optional: install MCP servers
+
+The CLI also wires up the Camera Help Guides MCP server for AI assistants — see [MCP setup](/mcp-server/setup):
+
+```bash
+npx camera-server mcp install claude-code
+```
+
+See the [MCP server quickstart](/mcp-server/setup) for details.
+
+---
+
+## Next steps
 
 <CardGroup cols={2}>
-  <Card title="CameraManager" icon="server" href="/sdk/camera-manager">
-    Full lifecycle management, events, and multi-camera support
+  <Card title="TypeScript SDK reference" href="/sdk/typescript">
+    Every method on the client, with examples and error handling.
   </Card>
-  <Card title="Events" icon="bolt" href="/sdk/events">
-    React to property changes, downloads, and camera state
+  <Card title="Server distribution" href="/web-api/server-package">
+    Run the REST API locally, embed it in Electron / Tauri, or call its `ServerManager` class.
   </Card>
-  <Card title="Examples" icon="code" href="/sdk/examples">
-    Interval shooting, live view, browser control, and more
+  <Card title="SSE event consumer" href="/sdk/recipes/sse-events">
+    React to property changes and downloads in real time.
   </Card>
-  <Card title="Stateful API Access" icon="terminal" href="/sdk/stateful/camera-client">
-    Low-level CameraClient and EventStream without managed state
+  <Card title="Live-view polling" href="/sdk/recipes/live-view-polling">
+    Render JPEG frames at ~15 fps.
   </Card>
 </CardGroup>

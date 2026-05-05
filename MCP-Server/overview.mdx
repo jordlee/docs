@@ -1,47 +1,28 @@
 ---
 title: "Overview"
 description: "AI-powered documentation search for Sony's camera development tools"
-layout: "full"
-icon: "code"
 ---
 
 <Note>
   The MCP Servers are community-built developer tools and are **not officially supported by Sony**. Only the [Camera Remote SDK](/sdk/camera-remote-sdk) (C++/C#) is an official Sony product.
 </Note>
 
-<Card title="Quick Setup" icon="rocket" href="/quickstarts/mcp-server">
+<Card title="Quick Setup" href="/mcp-server/setup">
   Get MCP servers running in under 5 minutes
 </Card>
-
-<iframe src="https://www.loom.com/embed/b8b5243664214257b6fdbd60e627d20a" title="Loom video player" frameborder="0" className="w-full aspect-video rounded-xl" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen />
 
 ## What Are MCP Servers?
 
 MCP (Model Context Protocol) servers connect AI assistants like Claude and Cursor to specialized knowledge bases. Instead of manually searching through hundreds of pages of documentation, you ask questions in plain English and get instant answers with code examples.
 
-Sony provides **three MCP servers**, each covering a different part of the camera development ecosystem:
+We provide **two MCP servers**, each covering a different part of the camera development ecosystem:
 
-<CardGroup cols={3}>
-  <Card title="Camera Remote Web API Docs" icon="globe" href="/MCP-Server/web-api-docs">
-    HTTP API endpoints, Client SDK (TypeScript), request/response formats, and architecture guides
-  </Card>
-  <Card title="Camera Remote SDK Docs" icon="code" href="/MCP-Server/sdk-docs">
-    Official C++ and C# SDK documentation, API functions, code examples, compatibility tables, and error codes
-  </Card>
-  <Card title="Camera Help Guides" icon="camera" href="/MCP-Server/help-guides">
-    Official help guide documentation for 24 Sony camera models — settings, features, shooting modes, and troubleshooting
-  </Card>
-</CardGroup>
-
-## Server Summary
-
-| Server | Name | Content | URL |
+| Server | Name | What it covers | URL |
 |--------|------|---------|-----|
-| [Web API Docs](/MCP-Server/web-api-docs) | `CameraWebAPI` | HTTP endpoints, TypeScript Client SDK | `https://crsdk.app/mcp` |
-| [SDK Docs](/MCP-Server/sdk-docs) | `CameraRemoteSDK` | C++/C# SDK docs, 13,000+ indexed pieces | `https://sdk-rag-agent-production.up.railway.app/mcp` |
-| [Help Guides](/MCP-Server/help-guides) | `CameraHelp` | 24 camera models, 55,000+ help entries | `https://camera-rag-agent-production.up.railway.app/mcp` |
+| Camera Remote SDK Docs | `CameraRemoteSDK` | C++/C# SDK — APIs, code examples, compatibility, error codes. 13,000+ indexed pieces | `https://sdk-rag-agent-production.up.railway.app/mcp` |
+| Camera Help Guides | `CameraHelp` | 24 Sony camera models — settings, features, shooting modes, troubleshooting. 55,000+ entries | `https://camera-rag-agent-production.up.railway.app/mcp` |
 
-You can install one, two, or all three servers — they run independently and can be used simultaneously.
+You can install one or both — they run independently and can be used simultaneously. For Alpha Camera REST API documentation, point your assistant directly at [`https://crsdk.app`](https://crsdk.app) via web search instead of running an MCP server.
 
 ## How It Works
 

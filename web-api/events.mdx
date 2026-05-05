@@ -5,9 +5,11 @@ description: "Real-time camera callbacks via Server-Sent Events"
 
 Real-time event stream from the camera SDK. Subscribe to events from all cameras or a specific camera.
 
+See the auto-generated [API reference](/web-api/overview) for full request/response schemas.
+
 ## Subscribe to All Camera Events
 
-<ParamField path="method" type="GET">`GET /api/events`</ParamField>
+`GET /api/events`
 
 <CodeGroup>
 ```bash curl
@@ -25,9 +27,7 @@ events.on('downloadComplete', (data) => {
 
 ## Subscribe to Select Camera Events
 
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/events`</ParamField>
-
-Same event types, filtered to a single camera.
+`GET /api/cameras/{cameraId}/events` — same event types, filtered to a single camera.
 
 <CodeGroup>
 ```bash curl
@@ -46,7 +46,7 @@ const events = new EventStream('http://localhost:8080', 'D10F60149B0C');
 Events related to camera connection state and SDK errors.
 
 <Info>
-When using the Client SDK, connection and lifecycle events can also be accessed via `manager.on()`. See [Client SDK Events](/sdk/events) for details.
+When using the Client SDK, connection and lifecycle events can also be accessed via `manager.on()`. See [Client SDK Events](/web-api/events) for details.
 </Info>
 
 | Event | SDK Callback | Description |

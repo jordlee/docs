@@ -4,14 +4,14 @@ description: "Health check, logs, and graceful shutdown"
 ---
 
 <Info>
-For TypeScript projects, use [CameraManager](/sdk/camera-manager) instead of calling these endpoints directly — it manages the binary lifecycle, camera connections, and SSE events automatically.
+For TypeScript projects, use [CameraManager](/sdk/typescript) instead of calling these endpoints directly — it manages the binary lifecycle, camera connections, and SSE events automatically.
 </Info>
+
+See the auto-generated [API reference](/web-api/overview) for full request/response schemas.
 
 ## Server Status
 
-<ParamField path="method" type="GET">`GET /api/server/status`</ParamField>
-
-Health check endpoint. Returns server version, uptime, platform, and camera counts. Used by `ServerManager` and `CameraManager` to confirm the server is ready.
+`GET /api/server/status` — health check endpoint. Returns server version, uptime, platform, and camera counts. Used by `ServerManager` and `CameraManager` to confirm the server is ready.
 
 <CodeGroup>
 ```bash curl
@@ -43,12 +43,7 @@ await manager.isRunning(); // true — uses this endpoint internally
 
 ## Server Logs
 
-<ParamField path="method" type="GET">`GET /api/server/logs`</ParamField>
-
-Returns buffered server log output. Useful for debugging without terminal access.
-
-<ParamField query="lines" type="integer" default="100">Number of recent log lines</ParamField>
-<ParamField query="level" type="string" default="info">`debug`, `info`, `warn`, or `error`</ParamField>
+`GET /api/server/logs` — returns buffered server log output. Useful for debugging without terminal access. Query params: `lines` (default 100), `level` (default `info`).
 
 <CodeGroup>
 ```bash curl
@@ -63,11 +58,6 @@ curl http://localhost:8080/api/server/logs
       "timestamp": "2026-03-02T12:18:45",
       "level": "info",
       "message": "GET /api/server/status"
-    },
-    {
-      "timestamp": "2026-03-02T12:18:30",
-      "level": "info",
-      "message": "POST /api/cameras/D10F60149B0C/connection"
     }
   ],
   "total": 47
@@ -79,17 +69,8 @@ curl http://localhost:8080/api/server/logs
 
 ## Shutdown
 
-<ParamField path="method" type="POST">`POST /api/server/shutdown`</ParamField>
-
-Initiates graceful shutdown: disconnects all cameras, closes SSE/WebSocket connections, then exits. `CameraManager.close()` and `ServerManager.stop()` call this before falling back to SIGTERM.
+`POST /api/server/shutdown` — initiates graceful shutdown: disconnects all cameras, closes open SSE streams, then exits. `ServerManager.stop()` (in [`@alpha-sdk/api`](/web-api/server-package)) calls this before falling back to SIGTERM.
 
 ```bash
 curl -X POST http://localhost:8080/api/server/shutdown
-```
-
-```json
-{
-  "success": true,
-  "message": "Shutdown initiated"
-}
 ```

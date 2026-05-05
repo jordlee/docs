@@ -1,10 +1,9 @@
 ---
 title: "Troubleshooting"
-description: "Common issues and solutions when using the AI SDK Assistant"
-icon: "triangle-exclamation"
+description: "Common issues and solutions when using the MCP servers"
 ---
 
-While we've taken steps to ensure the smoothest experience possible using the AI SDK Assistant, you may encounter the following issues in the beta release.
+While we've taken steps to ensure the smoothest experience possible, you may encounter the following issues in the beta release.
 
 ### "Could not connect to MCP Server [server name]"
 
@@ -23,12 +22,12 @@ While we've taken steps to ensure the smoothest experience possible using the AI
 ### Claude makes 10+ tool calls before providing an answer.
 
 <Check>
-  **Most likely issue:** Claude is doing an exhaustive search of the documentation for completeness.
+  **Most likely issue:** Claude is doing an exhaustive search of the help guides for completeness.
 </Check>
 
 **Solutions:**
 
-- Use the [system prompt](/MCP-Server/system-prompt) to refine Claude's search approach.
+- Use the [system prompt](/mcp-server/system-prompt) to refine Claude's search approach.
 - Modify the system prompt to instruct Claude to prioritize quick answers over deep research.
 - Interrupt Claude's response and ask it to summarize the information it found.
 
@@ -51,7 +50,7 @@ While we've taken steps to ensure the smoothest experience possible using the AI
 
 **Solutions:**
 
-- Refresh the page, wait 30 seconds before making a query to the AI SDK Assistant
+- Refresh the page, wait 30 seconds before making a query
 - Make your first request smaller. After successful response, resume normal operation
 
 ### "Tool call [tool name] returned no results or 429 error"

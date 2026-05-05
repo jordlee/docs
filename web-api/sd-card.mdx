@@ -5,11 +5,11 @@ description: "Browse and download files from the camera's SD card, and configure
 
 <Warning>Requires `remote-transfer` or `contents` connection mode.</Warning>
 
+See the auto-generated [API reference](/web-api/overview) for full request/response schemas.
+
 ## List Files
 
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files`</ParamField>
-
-<ParamField path="slotNumber" type="integer" required>SD card slot: `1` or `2`</ParamField>
+`GET /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files` — list files on SD card slot 1 or 2.
 
 <CodeGroup>
 ```bash curl
@@ -32,12 +32,6 @@ console.log(files.files);
       "file_id": 67890,
       "file_path": "DCIM/100MSDCF/DSC00001.ARW",
       "file_size": 25165824
-    },
-    {
-      "content_id": 12345,
-      "file_id": 67891,
-      "file_path": "DCIM/100MSDCF/DSC00001.JPG",
-      "file_size": 8388608
     }
   ]
 }
@@ -48,13 +42,7 @@ console.log(files.files);
 
 ## Download File
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/download`</ParamField>
-
-Download a specific file from the SD card to the host PC.
-
-<ParamField path="contentId" type="integer" required>Content ID from file listing</ParamField>
-<ParamField path="fileId" type="integer" required>File ID from file listing</ParamField>
-<ParamField body="save_path" type="string">Directory on host PC to save the file</ParamField>
+`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/download` — download a specific file from the SD card to the host PC. Optional body `save_path` overrides the server default.
 
 <CodeGroup>
 ```bash curl
@@ -66,15 +54,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
 ```typescript TypeScript
 await client.downloadSDCardFile('D10F60149B0C', 1, 12345, 67890);
 ```
-
-```json Response
-{
-  "success": true,
-  "filename": "DSC00001.ARW",
-  "progress": 100,
-  "saved_path": "/Users/me/Photos/DSC00001.ARW"
-}
-```
 </CodeGroup>
 
 Listen for `transferProgress` SSE events to track download progress in `remote-transfer` mode.
@@ -83,13 +62,7 @@ Listen for `transferProgress` SSE events to track download progress in `remote-t
 
 ## Download Thumbnail
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/thumbnail`</ParamField>
-
-Download a compressed JPEG thumbnail (~50-60 KB) for fast preview or ML evaluation. Much faster than pulling the full file.
-
-<ParamField path="contentId" type="integer" required>Content ID from file listing</ParamField>
-<ParamField path="fileId" type="integer" required>File ID from file listing</ParamField>
-<ParamField body="save_path" type="string">Directory on host PC to save the thumbnail</ParamField>
+`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/thumbnail` — download a compressed JPEG thumbnail (~50-60 KB) for fast preview or ML evaluation. Much faster than pulling the full file. Returns HTTP 202 and delivers completion via SSE.
 
 <CodeGroup>
 ```bash curl
@@ -101,27 +74,13 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
 ```typescript TypeScript
 await cam.downloadThumbnail(1, 12345, 67890, { save_path: '/Users/me/thumbnails' });
 ```
-
-```json Response (HTTP 202)
-{
-  "success": true,
-  "message": "Thumbnail download started. Listen for transferProgress SSE events for completion.",
-  "type": "thumbnail"
-}
-```
 </CodeGroup>
 
 ---
 
 ## Download Screennail
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/screennail`</ParamField>
-
-Download a medium-resolution JPEG preview (~250-300 KB). Higher quality than thumbnail, still much smaller than the full file.
-
-<ParamField path="contentId" type="integer" required>Content ID from file listing</ParamField>
-<ParamField path="fileId" type="integer" required>File ID from file listing</ParamField>
-<ParamField body="save_path" type="string">Directory on host PC to save the screennail</ParamField>
+`POST /api/cameras/{cameraId}/sd-card/slot/{slotNumber}/files/{contentId}/{fileId}/screennail` — medium-resolution JPEG preview (~250-300 KB). Higher quality than thumbnail, still much smaller than the full file. Returns HTTP 202.
 
 <CodeGroup>
 ```bash curl
@@ -132,14 +91,6 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/sd-card/slot/1/files
 
 ```typescript TypeScript
 await cam.downloadScreennail(1, 12345, 67890, { save_path: '/Users/me/previews' });
-```
-
-```json Response (HTTP 202)
-{
-  "success": true,
-  "message": "Screennail download started. Listen for transferProgress SSE events for completion.",
-  "type": "screennail"
-}
 ```
 </CodeGroup>
 
@@ -165,28 +116,8 @@ Configure where auto-transferred images are saved on the host PC.
 Save info only applies in `remote` connection mode, where images auto-transfer to the host PC. It has no effect in `remote-transfer` or `contents` modes.
 </Warning>
 
-### Get Save Info
-
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/settings/save-info`</ParamField>
-
-```json
-{
-  "success": true,
-  "data": {
-    "path": "/Users/me/Photos",
-    "prefix": "DSC",
-    "startNo": "1"
-  }
-}
-```
-
-### Set Save Info
-
-<ParamField path="method" type="PUT">`PUT /api/cameras/{cameraId}/settings/save-info`</ParamField>
-
-<ParamField body="path" type="string">Directory path on host PC</ParamField>
-<ParamField body="prefix" type="string">Filename prefix</ParamField>
-<ParamField body="startNo" type="integer">Starting file number</ParamField>
+- `GET /api/cameras/{cameraId}/settings/save-info` — read current path / prefix / startNo
+- `PUT /api/cameras/{cameraId}/settings/save-info` — update values
 
 ```bash
 curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/settings/save-info \

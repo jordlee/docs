@@ -1,51 +1,52 @@
 ---
-title: "Introduction"
-description: "Sony Camera Remote SDK — developer tools for programmatic camera control"
+title: Welcome
+description: "Programmatic control for Sony cameras — the Alpha Camera REST API, client SDKs, and AI-assisted tooling."
 ---
 
 <Note>
-  The **MCP Servers**, **Client SDK**, and **HTTP API** are community-built developer tools and are **not officially supported by Sony**. Only the [Camera Remote SDK](/sdk/camera-remote-sdk) (C++/C#) is an official Sony product with official support.
+  The **Client SDK**, **Alpha Camera REST API**, and **MCP Servers** are community-built developer tools and are **not officially supported by Sony**. Only the [Camera Remote SDK](/sdk/camera-remote-sdk) (C++/C#) is an official Sony product with official support.
 </Note>
 
 <img
-  src="/images/hero.jpg"
-  alt="Sony Developer Platform"
-  style={{ borderRadius:"12px" }}
-/>
+    src="/images/hero.jpg"
+    alt="Sony Developer Platform hero"
+  />
 
-### Sony Developer Platform
+## Build with Sony cameras
 
-Build applications that control Sony cameras programmatically. From TypeScript packages to raw HTTP endpoints to AI-powered documentation search — choose the integration that fits your project.
+From a single API call to full SDK-level control, the Sony Developer Platform gives you the integration surface that fits your project — raw HTTP, typed clients in TypeScript / Python / Swift, or AI-assisted documentation.
 
 <CardGroup cols={2}>
-  <Card title="Quickstarts" icon="rocket" href="/quickstarts/overview">
-    Get up and running in under 5 minutes with step-by-step guides
+  <Card title="Quickstarts" href="/quickstarts/overview">
+    Ship your first capture in under 5 minutes — pick a client SDK, raw HTTP, or MCP.
   </Card>
-  <Card title="SDKs" icon="cube" href="/sdk/overview">
-    TypeScript Client SDK, Camera Remote SDK (C++/C#), and Camera Remote Command SDK
+  <Card title="SDKs" href="/sdk/overview">
+    TypeScript, Python, Swift clients + the embedded Node.js server.
   </Card>
-  <Card title="API Reference" icon="book" href="/web-api/overview">
-    RESTful HTTP endpoints for camera connection, shooting, settings, live view, and more
+  <Card title="API Reference" href="/web-api/overview">
+    Every HTTP endpoint — connection, properties, shooting, live view, SD card, events.
   </Card>
-  <Card title="MCP Server" icon="robot" href="/MCP-Server/overview">
-    AI-powered SDK documentation search for Claude, Claude Code, and Cursor
+  <Card title="MCP Server" href="/mcp-server/overview">
+    Plug Claude, Cursor, or any MCP-capable assistant into 13,000+ SDK reference chunks.
   </Card>
 </CardGroup>
 
-## Product Overview
+## What's here
 
-| Product | What It Does | Language |
-|---------|-------------|----------|
-| [Client SDK](/sdk/overview) | TypeScript wrapper — managed camera lifecycle, typed APIs, auto-reconnection | TypeScript |
-| [HTTP API](/web-api/overview) | RESTful endpoints on localhost — works from any language | Any |
-| [Camera Remote SDK](/sdk/camera-remote-sdk) | Sony's official native SDK — the foundation everything else is built on | C++, C# |
-| [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) | PTP-based direct camera commands for specialized integrations | C++ |
-| [AI SDK Assistant](/MCP-Server/overview) | MCP server connecting AI assistants to 13,000+ pieces of SDK documentation | -- |
+| Product | What it does | Install |
+|---------|--------------|---------|
+| [TypeScript Client SDK](/sdk/typescript) | REST client for Node, Electron, Tauri, and browsers. Dual ESM + CJS. | `npm install @alpha-sdk/client` |
+| [Python Client SDK](/sdk/python) | REST client with sync and async variants, Pydantic models. | `pip install alpha-sdk-client` |
+| [Swift Client SDK](/sdk/swift) | Native `async/await` client for iOS, macOS, tvOS, and watchOS. | SwiftPM |
+| [Alpha Camera REST API](/web-api/server-package) | The HTTP and SSE server itself — install via npm, run via the `camera-server` CLI, or embed via the Node.js `ServerManager` class. | `npm install -g @alpha-sdk/api` |
+| [Camera Remote SDK](/sdk/camera-remote-sdk) | Sony's official native SDK — the foundation everything builds on. | C++ / C# |
+| [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) | PTP-based direct camera commands for specialized integrations. | C++ |
+| [MCP Servers](/mcp-server/overview) | AI assistants connected to the SDK and Help Guide knowledge bases. | — |
 
-## How It All Fits Together
+## How it fits together
 
-The **Camera Remote SDK** (C++/C#) is the native foundation. The **Camera Remote Web API Server** wraps it as a local HTTP service. The **Client SDK** (TypeScript) manages that server automatically. The **AI SDK Assistant** helps you learn and implement any layer faster.
+The **Camera Remote SDK** (C++/C#) is the native foundation. The **Alpha Camera REST API** distributes that SDK as a local HTTP and SSE server, packaged for npm with a CLI (`camera-server`) and a Node.js `ServerManager` class. The three **language client SDKs** — TypeScript, Python, and Swift — call the server over REST. The **MCP Servers** let AI assistants reference any of these layers while you build.
 
-<Card title="Get Started" icon="arrow-right" href="/quickstarts/overview">
-  Choose your integration path and start building
+<Card title="Start with a quickstart" href="/quickstarts/overview">
+  Pick the integration path that fits your project and ship your first capture.
 </Card>

@@ -3,15 +3,13 @@ title: "Save & Recall Settings"
 description: "Camera settings file management — backup and restore camera configurations"
 ---
 
-## Camera Settings Files
+Save and restore complete camera configurations using `.DAT` settings files. Not all cameras support settings download/upload — see [Compatibility](/web-api/compatibility#api-compatibility) for the list.
 
-Save and restore complete camera configurations.
+See the auto-generated [API reference](/web-api/overview) for full request/response schemas.
 
-### Download Settings to PC
+## Download Settings to PC
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/settings/download`</ParamField>
-
-<ParamField body="filename" type="string">Settings filename (e.g. `CUMSET.DAT`)</ParamField>
+`POST /api/cameras/{cameraId}/settings/download` — download the camera's settings file to the host PC. Body: `filename` (e.g. `CUMSET.DAT`).
 
 ```bash
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/settings/download \
@@ -19,11 +17,9 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/settings/download \
   -d '{"filename": "CUMSET.DAT"}'
 ```
 
-### Upload Settings to Camera
+## Upload Settings to Camera
 
-<ParamField path="method" type="POST">`POST /api/cameras/{cameraId}/settings/upload`</ParamField>
-
-<ParamField body="filename" type="string">Settings filename to restore</ParamField>
+`POST /api/cameras/{cameraId}/settings/upload` — restore a settings file. Body: `filename`.
 
 ```bash
 curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/settings/upload \
@@ -31,11 +27,11 @@ curl -X POST http://localhost:8080/api/cameras/D10F60149B0C/settings/upload \
   -d '{"filename": "CUMSET.DAT"}'
 ```
 
-### List Settings Files
+## List Settings Files
 
-<ParamField path="method" type="GET">`GET /api/cameras/{cameraId}/settings/files`</ParamField>
+`GET /api/cameras/{cameraId}/settings/files` — list available settings files.
 
-```json
+```json Response
 {
   "success": true,
   "files": ["CUMSET.DAT", "CUMSET_Backup.DAT"]

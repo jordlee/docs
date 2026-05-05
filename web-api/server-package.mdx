@@ -1,0 +1,220 @@
+---
+title: "Server distribution"
+description: "@alpha-sdk/api ships the REST API server, the camera-server CLI, and a Node.js ServerManager class"
+---
+
+`@alpha-sdk/api` is the npm distribution of the Alpha Camera REST API. A single install gives you three things:
+
+1. The **native REST API server binary** (`CameraWebApp`) for macOS, Linux, and Windows.
+2. The **`camera-server` CLI** — a terminal interface for installing, starting, stopping, and inspecting the server.
+3. A small **`ServerManager` Node.js class** for embedding the server's lifecycle inside a Node application.
+
+The matching platform binary (`@alpha-sdk/darwin-arm64`, `@alpha-sdk/linux-arm64`, `@alpha-sdk/linux-x64`, `@alpha-sdk/win32-x64`) is pulled in automatically as an `optionalDependency` — no separate download.
+
+<Note>
+  `ServerManager` is a Node.js convenience class, not a separate SDK. The Python and Swift clients do **not** ship a `ServerManager` equivalent. From those languages, run `camera-server start` from a shell, spawn the binary as a subprocess (see the [server subprocess recipe](/sdk/recipes/server-subprocess)), or connect to a server already running elsewhere on the network.
+</Note>
+
+---
+
+## Install
+
+```bash
+# Globally — most common for CLI / scripting
+npm install -g @alpha-sdk/api
+
+# Per-project — when embedding ServerManager in your app
+npm install @alpha-sdk/api
+```
+
+After install, the [Sony Camera Remote SDK License Agreement](https://support.d-imaging.sony.co.jp/app/sdk/licenseagreement_d/en.html) prompt appears once. Accept to unlock the binary.
+
+---
+
+## CLI
+
+```bash
+camera-server start             # spawn the server on :8080
+camera-server stop
+camera-server status            # check what's running
+
+camera-server info              # version, platform, binary path
+camera-server doctor            # verify prerequisites
+camera-server platforms         # list installed/available platforms
+
+camera-server install-sdk ts        # install @alpha-sdk/client in current project
+camera-server install-sdk python    # install alpha-sdk-client
+camera-server install-sdk swift     # print SwiftPM snippet
+camera-server install-sdk all       # install all three
+
+camera-server playground start      # browser-based interactive playground
+camera-server mcp install <agent>   # install Camera Help Guides MCP server
+camera-server docs                  # open https://crsdk.app
+```
+
+Run `camera-server` with no arguments to launch the interactive TUI.
+
+---
+
+## ServerManager (Node.js)
+
+A small class for embedding the server's lifecycle inside a Node, Electron, or Tauri application.
+
+```ts
+import { ServerManager } from "@alpha-sdk/api";
+
+const server = new ServerManager();
+await server.start();           // resolves once HTTP is responsive
+console.log(`server on :${server.getPort()}`);
+
+// ... do work against http://localhost:${server.getPort()}/api ...
+
+await server.stop();            // graceful shutdown via /api/server/shutdown
+```
+
+### Constructor options
+
+```ts
+new ServerManager({
+  port: 8080,             // default 8080
+  binaryPath: "...",      // override auto-detect (rare)
+  autoPort: true,         // find a free port if 8080 is taken
+  detached: false,        // server outlives parent process
+});
+```
+
+### Methods
+
+| Method | Description |
+|---|---|
+| `start()` → `Promise<void>` | Spawn the binary. Resolves when `/api/server/status` responds 200. |
+| `stop()` → `Promise<void>` | Graceful shutdown. Falls back to SIGTERM → SIGKILL if the binary doesn't exit. |
+| `kill()` → `void` | Synchronous, no-fallback kill. Useful inside `process.on('SIGINT', ...)` handlers. |
+| `isRunning()` → `Promise<boolean>` | Pings `/api/server/status`. |
+| `getPort()` → `number` | Currently bound port. |
+| `getPid()` → `number \| undefined` | Child process PID (or detached PID). |
+| `getStdout()` → `string[]` | Captured stdout lines. |
+| `getStderr()` → `string[]` | Captured stderr lines. |
+
+---
+
+## End-to-end example
+
+Pair `ServerManager` with the [TypeScript Client SDK](/sdk/typescript) — start the server, connect to a camera, change a setting, fire the shutter, list and download the resulting photo, then disconnect:
+
+```ts
+import { ServerManager } from "@alpha-sdk/api";
+import { AlphaSDKClient } from "@alpha-sdk/client";
+
+const server = new ServerManager();
+await server.start();
+
+const client = new AlphaSDKClient({
+  environment: `http://localhost:${server.getPort()}`,
+});
+
+const { cameras } = await client.cameras.list();
+const cameraId = cameras[0].id;
+
+await client.cameras.connect({
+  cameraId,
+  mode: "remote-transfer",
+  reconnecting: "on",
+});
+
+await client.properties.setPriorityKey({ cameraId, setting: "pc-remote" });
+await client.properties.set({ cameraId, propertyName: "shutter-speed", value: "1/250" });
+await client.actions.shutter({ cameraId });
+
+await new Promise(r => setTimeout(r, 1500));
+const { files } = await client.sdCard.list({ cameraId, slotNumber: 1 });
+const latest = files[files.length - 1];
+
+await client.sdCard.download({
+  cameraId,
+  slotNumber: 1,
+  contentId: latest.contentId,
+  fileId: latest.fileId,
+  body: {},
+});
+
+await client.cameras.disconnect({ cameraId });
+await server.stop();
+```
+
+---
+
+## Integration patterns
+
+| Application type | Pattern | Bundling |
+|---|---|---|
+| Node CLI / script | `ServerManager.start()` | Binary auto-installed via npm. |
+| Electron | `ServerManager` + `extraResources` | Binary copied into the `.app`. |
+| Tauri | Sidecar | Binary in `src-tauri/binaries/`. |
+| Browser-only SPA | Talk to a server running elsewhere | Nothing bundled. |
+| iOS / Android | Talk to a server running elsewhere | Nothing bundled — the binary cannot run on those platforms. |
+| Python / Swift / other languages | Spawn the binary as a subprocess, or run `camera-server start` separately | See the [server subprocess recipe](/sdk/recipes/server-subprocess). |
+
+---
+
+## Embedding in Electron or Tauri
+
+The bundled binary lives at `node_modules/@alpha-sdk/<platform>/CameraWebApp` (or `CameraWebApp.exe` on Windows). To ship it inside a packaged application:
+
+### Electron-builder
+
+```json
+{
+  "build": {
+    "extraResources": [
+      {
+        "from": "node_modules/@alpha-sdk/${platform}-${arch}",
+        "to": "alpha-sdk-binary",
+        "filter": ["**/*"]
+      }
+    ]
+  }
+}
+```
+
+Then in your main process:
+
+```ts
+import path from "node:path";
+import { ServerManager } from "@alpha-sdk/api";
+
+const server = new ServerManager({
+  binaryPath: path.join(
+    process.resourcesPath,
+    "alpha-sdk-binary",
+    process.platform === "win32" ? "CameraWebApp.exe" : "CameraWebApp"
+  ),
+});
+await server.start();
+```
+
+### Tauri
+
+Drop the binary into `src-tauri/binaries/CameraWebApp-<triple>` and declare it as a sidecar in `tauri.conf.json`:
+
+```json
+{
+  "tauri": {
+    "bundle": {
+      "externalBin": ["binaries/CameraWebApp"]
+    }
+  }
+}
+```
+
+---
+
+## Versioning
+
+`@alpha-sdk/api` follows SemVer. Bumps:
+
+- **Patch** — bug fixes, bundled-binary updates, playground bundle refreshes.
+- **Minor** — new CLI commands, new `ServerManager` methods.
+- **Major** — breaking changes to the CLI surface or `ServerManager` API.
+
+See the package CHANGELOG on the npm page for release notes.
