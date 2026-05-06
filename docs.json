@@ -19,7 +19,7 @@
     "global": {
       "anchors": [
         {
-          "anchor": "npm",
+          "anchor": "Install REST API",
           "icon": "npm",
           "href": "https://www.npmjs.com/package/@alpha-sdk/api"
         },
