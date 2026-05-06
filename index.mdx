@@ -1,41 +1,41 @@
 ---
-title: Welcome
-description: "Programmatic control for Sony cameras — the Alpha Camera REST API, client SDKs, and AI-assisted tooling."
+title: "Welcome"
+description: "Implement programmatic camera-control for Sony's Alpha cameras using modern web APIs and SDKs."
 ---
 
 <Note>
-  The **Alpha Camera REST API**, **client SDKs**, **CLI tools**, and **MCP servers** are community-built developer tools. Sony's official native SDKs are available separately and are only needed for direct C++ / C# integrations.
+  The **Alpha Camera REST API**, **client SDKs**, **CLI tools**, and **MCP servers** are community-built developer tools. Sony's official native SDKs are available separately and are only needed for direct C\+\+ / C# integrations.
 </Note>
 
-<img
-    src="/images/hero.jpg"
-    alt="Sony Developer Platform hero"
-  />
+![Sony Developer Platform hero](/images/hero.jpg)
 
 ## Build with Sony cameras
 
-From a single API call to full SDK-level control, the Sony Developer Platform gives you the integration surface that fits your project — raw HTTP, typed clients in TypeScript / Python / Swift, or AI-assisted documentation.
+The Sony Developer Platform (unofficial) gives you developer friendly abstractions for accessing camera hardware rather than using low-level C\+\+ hardware commands— HTTP APIs, typed clients in TypeScript / Python / Swift, and AI-friendly documentation.
 
 <CardGroup cols={2}>
   <Card title="Overview" href="/platform-overview">
-    Understand the platform layers and choose the right integration path.
+    Plan your integration path, install dependencies and explore  capabilities.
   </Card>
+
   <Card title="SDKs" href="/sdk/overview">
-    TypeScript, Python, Swift clients + the embedded Node.js server.
+    TypeScript, Python, Swift clients \+ complete example apps and recipes.
   </Card>
+
   <Card title="API Reference" href="/web-api/overview">
-    Every HTTP endpoint — connection, properties, shooting, live view, SD card, events.
+    Every HTTP endpoint made testable - start a server, connect a camera and try it yourself via the API playground.
   </Card>
+
   <Card title="MCP Server" href="/mcp-server/overview">
-    Plug Claude, Cursor, or any MCP-capable assistant into 13,000+ SDK reference chunks.
+    Plug Claude, Cursor, Codex or any MCP-capable AI assistant into 13,000\+ SDK reference chunks. 
   </Card>
 </CardGroup>
 
 ## What's here
 
 | Product | What it does | Install |
-|---------|--------------|---------|
-| [TypeScript Client SDK](/sdk/typescript) | REST client for Node, Electron, Tauri, and browsers. Dual ESM + CJS. | `npm install @alpha-sdk/client` |
+| --- | --- | --- |
+| [TypeScript Client SDK](/sdk/typescript) | REST client for Node, Electron, Tauri, and browsers. Dual ESM \+ CJS. | `npm install @alpha-sdk/client` |
 | [Python Client SDK](/sdk/python) | REST client with sync and async variants, Pydantic models. | `pip install alpha-sdk-client` |
 | [Swift Client SDK](/sdk/swift) | Native `async/await` client for iOS, macOS, tvOS, and watchOS. | SwiftPM |
 | [Alpha Camera REST API](/web-api/server) | The HTTP and SSE server itself — install via npm, run via the `camera-server` CLI, or embed via the Node.js `ServerManager` class. | `npm install -g @alpha-sdk/api` |
@@ -43,11 +43,11 @@ From a single API call to full SDK-level control, the Sony Developer Platform gi
 
 ## How it fits together
 
-The **Alpha Camera REST API** is the main integration surface for this site. It runs as a local HTTP and SSE server, packaged for npm with a CLI (`camera-server`) and a Node.js `ServerManager` class. The three **language client SDKs** — TypeScript, Python, and Swift — call the server over REST. The **MCP Servers** let AI assistants reference these layers while you build.
+The **Alpha Camera REST API** is the main integration surface for this site. It runs as a local HTTP and SSE server, packaged via npm with a CLI (`camera-server`) and a Node.js `ServerManager` class. The three **language client SDKs** — TypeScript, Python, and Swift — communicate with the server over RESTful API calls. The **MCP Servers** let AI assistants reference these layers while you build.
 
 If you need direct native integration instead of the REST stack, Sony also provides:
 
-- [Camera Remote SDK](/sdk/camera-remote-sdk) — official C++ / C# camera control SDK
+- [Camera Remote SDK](/sdk/camera-remote-sdk) — official C\+\+ / C# camera control SDK
 - [Camera Remote Command SDK](/sdk/camera-remote-command-sdk) — lower-level PTP command SDK for specialized use cases
 
 <Card title="Start with the platform overview" href="/platform-overview">

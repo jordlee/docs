@@ -97,7 +97,7 @@
             ]
           },
           {
-            "group": "REST API CLI",
+            "group": "CLI",
             "pages": [
               "cli/camera-server"
             ]
