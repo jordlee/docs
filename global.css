@@ -32,9 +32,6 @@ nav img,
 [class*="logo"] svg,
 img[src*="sony-logo"],
 img[src*="Sony_logo"],
-img[src^="/logo/"],
-img[alt*="logo" i],
-img[alt*="Sony" i],
 nav a[href="/"] img,
 nav a[href="/"] svg {
   height: 16px !important;
