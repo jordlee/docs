@@ -66,6 +66,10 @@ Enable on-screen display — the camera renders its UI (exposure info, focus poi
 curl -o osd-frame.jpg http://localhost:8080/api/cameras/D10F60149B0C/live-view/osd-frame
 ```
 
+<Note>
+Two things build on live view. Focus overlays are drawn from [AF Frame Position](/web-api/actions#af-frame-position) and [Remote Touch and Tracking](/web-api/actions#remote-touch-and-tracking), which report frame coordinates normalized to whatever size you render at. And the OSD frame paired with [Button Press](/web-api/actions#button-press) is enough to drive the camera's own menus remotely — press, then read the screen back.
+</Note>
+
 ---
 
 ## Polling for continuous frames

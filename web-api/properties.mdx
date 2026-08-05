@@ -108,6 +108,25 @@ curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/priority-key \
 
 </CodeGroup>
 
+### The key also changes what the camera reports
+
+Holding `pc-remote` is not only about whether a write is *accepted* — it changes what the camera *reports*. Measured on an ILCE-7M5 over USB in `remote` connection mode, SDK V2.02.00: the same property, read seconds apart, nothing else changed.
+
+| Priority key | `GET /properties/focus-area` |
+|---|---|
+| `camera-position` (the default after connecting) | `writable: false`, `available_values: []` |
+| `pc-remote` | `writable: true`, `available_values` lists the body's focus areas |
+
+The subsequent `PUT /properties/focus-area` then succeeded.
+
+<Warning>
+  **`writable: false` is a statement about the current session, not about the body.** A client that enumerates properties immediately after connecting — while the key is still `camera-position` — will conclude the camera does not support features it does support. Claim `pc-remote` first whenever a read is going to drive a capability list or a settings UI.
+</Warning>
+
+An empty `available_values` has the same ambiguity: it means either "this is a range property" or "this is gated by the current priority key." Re-read after claiming `pc-remote` before concluding anything about the camera.
+
+This was measured on one body and one property — treat the shape of the behaviour as the finding, not the specific values. It applies to bodies that implement the priority key; FX3 and cinema bodies do not, and auto-enter PC Remote on USB.
+
 ---
 
 ## Property Reference
@@ -115,7 +134,7 @@ curl -X PUT http://localhost:8080/api/cameras/D10F60149B0C/priority-key \
 All 56 properties organized by category. Every property supports **hex values** from the GET response — hex always works. Always GET the property first to see what your specific camera supports.
 
 <Tip>
-  Properties marked **R/W** can be read and written. **Read-only** properties return data but reject SET requests. Some R/W properties may be read-only depending on the camera's current mode.
+  Properties marked **R/W** can be read and written. **Read-only** properties return data but reject SET requests. Some R/W properties report as read-only depending on the camera's current mode — or on which [priority key](#priority-key) you hold.
 </Tip>
 
 ### Core Exposure
@@ -136,7 +155,7 @@ All 56 properties organized by category. Every property supports **hex values** 
 | Property                | R/W       | Description                                    |
 | ----------------------- | --------- | ---------------------------------------------- |
 | `focus-mode`            | R/W       | Manual, AF-S, AF-C, AF-A, DMF                  |
-| `focus-area`            | R/W       | Wide, Zone, Center, Flexible Spot, Tracking     |
+| `focus-area`            | R/W       | Wide, Zone, Center, Flexible Spot, Tracking — determines whether an [AF frame](/web-api/actions#af-frame-position) exists to move |
 | `focus-position`        | R/W       | Absolute position 0-65535                       |
 | `focus-position-current`| Read-only | Actual lens position                            |
 | `focus-driving-status`  | Read-only | Not Driving / Driving                           |
@@ -258,6 +277,14 @@ All 56 properties organized by category. Every property supports **hex values** 
 | `media-slot2-remaining-photos` | Read-only | Remaining photos on slot 2               |
 | `media-slot2-remaining-time`   | Read-only | Remaining recording time on slot 2 (seconds) |
 
+### Camera Settings File
+
+| Property                         | R/W       | Description                                                  |
+| -------------------------------- | --------- | ------------------------------------------------------------ |
+| `camera-setting-save-enable`     | Read-only | Camera will allow a settings download (0 Disable / 1 Enable) |
+| `camera-setting-read-enable`     | Read-only | Camera will accept a settings upload (0 Disable / 1 Enable)  |
+| `camera-setting-save-read-state` | Read-only | Settings transfer state (0 Idle / 1 Reading)                 |
+
 ---
 
 ## Notable property notes
@@ -327,6 +354,14 @@ Enable numeric ID writing first (`image-id-num-setting` = `0x2`), then set `imag
 
 <Warning>
   `image-id-num-setting` resets to **Off** when the camera is powered off or PC Remote is disconnected. You must re-enable it each session.
+</Warning>
+
+### camera-setting-save-enable / camera-setting-read-enable / camera-setting-save-read-state
+
+The camera's own gates on [Save & Recall Settings](/web-api/settings). Read all three before calling settings download or upload — a `400` from either endpoint almost always means one of these is `0` rather than that the request was bad.
+
+<Warning>
+  The camera will not enable either flag without recording media present, and on a two-slot body the card must be in **slot 1**. An ILCE-7M4 with a card only in slot 2 reports `camera-setting-save-enable: 0`.
 </Warning>
 
 
