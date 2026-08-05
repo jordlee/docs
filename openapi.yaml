@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Alpha Camera REST API
-  version: 3.1.0
+  version: 3.0.0
   description: |
     RESTful control for Sony cameras — shooting, settings, live view with OSD overlay,
     focus control, and file transfer through a clean HTTP interface.
@@ -270,11 +270,6 @@ paths:
       description: |
         Returns the current value, human-readable format, writability flag, and all
         values the camera currently accepts for this property.
-
-        `writable` and `available_values` describe the **current session**, not the
-        body's capabilities — both are gated by the priority key. If the goal is
-        discovering what a camera supports, send
-        `PUT /api/cameras/{id}/priority-key {"setting":"pc-remote"}` before reading.
       tags: [Properties]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -357,17 +352,6 @@ paths:
 
         Use this endpoint for "load everything once" UI flows. Use single GET
         when you need just one property and want the consistent setter format.
-
-        ## Read after claiming the priority key
-
-        Every entry's `writable` flag and `available_values` list describe the
-        **current session**, not the body's capabilities — both are gated by the
-        priority key, which defaults to `camera-position` after
-        `POST /connection`. A bulk read taken before claiming `pc-remote`
-        under-reports what the camera can do, across many properties at once.
-
-        Send `PUT /api/cameras/{id}/priority-key {"setting":"pc-remote"}` first if
-        this response is going to drive a capability list or a settings UI.
       tags: [Properties]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -580,11 +564,6 @@ paths:
       description: |
         Returns the current priority key setting (`pc-remote` or `camera-position`).
 
-        The key does more than decide whether writes are accepted — it also
-        determines what the camera *reports* as writable. Read it before
-        interpreting any `writable` flag or `available_values` list. See
-        `setPriorityKey` for the measured behaviour.
-
         **Note**: FX3 / cinema bodies do not implement `PriorityKeySettings` —
         GET returns empty data and SET returns SDK error `0x8402`. These bodies
         auto-enter PC Remote mode on USB.
@@ -610,31 +589,6 @@ paths:
         Set the priority key. Must be `pc-remote` for the camera to accept remote
         property changes and shooting commands. Not supported on FX3 / cinema
         bodies (returns 400).
-
-        ## The key also changes what the camera reports
-
-        Holding `pc-remote` is not only about whether a write is *accepted* — it
-        changes what `getProperty` and `getAllProperties` *report*. Measured on an
-        ILCE-7M5 over USB in `remote` connection mode, SDK V2.02.00: the same
-        property, read seconds apart, nothing else changed.
-
-        | Priority key | `GET /properties/focus-area` |
-        |---|---|
-        | `camera-position` (the default after `POST /connection`) | `writable: false`, `available_values: []` |
-        | `pc-remote` | `writable: true`, `available_values` lists the body's focus areas (`Wide` … `Tracking Flexible Spot FreeSize3`) |
-
-        The subsequent `PUT /properties/focus-area {"value":"0x17"}` then succeeded.
-
-        So **`writable: false` is a statement about the current session, not about
-        the body.** A client that enumerates properties immediately after
-        connecting — while the key is still `camera-position` — will conclude the
-        camera does not support features it does support. Claim `pc-remote` first
-        whenever a read is going to drive a capability list or a settings UI.
-
-        This was measured on one body and one property; treat the shape of the
-        behaviour as the finding, not the specific values. It applies to bodies
-        that implement `PriorityKeySettings` — see the note on `getPriorityKey`
-        for the FX3 / cinema exception.
       tags: [Properties]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -1873,15 +1827,6 @@ components:
         mode (`remote` / `remote-transfer` / `contents`) so clients don't
         have to remember what they passed at connect time. When the camera
         is not connected, `data` is omitted.
-      example:
-        success: true
-        message: Camera connected
-        camera:
-          connected: true
-          model: ILCE-7M4
-          id: D06CE00004C4
-        data:
-          mode: remote-transfer
       required: [success]
       properties:
         success:
@@ -1950,16 +1895,6 @@ components:
 
     GetLiveViewStatusResponse:
       type: object
-      example:
-        success: true
-        message: Live view status retrieved
-        camera:
-          connected: true
-          model: ILCE-7M4
-          id: D06CE00004C4
-        data:
-          enabled: true
-          streaming: false
       required: [success, data]
       properties:
         success:
@@ -1973,16 +1908,6 @@ components:
 
     GetOSDStatusResponse:
       type: object
-      example:
-        success: true
-        message: OSD status retrieved
-        camera:
-          connected: true
-          model: ILCE-7M4
-          id: D06CE00004C4
-        data:
-          supported: true
-          enabled: false
       required: [success, data]
       properties:
         success:
@@ -2085,32 +2010,14 @@ components:
           example: "1/125"
         writable:
           type: boolean
-          description: |
-            Whether this property is writable **in the current session** — not
-            whether the body supports writing it.
-
-            The value moves with the priority key. A property can report `false`
-            while the key is `camera-position` (the default after
-            `POST /connection`) and `true` seconds later once `pc-remote` is
-            claimed, with nothing else changed. Set the key with
-            `PUT /api/cameras/{id}/priority-key` before treating a `false` here
-            as a statement about the camera.
+          description: Whether this property is currently writable.
         available_values:
           type: array
           items:
             $ref: "#/components/schemas/AvailableValue"
           description: |
-            Values the camera currently accepts. An empty array has two
-            different causes:
-
-            - The property has no enumerated values (range properties,
-              freeform strings).
-            - The property is gated by the current priority key — the camera
-              reports nothing while the key is `camera-position` and populates
-              the list once `pc-remote` is claimed.
-
-            So empty does not imply a range property. Claim `pc-remote` and
-            re-read before concluding a body has no values for a property.
+            Values the camera currently accepts. Empty array for properties
+            with no enumerated values (range properties, freeform strings).
           x-fern-property-name: availableValues
 
     AvailableValue:
@@ -2169,31 +2076,10 @@ components:
           x-fern-property-name: currentFormatted
         writable:
           type: boolean
-          description: |
-            Whether this property is writable **in the current session** — not
-            whether the body supports writing it.
-
-            The value moves with the priority key. A property can report `false`
-            while the key is `camera-position` (the default after
-            `POST /connection`) and `true` seconds later once `pc-remote` is
-            claimed, with nothing else changed. Because this endpoint enumerates
-            everything at once, reading it before claiming `pc-remote`
-            under-reports what the camera can do.
         available_values:
           type: array
           items:
             $ref: "#/components/schemas/BulkAvailableValue"
-          description: |
-            Values the camera currently accepts. An empty array has two
-            different causes:
-
-            - The property has no enumerated values (range properties,
-              freeform strings).
-            - The property is gated by the current priority key — the camera
-              reports nothing while the key is `camera-position` and populates
-              the list once `pc-remote` is claimed.
-
-            So empty does not imply a range property.
           x-fern-property-name: availableValues
 
     BulkAvailableValue:
