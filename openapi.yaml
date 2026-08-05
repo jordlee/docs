@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Alpha Camera REST API
-  version: 3.0.0
+  version: 3.1.0
   description: |
     RESTful control for Sony cameras — shooting, settings, live view with OSD overlay,
     focus control, and file transfer through a clean HTTP interface.
@@ -270,6 +270,11 @@ paths:
       description: |
         Returns the current value, human-readable format, writability flag, and all
         values the camera currently accepts for this property.
+
+        `writable` and `available_values` describe the **current session**, not the
+        body's capabilities — both are gated by the priority key. If the goal is
+        discovering what a camera supports, send
+        `PUT /api/cameras/{id}/priority-key {"setting":"pc-remote"}` before reading.
       tags: [Properties]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -352,6 +357,17 @@ paths:
 
         Use this endpoint for "load everything once" UI flows. Use single GET
         when you need just one property and want the consistent setter format.
+
+        ## Read after claiming the priority key
+
+        Every entry's `writable` flag and `available_values` list describe the
+        **current session**, not the body's capabilities — both are gated by the
+        priority key, which defaults to `camera-position` after
+        `POST /connection`. A bulk read taken before claiming `pc-remote`
+        under-reports what the camera can do, across many properties at once.
+
+        Send `PUT /api/cameras/{id}/priority-key {"setting":"pc-remote"}` first if
+        this response is going to drive a capability list or a settings UI.
       tags: [Properties]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -369,6 +385,192 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/cameras/{cameraId}/af-area-position:
+    get:
+      operationId: getAFAreaPosition
+      x-fern-sdk-group-name: focus
+      x-fern-sdk-method-name: getAreaPosition
+      summary: Get the AF frame position
+      description: |
+        Return the camera's current autofocus frame(s) — position, size and focus
+        state — so a client can draw a focus box over a live view.
+
+        Each frame reports its centre three ways: `normalized` (0-1, the value to
+        use for overlays at any resolution), `position` (the same point in the
+        coordinate space `setAFAreaPosition` expects, so a read can be written
+        straight back), and `raw` (the camera's own numerator/denominator pair).
+        `size.normalized_width` / `normalized_height` give the box dimensions as a
+        fraction of the frame.
+
+        **More than one frame can be returned.** An expanding area reports the
+        main box plus its assist box — an ILCE-7M4 set to Tracking Expand Flexible
+        Spot returns a 38x38 `contrast-flexible-main` and a 76x76
+        `contrast-flexible-assist`. Draw them all.
+
+        `state` (`focused`, `not-focused`, `moving`, `selection`, …) is the value
+        to drive box colour from.
+
+        ## When this returns 400
+
+        The camera only reports a frame for focus areas that actually draw a box —
+        Flexible Spot, Expand Flexible Spot, Tracking variants. In Wide or a
+        face/eye-priority mode there is no movable frame and nothing is reported.
+        Live view should be streaming, since this reads a live-view property.
+      tags: [Actions]
+      parameters:
+        - $ref: "#/components/parameters/cameraId"
+      responses:
+        "200":
+          description: AF frame(s) retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AFAreaPositionResponse"
+        "400":
+          description: |
+            No AF frame available — usually a focus area with no movable box, or
+            live view not running.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Camera not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      operationId: setAFAreaPosition
+      x-fern-sdk-group-name: focus
+      x-fern-sdk-method-name: setAreaPosition
+      summary: Move the AF frame
+      description: |
+        Move the centre of the autofocus frame. Send either absolute coordinates
+        (`x` 0-639, `y` 0-479) or `normalized` 0-1 values — the latter is usually
+        what you want when translating a tap or click on a live view.
+
+        ## The camera clamps, and does not tell you
+
+        The usable area is smaller than the full range: it is inset from the edges
+        and varies by model, aspect ratio and AF setting. A request inside
+        0-639/0-479 is always accepted with `200`, then silently clamped.
+
+        Measured on an ILCE-7M4 with Tracking Expand Flexible Spot — every corner
+        was requested and every one was pulled inward, symmetrically:
+
+        | Requested | Landed |
+        |---|---|
+        | `0, 0` | `65, 61` |
+        | `639, 0` | `574, 61` |
+        | `639, 479` | `574, 418` |
+        | `0, 479` | `65, 418` |
+        | `320, 240` | `320, 240` |
+
+        That is a usable area of x `65-574`, y `61-418` — the middle 80% x 74% of
+        the coordinate space. Treat those numbers as illustrative, not a contract:
+        a different body, aspect ratio or AF area will inset differently.
+
+        A write is also ignored outright when the focus area has no movable box.
+        **Always follow up with `getAFAreaPosition` to see where the frame
+        actually is** rather than assuming the requested value took.
+
+        Requires priority key `pc-remote`.
+      tags: [Actions]
+      parameters:
+        - $ref: "#/components/parameters/cameraId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AFAreaPositionRequest"
+      responses:
+        "200":
+          description: |
+            Accepted by the camera. The frame may have been clamped — confirm with
+            `getAFAreaPosition`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CameraResponse"
+        "400":
+          description: |
+            Missing or malformed body, coordinates out of range, or the camera
+            rejected the write.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Camera not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/cameras/{cameraId}/tracking-frame:
+    get:
+      operationId: getTrackingFrame
+      x-fern-sdk-group-name: focus
+      x-fern-sdk-method-name: getTrackingFrame
+      summary: Get the tracking frame
+      description: |
+        Return the box the camera is tracking a subject in, after a
+        `remoteTouch`. The shape is the same as `getAFAreaPosition` — `normalized`
+        for overlays, `position` in the coordinate space `remoteTouch` accepts,
+        `raw` as the camera reports it — so the same overlay code renders both.
+
+        Poll this to follow a moving subject: the camera updates the frame on its
+        own once tracking has been seeded.
+
+        `type` is `target-af` for the subject being tracked, `non-target-af` for a
+        candidate the camera is showing but not acting on.
+
+        ## Empty is a normal answer
+
+        With nothing being tracked this returns `200` with `frames: []` and
+        `available: true` — the property was readable, there was just no subject.
+        A `400` means the property could not be read at all, usually because live
+        view is not running.
+
+        Two ways to get a frame here, both measured on an ILCE-7M4:
+
+        - `remoteTouch`, with the body's **Touch Func. in Shooting** set to
+          `Touch Tracking`. Tracking then holds on its own with no button held.
+        - The camera tracking for its own reasons — a tracking focus area with AF
+          engaged. Holding `af-on` in `Tracking: Expand Flexible Spot` reports a
+          `target-af` frame that disappears on release.
+
+        With the ILCE-7M4 default of `Touch Focus`, a touch moves the AF frame
+        instead and nothing appears here — read `getAFAreaPosition` in that case.
+      tags: [Actions]
+      parameters:
+        - $ref: "#/components/parameters/cameraId"
+      responses:
+        "200":
+          description: |
+            Tracking frame read. `frames` is empty when nothing is being tracked.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackingFrameResponse"
+        "400":
+          description: |
+            The tracking frame could not be read — usually live view is not
+            running.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Camera not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/cameras/{cameraId}/priority-key:
     get:
       operationId: getPriorityKey
@@ -377,6 +579,11 @@ paths:
       summary: Get priority key setting
       description: |
         Returns the current priority key setting (`pc-remote` or `camera-position`).
+
+        The key does more than decide whether writes are accepted — it also
+        determines what the camera *reports* as writable. Read it before
+        interpreting any `writable` flag or `available_values` list. See
+        `setPriorityKey` for the measured behaviour.
 
         **Note**: FX3 / cinema bodies do not implement `PriorityKeySettings` —
         GET returns empty data and SET returns SDK error `0x8402`. These bodies
@@ -403,6 +610,31 @@ paths:
         Set the priority key. Must be `pc-remote` for the camera to accept remote
         property changes and shooting commands. Not supported on FX3 / cinema
         bodies (returns 400).
+
+        ## The key also changes what the camera reports
+
+        Holding `pc-remote` is not only about whether a write is *accepted* — it
+        changes what `getProperty` and `getAllProperties` *report*. Measured on an
+        ILCE-7M5 over USB in `remote` connection mode, SDK V2.02.00: the same
+        property, read seconds apart, nothing else changed.
+
+        | Priority key | `GET /properties/focus-area` |
+        |---|---|
+        | `camera-position` (the default after `POST /connection`) | `writable: false`, `available_values: []` |
+        | `pc-remote` | `writable: true`, `available_values` lists the body's focus areas (`Wide` … `Tracking Flexible Spot FreeSize3`) |
+
+        The subsequent `PUT /properties/focus-area {"value":"0x17"}` then succeeded.
+
+        So **`writable: false` is a statement about the current session, not about
+        the body.** A client that enumerates properties immediately after
+        connecting — while the key is still `camera-position` — will conclude the
+        camera does not support features it does support. Claim `pc-remote` first
+        whenever a read is going to drive a capability list or a settings UI.
+
+        This was measured on one body and one property; treat the shape of the
+        behaviour as the finding, not the specific values. It applies to bodies
+        that implement `PriorityKeySettings` — see the note on `getPriorityKey`
+        for the FX3 / cinema exception.
       tags: [Properties]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -459,6 +691,197 @@ paths:
                 $ref: "#/components/schemas/CameraResponse"
         "400":
           $ref: "#/components/responses/OperationRejected"
+
+  /api/cameras/{cameraId}/actions/button:
+    post:
+      operationId: pressCameraButton
+      x-fern-sdk-group-name: actions
+      x-fern-sdk-method-name: button
+      summary: Press a button on the camera body
+      description: |
+        Press a physical button — menu, enter, the D-pad, C1-C7, playback and so
+        on — as if someone pressed it on the body. Combined with live view and
+        `getOSDFrame` this is enough to drive the camera's own menus remotely and
+        read the result back off the screen.
+
+        Omit `action` for a full press. Send `down` and a later `up` to hold a
+        button, the same contract as `triggerShutter`.
+
+        ## Not every body exposes every button
+
+        The camera reports which keys it will accept, and that list is much
+        shorter than the full enum. An ILCE-7M4 reports 24: the D-pad and
+        multi-selector, `enter`, `menu`, `fn`, `playback`, `c1`-`c4`, `movie`,
+        `ael` and `af-on` — but **not** `delete`, `mode`, `c5`-`c7`, `display`,
+        `home`, `clips`, `slot-select`, `cancel-back` or `thumbnail`.
+
+        A rejected press returns `400` with the camera's own supported list in
+        `data.supported_buttons`, so you can discover the real set at runtime.
+
+        ## Held keys block new presses
+
+        The SDK only starts a press while the camera reports itself idle, so a
+        button already held — by this API or by a hand on the body — makes the
+        next press fail. A release is never blocked: an `up` always goes through,
+        so a held key can always be let go.
+
+        Requires priority key `pc-remote`.
+      tags: [Actions]
+      parameters:
+        - $ref: "#/components/parameters/cameraId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ButtonRequest"
+      responses:
+        "200":
+          description: Button press sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CameraResponse"
+        "400":
+          description: |
+            Missing or unknown `button`, invalid `action`, or the camera refused
+            the press because a key is already held. When the camera reported its
+            operable keys they are listed in `data.supported_buttons`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/cameras/{cameraId}/actions/touch:
+    post:
+      operationId: remoteTouch
+      x-fern-sdk-group-name: actions
+      x-fern-sdk-method-name: touch
+      summary: Touch a point in the frame
+      description: |
+        Tap a point in the live-view frame, as if someone touched the camera's own
+        screen there. Send absolute coordinates (`x` 0-639, `y` 0-479) or
+        `normalized` 0-1 values — the latter is what you want for a tap or click
+        on a live view.
+
+        ## This is not `setAFAreaPosition`
+
+        `setAFAreaPosition` drags the focus box to a point and leaves it there. A
+        touch **seeds the camera's subject tracking**: the camera locks onto
+        whatever is at that point and then follows it on its own. You cannot get
+        that by rewriting positions from a client. Touch also works in focus areas
+        that have no movable box — Wide, face priority — where
+        `setAFAreaPosition` has nothing to move.
+
+        Read the result with `getTrackingFrame`.
+
+        ## The camera decides what a touch does
+
+        The SDK property that would select the touch behaviour
+        (`FunctionOfRemoteTouchOperation`) is unsupported on Alpha bodies
+        including the ILCE-7M4 — only broadcast bodies can choose. A touch does
+        whatever the body's own **Touch Func. in Shooting** is set to
+        (`MENU > Setup > Touch Operation > Touch Panel Settings > Shooting
+        Screen`), and that setting is not exposed over this API:
+
+        | Touch Func. in Shooting | What `remoteTouch` does |
+        |---|---|
+        | `Touch Focus` (ILCE-7M4 default) | Moves the AF frame, like `setAFAreaPosition`. `getTrackingFrame` stays empty. |
+        | `Touch Tracking` | Starts subject tracking at the point. `getTrackingFrame` reports the box. |
+
+        Both were measured on an ILCE-7M4. Note the touch is accepted **even when
+        the body's `Touch Operation` is `Off`** — that setting governs the
+        physical screen, not the remote property.
+
+        ## A 200 does not mean tracking started
+
+        The camera accepts the write and then decides. With `Touch Tracking` set,
+        a touch on a point with nothing trackable — measured on flat wall and
+        blown-out window areas — returns `200` and produces no tracking frame at
+        all. **Always read `getTrackingFrame` to find out what actually
+        happened.**
+
+        Touches land close to where they are asked for but not exactly: the
+        camera snaps to the nearest feature it can hold. Measured on an ILCE-7M4,
+        `320,240` landed at `320,239` and `200,300` at `209,297`, while points
+        near the edges pulled further in — `0,479` landed at `35,445`.
+
+        Leave a beat between touches. Firing several within a second or so, or
+        immediately after a `cancelRemoteTouch`, made the camera drop tracking
+        entirely until it was left alone.
+
+        ## When this returns 400
+
+        Touch is gated on the camera reporting it as currently available. On the
+        ILCE-7SM3 and ILCE-7C it is movie-mode only; other bodies gate it on focus
+        mode or on live view running. A rejected touch says which gate failed.
+
+        Requires priority key `pc-remote`.
+      tags: [Actions]
+      parameters:
+        - $ref: "#/components/parameters/cameraId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TouchRequest"
+      responses:
+        "200":
+          description: |
+            Touch sent. Confirm what the camera locked onto with
+            `getTrackingFrame`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CameraResponse"
+        "400":
+          description: |
+            Missing or malformed coordinates, coordinates out of range, or the
+            camera reports remote touch as unavailable right now.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/cameras/{cameraId}/actions/touch-cancel:
+    post:
+      operationId: cancelRemoteTouch
+      x-fern-sdk-group-name: actions
+      x-fern-sdk-method-name: touchCancel
+      summary: Cancel a touch / stop tracking
+      description: |
+        Release the subject a `remoteTouch` locked onto. No body required.
+
+        The camera only accepts a cancel while it has something to cancel, so this
+        returns `400` when nothing is being tracked. That is a safe no-op, not a
+        failure to retry.
+
+        The gate is specifically about a **remote touch** being in progress, not
+        about tracking in general. Tracking the camera started itself — a tracking
+        focus area with `af-on` held — reports nothing to cancel, because there is
+        no remote touch operation to release. The camera's ready flag also lags a
+        successful cancel by a beat, so an immediate second call can still report
+        success; treat `getTrackingFrame` as the truth.
+
+        Requires priority key `pc-remote`.
+      tags: [Actions]
+      parameters:
+        - $ref: "#/components/parameters/cameraId"
+      responses:
+        "200":
+          description: Tracking cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CameraResponse"
+        "400":
+          description: |
+            Nothing to cancel — the camera is not tracking a touched subject.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/cameras/{cameraId}/actions/half-press:
     post:
@@ -1139,7 +1562,29 @@ paths:
       x-fern-sdk-group-name: settings
       x-fern-sdk-method-name: download
       summary: Save camera settings to PC
-      description: Download the camera's current settings to a file on the host PC.
+      description: |
+        Download the camera's current settings to a file on the host PC.
+
+        The file is written to a `camera_settings/` directory relative to the
+        **server's** working directory — not a caller-supplied path. There is no
+        `save_path` for this endpoint (unlike the SD card endpoints); the optional
+        `filename` only names the file. The response `data.path` reports where it
+        landed. A typical file is `CUMSET.DAT`, around 180 KB.
+
+        Completion also emits a `downloadComplete` SSE event.
+
+        ## Requires the camera to allow it
+
+        The SDK only permits this when the camera reports
+        `camera-setting-save-enable` as `1` and `camera-setting-save-read-state`
+        as `0` (Idle). Read those via `getAllProperties` before calling — a `400`
+        here usually means the camera is refusing, not that the request was
+        malformed.
+
+        The camera will not enable it without recording media present. On bodies
+        with two card slots this means **slot 1** specifically: an ILCE-7M4 with a
+        card in slot 2 only reports `camera-setting-save-enable: 0` and rejects
+        the call.
       tags: [Settings]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -1168,7 +1613,23 @@ paths:
       x-fern-sdk-group-name: settings
       x-fern-sdk-method-name: upload
       summary: Load settings to camera
-      description: Upload a previously saved settings file back to the camera.
+      description: |
+        Upload a previously saved settings file back to the camera. `filename` is
+        required and is resolved inside the server's `camera_settings/` directory —
+        use `listCameraSettingsFiles` to see what is available.
+
+        **The camera reboots and drops the connection** once the settings are
+        applied. Reconnect afterwards; the response carries this as
+        `data.warning`. The result arrives as an SSE `settingsResult` event with
+        `{"operation":"read","success":true}`.
+
+        ## Requires the camera to allow it
+
+        Gated the same way as `downloadCameraSettings`, but on
+        `camera-setting-read-enable` being `1` (with
+        `camera-setting-save-read-state` at `0`). Recording media must be present —
+        **slot 1** on two-slot bodies. Read those properties via
+        `getAllProperties` to tell a refusing camera from a bad request.
       tags: [Settings]
       parameters:
         - $ref: "#/components/parameters/cameraId"
@@ -1624,14 +2085,32 @@ components:
           example: "1/125"
         writable:
           type: boolean
-          description: Whether this property is currently writable.
+          description: |
+            Whether this property is writable **in the current session** — not
+            whether the body supports writing it.
+
+            The value moves with the priority key. A property can report `false`
+            while the key is `camera-position` (the default after
+            `POST /connection`) and `true` seconds later once `pc-remote` is
+            claimed, with nothing else changed. Set the key with
+            `PUT /api/cameras/{id}/priority-key` before treating a `false` here
+            as a statement about the camera.
         available_values:
           type: array
           items:
             $ref: "#/components/schemas/AvailableValue"
           description: |
-            Values the camera currently accepts. Empty array for properties
-            with no enumerated values (range properties, freeform strings).
+            Values the camera currently accepts. An empty array has two
+            different causes:
+
+            - The property has no enumerated values (range properties,
+              freeform strings).
+            - The property is gated by the current priority key — the camera
+              reports nothing while the key is `camera-position` and populates
+              the list once `pc-remote` is claimed.
+
+            So empty does not imply a range property. Claim `pc-remote` and
+            re-read before concluding a body has no values for a property.
           x-fern-property-name: availableValues
 
     AvailableValue:
@@ -1690,10 +2169,31 @@ components:
           x-fern-property-name: currentFormatted
         writable:
           type: boolean
+          description: |
+            Whether this property is writable **in the current session** — not
+            whether the body supports writing it.
+
+            The value moves with the priority key. A property can report `false`
+            while the key is `camera-position` (the default after
+            `POST /connection`) and `true` seconds later once `pc-remote` is
+            claimed, with nothing else changed. Because this endpoint enumerates
+            everything at once, reading it before claiming `pc-remote`
+            under-reports what the camera can do.
         available_values:
           type: array
           items:
             $ref: "#/components/schemas/BulkAvailableValue"
+          description: |
+            Values the camera currently accepts. An empty array has two
+            different causes:
+
+            - The property has no enumerated values (range properties,
+              freeform strings).
+            - The property is gated by the current priority key — the camera
+              reports nothing while the key is `camera-position` and populates
+              the list once `pc-remote` is claimed.
+
+            So empty does not imply a range property.
           x-fern-property-name: availableValues
 
     BulkAvailableValue:
@@ -1903,6 +2403,59 @@ components:
             Hex value from `available_values` (e.g. `"0x1007d"`), human-readable
             string (e.g. `"1/125"`, `"f/5.6"`, `"wide"`), or decimal string.
 
+    ButtonRequest:
+      type: object
+      required: [button]
+      properties:
+        button:
+          type: string
+          description: |
+            Which button to press. Not every body accepts every name — a `400`
+            response lists what the connected camera reports as operable.
+          enum:
+            - up
+            - down
+            - left
+            - right
+            - enter
+            - menu
+            - multi-selector-up
+            - multi-selector-down
+            - multi-selector-left
+            - multi-selector-right
+            - multi-selector-enter
+            - multi-selector-right-up
+            - multi-selector-right-down
+            - multi-selector-left-up
+            - multi-selector-left-down
+            - fn
+            - playback
+            - delete
+            - mode
+            - c1
+            - c2
+            - c3
+            - c4
+            - c5
+            - c6
+            - c7
+            - movie
+            - ael
+            - af-on
+            - home
+            - clips
+            - slot-select
+            - display
+            - cancel-back
+            - thumbnail
+        action:
+          type: string
+          enum: [press, down, up]
+          description: |
+            `down` to hold and `up` to release. Omit (or send `press`) for a full
+            down-then-up. An `up` is always accepted so a held key can be
+            released.
+
     ShutterRequest:
       type: object
       properties:
@@ -1978,6 +2531,209 @@ components:
         startNo:
           type: integer
           description: Starting file number
+
+    AFAreaPositionRequest:
+      type: object
+      description: |
+        Supply either `x` and `y`, or a `normalized` object. If both are present,
+        `normalized` wins.
+      properties:
+        x:
+          type: integer
+          minimum: 0
+          maximum: 639
+          description: Frame centre X in the camera's AF coordinate space.
+        y:
+          type: integer
+          minimum: 0
+          maximum: 479
+          description: Frame centre Y in the camera's AF coordinate space.
+        normalized:
+          type: object
+          description: |
+            Frame centre as 0-1 fractions of the live view — use this for a tap or
+            click position without converting to the SDK's coordinate space.
+          properties:
+            x:
+              type: number
+              minimum: 0
+              maximum: 1
+            y:
+              type: number
+              minimum: 0
+              maximum: 1
+
+    AFFrame:
+      type: object
+      description: A single autofocus frame as the camera reports it.
+      properties:
+        type:
+          type: string
+          description: |
+            Frame type, e.g. `contrast-flexible-main`, `contrast-flexible-assist`,
+            `phase-detection-image-sensor`, `wide`, `zone`, `central-emphasis`,
+            `contrast`, `frame-somewhere`, `unknown`.
+        state:
+          type: string
+          description: |
+            `focused`, `not-focused`, `moving`, `selection`, `registration-af`,
+            `island` or `unknown`. Drive the box colour from this.
+        priority:
+          type: integer
+        normalized:
+          type: object
+          description: Frame centre as 0-1 fractions — use this to place an overlay.
+          properties:
+            x: { type: number }
+            y: { type: number }
+        position:
+          type: object
+          description: |
+            The same centre in the coordinate space `setAFAreaPosition` accepts, so
+            a value read here can be written straight back.
+          properties:
+            x: { type: integer }
+            y: { type: integer }
+        size:
+          type: object
+          description: Box dimensions, raw and as a fraction of the frame.
+          properties:
+            width: { type: integer }
+            height: { type: integer }
+            normalized_width: { type: number }
+            normalized_height: { type: number }
+        raw:
+          type: object
+          description: The camera's own numerator/denominator pair, unconverted.
+          properties:
+            xNumerator: { type: integer }
+            xDenominator: { type: integer }
+            yNumerator: { type: integer }
+            yDenominator: { type: integer }
+
+    AFAreaPositionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            available:
+              type: boolean
+              description: Whether the camera reported a focus frame at all.
+            frame_count:
+              type: integer
+            frames:
+              type: array
+              description: |
+                One entry per frame. Expanding and tracking areas report a main
+                box plus an assist box — render every entry.
+              items:
+                $ref: "#/components/schemas/AFFrame"
+
+    TouchRequest:
+      type: object
+      description: |
+        Supply either `x` and `y`, or a `normalized` object. If both are present,
+        `normalized` wins. Same coordinate space as `AFAreaPositionRequest`.
+      properties:
+        x:
+          type: integer
+          minimum: 0
+          maximum: 639
+          description: Touch point X in the camera's coordinate space.
+        y:
+          type: integer
+          minimum: 0
+          maximum: 479
+          description: Touch point Y in the camera's coordinate space.
+        normalized:
+          type: object
+          description: |
+            Touch point as 0-1 fractions of the live view — use this for a tap or
+            click position without converting to the SDK's coordinate space.
+          properties:
+            x:
+              type: number
+              minimum: 0
+              maximum: 1
+            y:
+              type: number
+              minimum: 0
+              maximum: 1
+
+    TrackingFrame:
+      type: object
+      description: A single tracking frame as the camera reports it.
+      properties:
+        type:
+          type: string
+          description: |
+            `target-af` for the subject being tracked, `non-target-af` for a
+            candidate the camera is showing but not acting on, or `unknown`.
+        state:
+          type: string
+          description: |
+            `focused`, `not-focused`, `moving`, `selection`, `registration-af`,
+            `island` or `unknown` — the same states the AF frame reports.
+        priority:
+          type: integer
+        normalized:
+          type: object
+          description: Frame centre as 0-1 fractions — use this to place an overlay.
+          properties:
+            x: { type: number }
+            y: { type: number }
+        position:
+          type: object
+          description: |
+            The same centre in the coordinate space `remoteTouch` accepts, so a
+            tracked position can be fed straight back in.
+          properties:
+            x: { type: integer }
+            y: { type: integer }
+        size:
+          type: object
+          description: Box dimensions, raw and as a fraction of the frame.
+          properties:
+            width: { type: integer }
+            height: { type: integer }
+            normalized_width: { type: number }
+            normalized_height: { type: number }
+        raw:
+          type: object
+          description: The camera's own numerator/denominator pair, unconverted.
+          properties:
+            xNumerator: { type: integer }
+            xDenominator: { type: integer }
+            yNumerator: { type: integer }
+            yDenominator: { type: integer }
+
+    TrackingFrameResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            available:
+              type: boolean
+              description: |
+                Whether the tracking property could be read. True with an empty
+                `frames` array means nothing is being tracked.
+            frame_count:
+              type: integer
+            frames:
+              type: array
+              description: One entry per frame the camera reports.
+              items:
+                $ref: "#/components/schemas/TrackingFrame"
 
     SettingsFileRequest:
       type: object
@@ -2133,6 +2889,12 @@ components:
         `camera-error-caution-status` (read), `system-error-caution-status` (read),
         `camera-system-error-info` (read)
 
+        **Camera-settings file gates (read):** `camera-setting-save-enable`,
+        `camera-setting-read-enable`, `camera-setting-save-read-state` — whether
+        the camera will accept `downloadCameraSettings` / `uploadCameraSettings`.
+        Both enable flags are `0` Disable / `1` Enable; the state is `0` Idle /
+        `1` Reading. Check these when either endpoint returns 400.
+
         **Media slots:** `media-slot1-status`, `media-slot1-remaining-photos`,
         `media-slot1-remaining-time`, `media-slot2-status`,
         `media-slot2-remaining-photos`, `media-slot2-remaining-time` (all read)
@@ -2204,6 +2966,10 @@ components:
         - camera-error-caution-status
         - system-error-caution-status
         - camera-system-error-info
+        # Camera-settings file save/load gates
+        - camera-setting-save-enable
+        - camera-setting-read-enable
+        - camera-setting-save-read-state
         # Media slots
         - media-slot1-status
         - media-slot1-remaining-photos
